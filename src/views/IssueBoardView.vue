@@ -34,6 +34,20 @@ const drop = (event: DragEvent) => {
 </script>
 
 <template>
+  <!--  <div class="d-flex align-center flex-column">-->
+  <!--    <v-btn-toggle-->
+  <!--      group-->
+  <!--      v-model="selected"-->
+  <!--      variant="elevated"-->
+  <!--      elevation="2"-->
+  <!--      rounded="2"-->
+  <!--      density="comfortable"-->
+  <!--    >-->
+  <!--      <v-btn value="all"> All Issues </v-btn>-->
+
+  <!--      <v-btn value="my"> My Issues </v-btn>-->
+  <!--    </v-btn-toggle>-->
+  <!--  </div>-->
   <v-row style="height: 500px">
     <v-col v-for="status in statusValues" :key="status" :data-status="status" class="h-100">
       <div
@@ -57,7 +71,7 @@ const drop = (event: DragEvent) => {
             <v-card-title>{{ task.title }}</v-card-title>
 
             <v-card-item>
-              <v-chip color="green"> 5 SP </v-chip>
+              <v-chip color="green"> 5 SP</v-chip>
             </v-card-item>
           </v-card>
         </div>

@@ -1,0 +1,3 @@
+schema:
+  # hint: local development, should maybe be changed
+  - "http://localhost:11000/graphql"

@@ -1,23 +1,19 @@
 <script setup lang="ts">
 import TheSideMenu from '@/components/TheSideMenu.vue'
+import { computed } from 'vue'
+import { useAppStore } from '@/stores/appStore'
+import TheTopBar from '@/components/TheTopBar.vue'
+
+const isLoggedIn = computed(() => useAppStore().isLoggedIn)
+const isProjectSelected = computed(() => useAppStore().isProjectSelected)
+
 </script>
 
 <template>
   <v-app>
-    <v-main>
-      <router-view />
-    </v-main>
 
-    <the-side-menu />
+    <router-view />
   </v-app>
-  <!--  <header>-->
-  <!--    <div class="wrapper">-->
-  <!--      <nav>-->
-  <!--        <RouterLink to="/">Home</RouterLink>-->
-  <!--        <RouterLink to="/about">About</RouterLink>-->
-  <!--      </nav>-->
-  <!--    </div>-->
-  <!--  </header>-->
 </template>
 
 <style scoped></style>
