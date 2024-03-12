@@ -28,6 +28,8 @@ onResult((result) => {
 })
 
 function login() {
+  // temp:
+  setUserId("0000")
   router.push('/project')
 }
 </script>

@@ -17,7 +17,15 @@ const { result } = useQuery(graphql(`
 `), () => ({ userId: userId.value }))
 
 const projects = computed(() => {
-  return result.value?.games
+  // return result.value?.games
+
+  // temp:
+  return [
+    {
+      id: "1010101",
+      name: "StuproSoSe2024"
+    }
+  ]
 })
 
 const page = ref(1)

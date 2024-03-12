@@ -95,7 +95,6 @@ function getIcon(type: string) {
 }
 
 function likeActivity(id: number) {
-  // implement your like functionality here
 }
 
 
@@ -130,7 +129,7 @@ function likeActivity(id: number) {
         </div>
 
         <div class="d-flex flex-row">
-          <v-card v-if="event.type == 'message'" min-width="700" class="elevation-2">
+          <v-card v-if="event.type == 'message'" class="elevation-2">
             <v-card-text>
               <blockquote>{{ event.description }}</blockquote>
             </v-card-text>

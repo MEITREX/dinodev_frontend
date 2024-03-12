@@ -2,6 +2,7 @@
 
 import { useRoute } from 'vue-router'
 import router from '@/router'
+import EndSprintSuccessDialog from '@/components/dialog/EndSprintSuccessDialog.vue'
 
 const route = useRoute()
 
@@ -44,22 +45,21 @@ function openBoard() {
     >
     </v-progress-linear>
 
-<!--    <h4 class="my-3">Oh no! Herbert is not doing well!</h4>
+    <!--    <h4 class="my-3">Oh no! Herbert is not doing well!</h4>
 
-    <p>You can do one of your assigned issues to feed him:</p>
+        <p>You can do one of your assigned issues to feed him:</p>
 
-    <v-card class="mb-2 mt-3">
-      <v-card-title>Issue 1</v-card-title>
-      <v-card-text>
-        <p>Herbert is hungry</p>
-      </v-card-text>
-    </v-card>-->
+        <v-card class="mb-2 mt-3">
+          <v-card-title>Issue 1</v-card-title>
+          <v-card-text>
+            <p>Herbert is hungry</p>
+          </v-card-text>
+        </v-card>-->
 
     <v-btn
       variant="elevated"
       @click="openBoard"
       class="mt-10 "
-      size="large"
       color="primary"
     >
       View issue board
@@ -69,10 +69,18 @@ function openBoard() {
       variant="elevated"
       @click="openBoard"
       class="mt-10 ml-3"
-      size="large"
     >
       View my issues
     </v-btn>
+
+    <v-btn
+      variant="elevated"
+      id="btn-end-sprint"
+      class="mt-10 ml-3"
+    >
+      End Sprint
+    </v-btn>
+    <end-sprint-success-dialog activator="#btn-end-sprint" />
 
   </div>
 </template>
