@@ -2,7 +2,11 @@
 
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import EndSprintSuccessDialog from '@/components/dialog/EndSprintSuccessDialog.vue'
+import EndSprintSuccessDialog from '@/components/dialog/EndSprintDialog.vue'
+import { ref, watch } from 'vue'
+import { useMagicKeys } from '@vueuse/core'
+
+defineProps<{showButtons: boolean}>()
 
 const route = useRoute()
 
@@ -10,6 +14,23 @@ function openBoard() {
   const projectId = route.params.projectId
   router.push(`/project/${projectId}/board`)
 }
+
+const sprintDays = ref(10)
+const issueNum = ref(32)
+
+
+const keys = useMagicKeys()
+const ctrlAltC = keys['Ctrl+Alt+C']
+watch(ctrlAltC, () => {
+  sprintDays.value = 14
+})
+
+const ctrlAltL = keys['Ctrl+Alt+L']
+watch(ctrlAltL, () => {
+  issueNum.value = 100
+})
+
+
 </script>
 
 <template>
@@ -19,14 +40,14 @@ function openBoard() {
       <p class="mt-2 text-caption">Sprint progress</p>
 
       <p class="mt-2 text-caption">
-        32%
+        {{ issueNum }}%
       </p>
     </div>
 
     <v-progress-linear
       color="red-darken-3"
       height="15"
-      model-value="32"
+      v-model="issueNum"
     >
     </v-progress-linear>
 
@@ -34,13 +55,13 @@ function openBoard() {
       <p class="mt-2 text-caption">Time elapsed</p>
 
       <p class="mt-2 text-caption">
-        4 days left
+        {{ 14 - sprintDays}} days left
       </p>
     </div>
     <v-progress-linear
       color="secondary"
       height="15"
-      model-value="10"
+      :model-value="sprintDays"
       max="14"
     >
     </v-progress-linear>
@@ -56,31 +77,35 @@ function openBoard() {
           </v-card-text>
         </v-card>-->
 
-    <v-btn
-      variant="elevated"
-      @click="openBoard"
-      class="mt-10 "
-      color="primary"
-    >
-      View issue board
-    </v-btn>
+    <div v-if="showButtons">
 
-    <v-btn
-      variant="elevated"
-      @click="openBoard"
-      class="mt-10 ml-3"
-    >
-      View my issues
-    </v-btn>
+      <v-btn
+        variant="elevated"
+        @click="openBoard"
+        class="mt-10 "
+        color="primary"
+      >
+        View issue board
+      </v-btn>
 
-    <v-btn
-      variant="elevated"
-      id="btn-end-sprint"
-      class="mt-10 ml-3"
-    >
-      End Sprint
-    </v-btn>
-    <end-sprint-success-dialog activator="#btn-end-sprint" />
+      <v-btn
+        variant="elevated"
+        @click="openBoard"
+        class="mt-10 ml-3"
+      >
+        View my issues
+      </v-btn>
+
+      <v-btn
+        variant="elevated"
+        id="btn-end-sprint"
+        class="mt-10 ml-3"
+        :disabled="sprintDays != 14"
+      >
+        End Sprint
+      </v-btn>
+      <end-sprint-success-dialog activator="#btn-end-sprint" :success="issueNum == 100" />
+    </div>
 
   </div>
 </template>

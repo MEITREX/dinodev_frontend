@@ -3,6 +3,8 @@
 import { useRoute, useRouter } from 'vue-router'
 import TheTopBar from '@/components/TheTopBar.vue'
 import TheSideMenu from '@/components/TheSideMenu.vue'
+import { useMagicKeys } from '@vueuse/core'
+import { watch } from 'vue'
 
 
 const route = useRoute()
@@ -18,6 +20,7 @@ if (!endsWithKnownSubRoute(route.path)) {
   const projectId = route.params.projectId
   router.push(`/project/${projectId}/sprint`)
 }
+
 
 </script>
 

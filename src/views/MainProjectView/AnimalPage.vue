@@ -9,7 +9,8 @@ import SprintStats from '@/components/SprintStats.vue'
     <v-img :src="ForestBackground" height="500" />
 
     <h3> Luna </h3>
-    <sprint-stats />
+    <sprint-stats show-buttons/>
+
   </v-container>
 </template>
 

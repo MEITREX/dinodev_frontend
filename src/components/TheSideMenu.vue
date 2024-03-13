@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useAppStore } from '@/stores/appStore'
+import { useMagicKeys } from '@vueuse/core'
+import LevelUpDialog from '@/components/dialog/LevelUpDialog.vue'
 
 const rail = ref(false)
 
@@ -13,6 +15,30 @@ function logout() {
 }
 
 const projectId = computed(() => useAppStore().projectId)
+
+function subRouteTo(route: string) {
+  return `/project/${projectId.value}/${route}`
+}
+
+const xp = ref(3000)
+const level = ref(3)
+const percent = computed(() => (xp.value / 8000) * 100)
+
+const levelUpReady = computed(() => percent.value >= 100)
+
+
+const key = useMagicKeys()
+const ctrlAltU = key['Ctrl+Alt+U']
+
+watch(ctrlAltU, () => {
+  xp.value += 1000
+})
+
+function levelUp() {
+  xp.value = 0
+  level.value++
+}
+
 </script>
 
 <template>
@@ -31,28 +57,56 @@ const projectId = computed(() => useAppStore().projectId)
 
     <div class="py-4 d-flex flex-column align-center justify-center">
       <v-progress-circular
-        model-value="20"
+        :model-value="percent"
         :size="rail ? 30 : 160"
         :width="rail ? 3 : 16"
         color="green"
       >
-        <div class="d-flex flex-column align-center" v-if="!rail">
-          <b>Level 3</b>
-          <p class="text-sm-center">3000 XP</p>
+        <level-up-dialog activator="#btn-level-up" />
+        <v-btn
+          v-show="levelUpReady"
+          color="white"
+          id="btn-level-up"
+          class="btn-levelup"
+          @click="levelUp"
+          variant="flat">
+          Level up
+        </v-btn>
+        <div v-if="!levelUpReady">
+          <div class="d-flex flex-column align-center" v-if="!rail">
+            <b>Level {{ level }}</b>
+            <p class="text-sm-center">{{ xp }} XP</p>
+          </div>
+          <div v-else class="sm">3</div>
         </div>
-        <div v-else class="sm">3</div>
       </v-progress-circular>
+
+
     </div>
 
     <v-divider />
 
     <v-list density="compact" nav>
-      <v-list-item prepend-icon="mdi-reiterate" :to="'/project/' + projectId + '/sprint'"> Current Sprint</v-list-item>
-      <v-list-item prepend-icon="mdi-view-dashboard" :to="'/project/' + projectId + '/board'"> Issue Board</v-list-item>
-      <v-list-item prepend-icon="mdi-account" to="/profile"> Profile</v-list-item>
-      <v-list-item prepend-icon="mdi-shopping" to="/store"> Store</v-list-item>
+
+      <v-list-subheader class="text-button">Project</v-list-subheader>
+      <v-list-item prepend-icon="mdi-reiterate" :to="subRouteTo('sprint')">
+          Current Sprint
+      </v-list-item>
+      <v-list-item prepend-icon="mdi-view-dashboard" :to="subRouteTo('board')"> Issue Board</v-list-item>
+      <v-list-item prepend-icon="mdi-account-group" :to="subRouteTo('team')"> Team</v-list-item>
+
+      <v-list-item prepend-icon="mdi-shopping" :to="subRouteTo('store')">
+        Store
+        <v-chip text-color="white" class="ml-3">57 💎</v-chip>
+      </v-list-item>
+    </v-list>
+    <v-divider class="my-2" />
+    <v-list density="compact" nav>
+      <v-list-subheader class="text-button">Administration</v-list-subheader>
+      <v-list-item prepend-icon="mdi-forum" :to="subRouteTo('meeting')"> Meetings</v-list-item>
       <v-list-item prepend-icon="mdi-cog" to="/settings"> Settings</v-list-item>
-      <v-list-item prepend-icon="mdi-book" to="/rules"> Rules</v-list-item>
+      <v-list-item prepend-icon="mdi-book" :to="subRouteTo('rules')"> Rules</v-list-item>
+      <!--<v-list-item prepend-icon="mdi-chart-bar" to="/stats"> Stats</v-list-item>-->
 
     </v-list>
     <v-divider class="my-2" />
@@ -69,4 +123,15 @@ const projectId = computed(() => useAppStore().projectId)
   </v-navigation-drawer>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+@keyframes wobble {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.btn-levelup {
+  animation: wobble 1s infinite;
+}
+</style>

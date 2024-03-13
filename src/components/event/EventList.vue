@@ -2,6 +2,13 @@
 
 import { ref } from 'vue'
 
+const props = defineProps({
+  customMember: {
+    type: String,
+    required: false
+  }
+})
+
 type Event = {
   title: string
   date: string
@@ -17,6 +24,15 @@ type Event = {
 }
 
 const events = ref<Event[]>([
+  {
+    title: 'reached a new highscore',
+    date: '1 minute ago',
+    description: 'contributed 19 story points to the sprint. A new highscore!',
+    type: 'reminder',
+    avatar: 'https://i.pravatar.cc/62',
+    likes: 2,
+    user: 'Alice',
+  },
   {
     title: 'commented',
     date: '1 minute ago',
@@ -57,7 +73,7 @@ const events = ref<Event[]>([
     xp: 10
   },
   {
-    title: 'changed status of an issue',
+    title: 'changed the status of an issue',
     date: '3 hours ago',
     description: 'In Review',
     type: 'change_status',
@@ -79,20 +95,22 @@ const events = ref<Event[]>([
   }
 ])
 
+if (props.customMember !== undefined) {
+  const avatar = 'https://i.pravatar.cc/' + Math.floor(Math.random() * 100)
+  events.value = events.value
+    .filter((e) => e.type === 'task_finished' || e.type === 'change_status')
+    .map((e) => {
+      e.user = props.customMember!
+      e.avatar = avatar
+      e.xp = undefined
+      e.userCircleColor = undefined
+      return e
+    })
+
+}
+
 
 const newMessage = ref('')
-
-function getIcon(type: string) {
-  switch (type) {
-    case 'task':
-      return 'mdi-check'
-    case 'message':
-      return 'mdi-message'
-    // add more cases as needed
-    default:
-      return 'mdi-information'
-  }
-}
 
 function likeActivity(id: number) {
 }
@@ -108,6 +126,7 @@ function likeActivity(id: number) {
     density="compact"
     class="w-100"
     line-thickness="2"
+    :truncate-line="customMember === undefined ? undefined : 'both'"
   >
     <v-timeline-item
       v-for="(event, index) in events"
@@ -134,17 +153,17 @@ function likeActivity(id: number) {
               <blockquote>{{ event.description }}</blockquote>
             </v-card-text>
           </v-card>
-<!--          <v-sheet-->
-<!--            v-if="event.type == 'message'"-->
-<!--            color="grey-lighten-3"-->
-<!--            min-width="50%"-->
-<!--            min-height="100px"-->
-<!--            rounded="sm"-->
-<!--          >-->
-<!--            <p>-->
-<!--              {{ event.description }}-->
-<!--            </p>-->
-<!--          </v-sheet>-->
+          <!--          <v-sheet-->
+          <!--            v-if="event.type == 'message'"-->
+          <!--            color="grey-lighten-3"-->
+          <!--            min-width="50%"-->
+          <!--            min-height="100px"-->
+          <!--            rounded="sm"-->
+          <!--          >-->
+          <!--            <p>-->
+          <!--              {{ event.description }}-->
+          <!--            </p>-->
+          <!--          </v-sheet>-->
 
           <p v-else-if="event.type == 'task_finished'">
             finished task
@@ -195,7 +214,7 @@ function likeActivity(id: number) {
             </template>
           </v-tooltip>
 
-          <v-tooltip location="bottom" text="Comment">
+          <v-tooltip location="bottom" text="Comment" v-if="customMember === undefined">
             <template #activator="{ props }">
               <v-btn
                 v-bind="props"
@@ -227,14 +246,14 @@ function likeActivity(id: number) {
 
     </v-timeline-item>
 
-    <v-timeline-item hide-dot>
+    <v-timeline-item hide-dot v-if="customMember === undefined">
 
       <v-btn>Load more</v-btn>
     </v-timeline-item>
   </v-timeline>
 
 
-  <v-textarea label="Add comment..." v-model="newMessage"></v-textarea>
+  <v-textarea  v-if="customMember === undefined" label="Add comment..." v-model="newMessage"></v-textarea>
 
 </template>
 
