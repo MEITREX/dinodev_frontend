@@ -13,9 +13,9 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "query pseudoLogin($userId: UUID!) {\n    games(userId: $userId) {\n      id\n      name\n    }\n  }": types.PseudoLoginDocument,
-    "\n  query getGames($userId: UUID!) {\n    games(userId: $userId) {\n      id\n      name\n    }\n  }\n": types.GetGamesDocument,
-    "\n      query getAllRules {\n        rules {\n          id\n          triggerEventTypes\n          createEventTypes {\n            eventTypeIdentifier\n          }\n        }\n      }\n    ": types.GetAllRulesDocument,
+    "\n    fragment BaseGlobalUser on GlobalUser {\n        id\n        avatar\n        username\n        roles {\n            id\n            name\n            globalPrivileges\n        }\n    }": types.BaseGlobalUserFragmentDoc,
+    "\n      query CurrentUser {\n          currentUser {\n              ... BaseGlobalUser\n          }\n      }\n  ": types.CurrentUserDocument,
+    "\n  query projects {\n    projects {\n      id\n      name\n      description\n      startDate\n      endDate\n    }\n  }\n": types.ProjectsDocument,
 };
 
 /**
@@ -35,15 +35,15 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query pseudoLogin($userId: UUID!) {\n    games(userId: $userId) {\n      id\n      name\n    }\n  }"): (typeof documents)["query pseudoLogin($userId: UUID!) {\n    games(userId: $userId) {\n      id\n      name\n    }\n  }"];
+export function graphql(source: "\n    fragment BaseGlobalUser on GlobalUser {\n        id\n        avatar\n        username\n        roles {\n            id\n            name\n            globalPrivileges\n        }\n    }"): (typeof documents)["\n    fragment BaseGlobalUser on GlobalUser {\n        id\n        avatar\n        username\n        roles {\n            id\n            name\n            globalPrivileges\n        }\n    }"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query getGames($userId: UUID!) {\n    games(userId: $userId) {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  query getGames($userId: UUID!) {\n    games(userId: $userId) {\n      id\n      name\n    }\n  }\n"];
+export function graphql(source: "\n      query CurrentUser {\n          currentUser {\n              ... BaseGlobalUser\n          }\n      }\n  "): (typeof documents)["\n      query CurrentUser {\n          currentUser {\n              ... BaseGlobalUser\n          }\n      }\n  "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n      query getAllRules {\n        rules {\n          id\n          triggerEventTypes\n          createEventTypes {\n            eventTypeIdentifier\n          }\n        }\n      }\n    "): (typeof documents)["\n      query getAllRules {\n        rules {\n          id\n          triggerEventTypes\n          createEventTypes {\n            eventTypeIdentifier\n          }\n        }\n      }\n    "];
+export function graphql(source: "\n  query projects {\n    projects {\n      id\n      name\n      description\n      startDate\n      endDate\n    }\n  }\n"): (typeof documents)["\n  query projects {\n    projects {\n      id\n      name\n      description\n      startDate\n      endDate\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

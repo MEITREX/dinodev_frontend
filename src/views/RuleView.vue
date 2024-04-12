@@ -4,20 +4,20 @@ import { graphql } from '@/gql'
 import gql from 'graphql-tag'
 import { computed } from 'vue'
 
-const { result } = useQuery(
-  graphql(`
-      query getAllRules {
-        rules {
-          id
-          triggerEventTypes
-          createEventTypes {
-            eventTypeIdentifier
-          }
-        }
-      }
-    `
-  )
-)
+// const { result } = useQuery(
+//   graphql(`
+//       query getAllRules {
+//         rules {
+//           id
+//           triggerEventTypes
+//           createEventTypes {
+//             eventTypeIdentifier
+//           }
+//         }
+//       }
+//     `
+//   )
+// )
 
 const rules = computed(() => {
   // return result.value?.rules

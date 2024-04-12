@@ -18,8 +18,6 @@ export type Scalars = {
   Date: { input: any; output: any; }
   /** A slightly refined version of RFC-3339 compliant DateTime Scalar */
   DateTime: { input: any; output: any; }
-  /** A JSON scalar type */
-  JsonObject: { input: any; output: any; }
   /** 24-hour clock time value string in the format `hh:mm:ss` or `hh:mm:ss.sss`. */
   LocalTime: { input: any; output: any; }
   /** An RFC-3339 compliant Full Time Scalar */
@@ -30,9 +28,53 @@ export type Scalars = {
   Url: { input: any; output: any; }
 };
 
-export enum ActionOnEvent {
-  None = 'NONE'
-}
+export type AnimalVote = {
+  __typename?: 'AnimalVote';
+  user: GlobalUser;
+  userId: Scalars['UUID']['output'];
+};
+
+export type AnimalVoting = {
+  __typename?: 'AnimalVoting';
+  animalVotingStates: Array<VotingState>;
+  finished: Scalars['Boolean']['output'];
+  votableAnimals: Array<Scalars['String']['output']>;
+  votingResult?: Maybe<Scalars['String']['output']>;
+};
+
+export type CodeRepositorySettings = {
+  __typename?: 'CodeRepositorySettings';
+  codeRepositoryName: Scalars['String']['output'];
+};
+
+export type CodeRepositorySettingsInput = {
+  codeRepositoryName: Scalars['String']['input'];
+};
+
+export type CreateProjectInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  endDate: Scalars['DateTime']['input'];
+  name: Scalars['String']['input'];
+  projectSettings: ProjectSettingsInput;
+  startDate: Scalars['DateTime']['input'];
+};
+
+export type CreateRoleInput = {
+  gamifiedName: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  permissions: Array<ProjectPrivilege>;
+};
+
+export type CreateSprintInput = {
+  endDate: Scalars['DateTime']['input'];
+  name: Scalars['String']['input'];
+  startDate: Scalars['DateTime']['input'];
+};
+
+export type CreateUserInput = {
+  avatar?: InputMaybe<Scalars['String']['input']>;
+  username: Scalars['String']['input'];
+};
 
 /**
  * 
@@ -52,79 +94,50 @@ export type DateTimeFilter = {
   before?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
-export type EventTypeDto = {
-  __typename?: 'EventTypeDto';
-  action: ActionOnEvent;
-  defaultVisibility: EventVisibility;
-  description: Scalars['String']['output'];
-  eventSchema: Scalars['JsonObject']['output'];
-  identifier: Scalars['String']['output'];
-};
-
-export type EventTypeInRuleDto = {
-  __typename?: 'EventTypeInRuleDto';
-  dataTemplate: Scalars['JsonObject']['output'];
-  eventTypeIdentifier: Scalars['String']['output'];
-};
-
-export type EventTypeInRuleDtoInput = {
-  dataTemplate: Scalars['JsonObject']['input'];
-  eventTypeIdentifier: Scalars['String']['input'];
-};
-
-export type EventTypeInput = {
-  action: ActionOnEvent;
-  defaultVisibility: EventVisibility;
-  description: Scalars['String']['input'];
-  eventSchema: Scalars['JsonObject']['input'];
-  identifier: Scalars['String']['input'];
-};
-
-export enum EventVisibility {
-  Admin = 'ADMIN',
-  Game = 'GAME',
-  Player = 'PLAYER'
+export enum GlobalPrivilege {
+  CreateProject = 'CREATE_PROJECT',
+  DeleteUser = 'DELETE_USER',
+  GrantRole = 'GRANT_ROLE',
+  ReadUserPrivateInfo = 'READ_USER_PRIVATE_INFO',
+  UpdateUser = 'UPDATE_USER'
 }
 
-export type GameDto = {
-  __typename?: 'GameDto';
-  additionalData: Scalars['JsonObject']['output'];
-  flags: Array<Scalars['String']['output']>;
+export type GlobalPrivilegeDetails = {
+  __typename?: 'GlobalPrivilegeDetails';
+  description: Scalars['String']['output'];
+  id: GlobalPrivilege;
+  name: Scalars['String']['output'];
+};
+
+export type GlobalUser = {
+  __typename?: 'GlobalUser';
+  avatar?: Maybe<Scalars['String']['output']>;
+  id: Scalars['UUID']['output'];
+  roles: Array<GlobalUserRole>;
+  userInProject: UserInProject;
+  username: Scalars['String']['output'];
+};
+
+
+export type GlobalUserUserInProjectArgs = {
+  projectId: Scalars['UUID']['input'];
+};
+
+export type GlobalUserRole = {
+  __typename?: 'GlobalUserRole';
+  globalPrivileges: Array<GlobalPrivilege>;
+  globalPrivilegesDetails: Array<GlobalPrivilegeDetails>;
   id: Scalars['UUID']['output'];
   name: Scalars['String']['output'];
-  players: Array<PlayerDto>;
-  scoresAsList: Array<Score>;
 };
 
-export type GameEventDto = {
-  __typename?: 'GameEventDto';
-  childEvents: Array<GameEventDto>;
-  data: Scalars['JsonObject']['output'];
-  eventType: EventTypeDto;
-  game: GameDto;
-  gameId: Scalars['UUID']['output'];
-  id: Scalars['UUID']['output'];
-  mostRecentChildTimestamp: Scalars['DateTime']['output'];
-  /**  resolved with schema mapping: */
-  parentEvent?: Maybe<GameEventDto>;
-  parentEventId?: Maybe<Scalars['UUID']['output']>;
-  player?: Maybe<PlayerDto>;
-  playerId?: Maybe<Scalars['UUID']['output']>;
-  timestamp: Scalars['DateTime']['output'];
-  visibility: EventVisibility;
+export type ImsSettings = {
+  __typename?: 'IMSSettings';
+  imsName: Scalars['String']['output'];
 };
 
-export type GameEventInput = {
-  data?: Scalars['JsonObject']['input'];
-  eventType: Scalars['String']['input'];
-  gameId: Scalars['UUID']['input'];
-  parentEventId?: InputMaybe<Scalars['UUID']['input']>;
-  playerId?: InputMaybe<Scalars['UUID']['input']>;
-  visibility: EventVisibility;
-};
-
-export type GameInput = {
-  name: Scalars['String']['input'];
+export type ImsSettingsInput = {
+  imsName: Scalars['String']['input'];
 };
 
 /**
@@ -150,86 +163,113 @@ export type IntFilter = {
   lessThan?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type IssueEstimation = {
+  __typename?: 'IssueEstimation';
+  finalResult?: Maybe<StoryPoints>;
+  finished: Scalars['Boolean']['output'];
+  issueId: Scalars['UUID']['output'];
+  max?: Maybe<StoryPoints>;
+  median?: Maybe<StoryPoints>;
+  min?: Maybe<StoryPoints>;
+  mode?: Maybe<StoryPoints>;
+  skipped: Scalars['Boolean']['output'];
+  votes: Array<StoryPointVote>;
+};
+
+export type IssueEstimations = {
+  __typename?: 'IssueEstimations';
+  countdown: Scalars['Int']['output'];
+  currentIssueEstimation?: Maybe<IssueEstimation>;
+  finished: Scalars['Boolean']['output'];
+  issueEstimations: Array<IssueEstimation>;
+};
+
+export type Meeting = {
+  attendees: Array<MeetingAttendee>;
+  description?: Maybe<Scalars['String']['output']>;
+  end: Scalars['DateTime']['output'];
+  id: Scalars['UUID']['output'];
+  meetingLink: Scalars['String']['output'];
+  start: Scalars['DateTime']['output'];
+  state: MeetingState;
+  title: Scalars['String']['output'];
+};
+
+export type MeetingAttendee = {
+  __typename?: 'MeetingAttendee';
+  role: MeetingRole;
+  state: UserState;
+  userId: Scalars['UUID']['output'];
+};
+
+export enum MeetingRole {
+  Attendee = 'ATTENDEE',
+  MeetingLeader = 'MEETING_LEADER'
+}
+
+export enum MeetingState {
+  Active = 'ACTIVE',
+  Finished = 'FINISHED',
+  Planned = 'PLANNED'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
-  createEvent: GameEventDto;
-  createEventType: EventTypeDto;
-  createGame: GameDto;
-  createPlayerInGame: PlayerDto;
-  createRule: RuleDto;
-  deleteEventType: Scalars['Boolean']['output'];
-  deleteGame: Scalars['Boolean']['output'];
-  deletePlayerFromGame: Scalars['Boolean']['output'];
-  deleteRule: Scalars['Boolean']['output'];
-  updateEventType: EventTypeDto;
-  updateGame: GameDto;
-  updateRule: RuleDto;
+  /**  projects */
+  createProject?: Maybe<Project>;
+  deleteProject: Scalars['Boolean']['output'];
+  grantRole: GlobalUser;
+  mutateProject: ProjectMutation;
+  /**  user */
+  register?: Maybe<GlobalUser>;
+  updateGlobalUserProfile: GlobalUser;
+  updateProject?: Maybe<Project>;
 };
 
 
-export type MutationCreateEventArgs = {
-  event: GameEventInput;
-  gameId: Scalars['UUID']['input'];
+export type MutationCreateProjectArgs = {
+  input: CreateProjectInput;
 };
 
 
-export type MutationCreateEventTypeArgs = {
-  eventType: EventTypeInput;
+export type MutationDeleteProjectArgs = {
+  id: Scalars['UUID']['input'];
 };
 
 
-export type MutationCreateGameArgs = {
-  game: GameInput;
+export type MutationGrantRoleArgs = {
+  roleId: Scalars['UUID']['input'];
+  userId: Scalars['UUID']['input'];
 };
 
 
-export type MutationCreatePlayerInGameArgs = {
-  gameId: Scalars['UUID']['input'];
-  player: PlayerInput;
+export type MutationMutateProjectArgs = {
+  id: Scalars['UUID']['input'];
 };
 
 
-export type MutationCreateRuleArgs = {
-  rule: RuleInput;
+export type MutationRegisterArgs = {
+  input: CreateUserInput;
 };
 
 
-export type MutationDeleteEventTypeArgs = {
-  eventTypeId: Scalars['UUID']['input'];
+export type MutationUpdateGlobalUserProfileArgs = {
+  id: Scalars['UUID']['input'];
+  input: UpdateUserInput;
 };
 
 
-export type MutationDeleteGameArgs = {
-  gameId: Scalars['UUID']['input'];
+export type MutationUpdateProjectArgs = {
+  id: Scalars['UUID']['input'];
+  input: UpdateProjectInput;
 };
 
-
-export type MutationDeletePlayerFromGameArgs = {
-  gameId: Scalars['UUID']['input'];
-  playerId: Scalars['UUID']['input'];
-};
-
-
-export type MutationDeleteRuleArgs = {
-  ruleId: Scalars['UUID']['input'];
-};
-
-
-export type MutationUpdateEventTypeArgs = {
-  eventType: EventTypeInput;
-  eventTypeId: Scalars['UUID']['input'];
-};
-
-
-export type MutationUpdateGameArgs = {
-  game: GameInput;
-  gameId: Scalars['UUID']['input'];
-};
-
-
-export type MutationUpdateRuleArgs = {
-  rule: RuleInput;
-  ruleId: Scalars['UUID']['input'];
+export type NameVoting = {
+  __typename?: 'NameVoting';
+  finished: Scalars['Boolean']['output'];
+  nameVotingStates: Array<VotingState>;
+  votableNames: Array<Scalars['String']['output']>;
+  votingResult?: Maybe<Scalars['String']['output']>;
 };
 
 /**
@@ -285,98 +325,307 @@ export type PaginationInfo = {
   totalPages: Scalars['Int']['output'];
 };
 
-export type PlayerDto = {
-  __typename?: 'PlayerDto';
-  additionalData: Scalars['JsonObject']['output'];
-  flags: Array<Scalars['String']['output']>;
-  game: GameDto;
-  name: Scalars['String']['output'];
-  scoresAsList: Array<Score>;
-  userId: Scalars['UUID']['output'];
+export type PlanningMeeting = Meeting & {
+  __typename?: 'PlanningMeeting';
+  animalVoting: AnimalVoting;
+  attendees: Array<MeetingAttendee>;
+  currentPage: PlanningMeetingPage;
+  description?: Maybe<Scalars['String']['output']>;
+  end: Scalars['DateTime']['output'];
+  /**  inherited from Meeting: */
+  id: Scalars['UUID']['output'];
+  issueEstimation: IssueEstimation;
+  meetingLink: Scalars['String']['output'];
+  nameVoting: NameVoting;
+  nextPageAllowed: Scalars['Boolean']['output'];
+  planningSettings: PlanningSettings;
+  sprintGoalVoting: SprintGoalVoting;
+  start: Scalars['DateTime']['output'];
+  state: MeetingState;
+  title: Scalars['String']['output'];
 };
 
-export type PlayerInput = {
-  game: Scalars['UUID']['input'];
+export type PlanningMeetingInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  end: Scalars['DateTime']['input'];
+  planningSettings: PlanningSettingsInput;
+  start: Scalars['DateTime']['input'];
+  title: Scalars['String']['input'];
+};
+
+export type PlanningMeetingMutation = {
+  __typename?: 'PlanningMeetingMutation';
+  addSprintIssue: PlanningMeeting;
+  changePage: PlanningMeeting;
+  finishMeeting: Sprint;
+  id: Scalars['UUID']['output'];
+  nextPage: PlanningMeeting;
+  removeSprintIssue: PlanningMeeting;
+  setFinalResult: PlanningMeeting;
+  setStoryPointLimit: PlanningMeeting;
+  skipIssue: PlanningMeeting;
+  startCountdown: PlanningMeeting;
+  voteAnimal: PlanningMeeting;
+  voteName: PlanningMeeting;
+  voteStoryPoints: PlanningMeeting;
+};
+
+
+export type PlanningMeetingMutationAddSprintIssueArgs = {
+  issueId: Scalars['UUID']['input'];
+};
+
+
+export type PlanningMeetingMutationChangePageArgs = {
+  page: PlanningMeetingPage;
+};
+
+
+export type PlanningMeetingMutationRemoveSprintIssueArgs = {
+  issueId: Scalars['UUID']['input'];
+};
+
+
+export type PlanningMeetingMutationSetFinalResultArgs = {
+  storyPoints: StoryPoints;
+};
+
+
+export type PlanningMeetingMutationSetStoryPointLimitArgs = {
+  limit: Scalars['Int']['input'];
+};
+
+
+export type PlanningMeetingMutationVoteAnimalArgs = {
+  animal: Scalars['String']['input'];
+  userId: Scalars['UUID']['input'];
+};
+
+
+export type PlanningMeetingMutationVoteNameArgs = {
   name: Scalars['String']['input'];
   userId: Scalars['UUID']['input'];
 };
 
+
+export type PlanningMeetingMutationVoteStoryPointsArgs = {
+  storyPoints: StoryPoints;
+  userId: Scalars['UUID']['input'];
+};
+
+export enum PlanningMeetingPage {
+  ChooseAnimal = 'CHOOSE_ANIMAL',
+  Configuration = 'CONFIGURATION',
+  EstimateAnimal = 'ESTIMATE_ANIMAL',
+  NameAnimal = 'NAME_ANIMAL'
+}
+
+export type PlanningSettings = {
+  __typename?: 'PlanningSettings';
+  sprintDurationDays: Scalars['Int']['output'];
+  sprintStartDate: Scalars['DateTime']['output'];
+};
+
+export type PlanningSettingsInput = {
+  sprintDurationDays: Scalars['Int']['input'];
+  sprintStartDate: Scalars['DateTime']['input'];
+};
+
+export type PrivateUserInfo = {
+  __typename?: 'PrivateUserInfo';
+  level: Scalars['Int']['output'];
+  stats: UserStats;
+  xp: Scalars['Int']['output'];
+};
+
+export type Project = {
+  __typename?: 'Project';
+  activeMeetings: Array<Meeting>;
+  activePlanningMeeting?: Maybe<PlanningMeeting>;
+  currentSprint?: Maybe<Sprint>;
+  currentUser?: Maybe<UserInProject>;
+  description?: Maybe<Scalars['String']['output']>;
+  endDate: Scalars['DateTime']['output'];
+  id: Scalars['UUID']['output'];
+  meeting?: Maybe<Meeting>;
+  /**  meetings */
+  meetings: Array<Meeting>;
+  name: Scalars['String']['output'];
+  planningMeetings: Array<PlanningMeeting>;
+  previousSprint?: Maybe<Sprint>;
+  projectSettings: ProjectSettings;
+  role?: Maybe<UserRoleInProject>;
+  /**  roles */
+  roles: Array<UserRoleInProject>;
+  sprints: Array<Sprint>;
+  startDate: Scalars['DateTime']['output'];
+  users: Array<UserInProject>;
+};
+
+
+export type ProjectMeetingArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type ProjectMeetingsArgs = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type ProjectRoleArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+export type ProjectMutation = {
+  __typename?: 'ProjectMutation';
+  createPlanningMeeting: PlanningMeeting;
+  createRole: UserRoleInProject;
+  createSprint: Sprint;
+  deleteRole: Scalars['Boolean']['output'];
+  finishMeeting: Meeting;
+  id: Scalars['UUID']['output'];
+  joinMeeting: Meeting;
+  leaveMeeting: Meeting;
+  mutatePlanningMeeting: PlanningMeetingMutation;
+  pingMeeting: Meeting;
+  promoteToMeetingLeader: Meeting;
+  startMeeting: Meeting;
+  updatePlanningMeeting: PlanningMeeting;
+  updateRole: UserRoleInProject;
+};
+
+
+export type ProjectMutationCreatePlanningMeetingArgs = {
+  input: PlanningMeetingInput;
+};
+
+
+export type ProjectMutationCreateRoleArgs = {
+  input: CreateRoleInput;
+};
+
+
+export type ProjectMutationCreateSprintArgs = {
+  input?: InputMaybe<CreateSprintInput>;
+};
+
+
+export type ProjectMutationDeleteRoleArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type ProjectMutationFinishMeetingArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type ProjectMutationJoinMeetingArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type ProjectMutationLeaveMeetingArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type ProjectMutationMutatePlanningMeetingArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type ProjectMutationPingMeetingArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type ProjectMutationPromoteToMeetingLeaderArgs = {
+  meetingId: Scalars['UUID']['input'];
+  userId: Scalars['UUID']['input'];
+};
+
+
+export type ProjectMutationStartMeetingArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+
+export type ProjectMutationUpdatePlanningMeetingArgs = {
+  id: Scalars['UUID']['input'];
+  input: PlanningMeetingInput;
+};
+
+
+export type ProjectMutationUpdateRoleArgs = {
+  id: Scalars['UUID']['input'];
+  input: UpdateRoleInput;
+};
+
+export enum ProjectPrivilege {
+  CreateRole = 'CREATE_ROLE',
+  CreateShopItem = 'CREATE_SHOP_ITEM',
+  CreateSprint = 'CREATE_SPRINT',
+  CreateUser = 'CREATE_USER',
+  DeleteRole = 'DELETE_ROLE',
+  DeleteShopItem = 'DELETE_SHOP_ITEM',
+  DeleteSprint = 'DELETE_SPRINT',
+  DeleteUser = 'DELETE_USER',
+  UpdateRole = 'UPDATE_ROLE',
+  UpdateShopItem = 'UPDATE_SHOP_ITEM',
+  UpdateSprint = 'UPDATE_SPRINT',
+  UpdateUser = 'UPDATE_USER'
+}
+
+export type ProjectPrivilegeDetails = {
+  __typename?: 'ProjectPrivilegeDetails';
+  description: Scalars['String']['output'];
+  id: ProjectPrivilege;
+  name: Scalars['String']['output'];
+};
+
+export type ProjectSettings = {
+  __typename?: 'ProjectSettings';
+  codeRepositorySettings: CodeRepositorySettings;
+  imsSettings: ImsSettings;
+};
+
+export type ProjectSettingsInput = {
+  codeRepositorySettings: CodeRepositorySettingsInput;
+  imsSettings: ImsSettingsInput;
+};
+
 export type Query = {
   __typename?: 'Query';
-  eventType: EventTypeDto;
-  eventTypes: Array<EventTypeDto>;
-  eventsForGame: Array<GameEventDto>;
-  eventsForPlayer: Array<GameEventDto>;
-  game: GameDto;
-  games: Array<GameDto>;
-  player: PlayerDto;
-  players: Array<PlayerDto>;
-  rule: RuleDto;
-  rules: Array<RuleDto>;
+  currentUser?: Maybe<GlobalUser>;
+  globalUser?: Maybe<GlobalUser>;
+  /**  roles */
+  globalUserRoles: Array<GlobalUserRole>;
+  /**  users */
+  globalUsers: Array<GlobalUser>;
+  project?: Maybe<Project>;
+  /**  projects */
+  projects: Array<Project>;
 };
 
 
-export type QueryEventTypeArgs = {
-  eventTypeId: Scalars['UUID']['input'];
+export type QueryGlobalUserArgs = {
+  id: Scalars['UUID']['input'];
 };
 
 
-export type QueryEventsForGameArgs = {
-  gameId: Scalars['UUID']['input'];
-  pagination?: InputMaybe<Pagination>;
+export type QueryProjectArgs = {
+  id: Scalars['UUID']['input'];
 };
 
-
-export type QueryEventsForPlayerArgs = {
-  gameId: Scalars['UUID']['input'];
-  pagination?: InputMaybe<Pagination>;
-  playerId: Scalars['UUID']['input'];
-};
-
-
-export type QueryGameArgs = {
-  gameId: Scalars['UUID']['input'];
-};
-
-
-export type QueryGamesArgs = {
-  userId?: InputMaybe<Scalars['UUID']['input']>;
-};
-
-
-export type QueryPlayerArgs = {
-  gameId: Scalars['UUID']['input'];
-  playerId: Scalars['UUID']['input'];
-};
-
-
-export type QueryPlayersArgs = {
-  gameId: Scalars['UUID']['input'];
-};
-
-
-export type QueryRuleArgs = {
-  ruleId: Scalars['ID']['input'];
-};
-
-export type RuleDto = {
-  __typename?: 'RuleDto';
-  conditionSchema: Scalars['JsonObject']['output'];
-  createEventTypes: Array<EventTypeInRuleDto>;
-  id: Scalars['UUID']['output'];
-  triggerEventTypes: Array<Scalars['String']['output']>;
-};
-
-export type RuleInput = {
-  conditionSchema: Scalars['JsonObject']['input'];
-  createEventTypes: Array<EventTypeInRuleDtoInput>;
-  triggerEventTypes: Array<Scalars['String']['input']>;
-};
-
-export type Score = {
-  __typename?: 'Score';
-  key: Scalars['String']['output'];
-  value: Scalars['Int']['output'];
+export type ShopItem = {
+  __typename?: 'ShopItem';
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  image: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  price: Scalars['Int']['output'];
 };
 
 /**
@@ -386,6 +635,43 @@ export type Score = {
 export enum SortDirection {
   Asc = 'ASC',
   Desc = 'DESC'
+}
+
+export type Sprint = {
+  __typename?: 'Sprint';
+  active: Scalars['Boolean']['output'];
+  endDate: Scalars['DateTime']['output'];
+  id: Scalars['UUID']['output'];
+  name: Scalars['String']['output'];
+  project: Project;
+  startDate: Scalars['DateTime']['output'];
+};
+
+export type SprintGoalVoting = {
+  __typename?: 'SprintGoalVoting';
+  capacity: Scalars['Int']['output'];
+  finished: Scalars['Boolean']['output'];
+  /**  backlog issues added by the IMS service */
+  sprintIssueIds: Array<Scalars['UUID']['output']>;
+  storyPointLimit: Scalars['Int']['output'];
+};
+
+export type StoryPointVote = {
+  __typename?: 'StoryPointVote';
+  storyPoints: StoryPoints;
+  user: GlobalUser;
+  userId: Scalars['UUID']['output'];
+};
+
+export enum StoryPoints {
+  Eight = 'EIGHT',
+  Five = 'FIVE',
+  NoVote = 'NO_VOTE',
+  One = 'ONE',
+  Thirteen = 'THIRTEEN',
+  Three = 'THREE',
+  Two = 'TWO',
+  Zero = 'ZERO'
 }
 
 /**
@@ -411,26 +697,144 @@ export type StringFilter = {
   ignoreCase?: Scalars['Boolean']['input'];
 };
 
-export type PseudoLoginQueryVariables = Exact<{
-  userId: Scalars['UUID']['input'];
-}>;
+export type Subscription = {
+  __typename?: 'Subscription';
+  animalVotingUpdated: PlanningMeeting;
+  issueEstimationUpdated: PlanningMeeting;
+  meetingAttendeesChanged: Array<MeetingAttendee>;
+  meetingFinished: Meeting;
+  meetingStarted: Meeting;
+  nameVotingUpdated: PlanningMeeting;
+  planningMeetingPageChanged: PlanningMeetingPage;
+  planningMeetingUpdated: PlanningMeeting;
+  sprintGoalVotingUpdated: PlanningMeeting;
+};
 
 
-export type PseudoLoginQuery = { __typename?: 'Query', games: Array<{ __typename?: 'GameDto', id: any, name: string }> };
-
-export type GetGamesQueryVariables = Exact<{
-  userId: Scalars['UUID']['input'];
-}>;
+export type SubscriptionAnimalVotingUpdatedArgs = {
+  meetingId: Scalars['UUID']['input'];
+};
 
 
-export type GetGamesQuery = { __typename?: 'Query', games: Array<{ __typename?: 'GameDto', id: any, name: string }> };
-
-export type GetAllRulesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetAllRulesQuery = { __typename?: 'Query', rules: Array<{ __typename?: 'RuleDto', id: any, triggerEventTypes: Array<string>, createEventTypes: Array<{ __typename?: 'EventTypeInRuleDto', eventTypeIdentifier: string }> }> };
+export type SubscriptionIssueEstimationUpdatedArgs = {
+  meetingId: Scalars['UUID']['input'];
+};
 
 
-export const PseudoLoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"pseudoLogin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"games"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<PseudoLoginQuery, PseudoLoginQueryVariables>;
-export const GetGamesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getGames"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"games"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetGamesQuery, GetGamesQueryVariables>;
-export const GetAllRulesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAllRules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"triggerEventTypes"}},{"kind":"Field","name":{"kind":"Name","value":"createEventTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventTypeIdentifier"}}]}}]}}]}}]} as unknown as DocumentNode<GetAllRulesQuery, GetAllRulesQueryVariables>;
+export type SubscriptionMeetingAttendeesChangedArgs = {
+  projectId: Scalars['UUID']['input'];
+};
+
+
+export type SubscriptionMeetingFinishedArgs = {
+  projectId: Scalars['UUID']['input'];
+};
+
+
+export type SubscriptionMeetingStartedArgs = {
+  projectId: Scalars['UUID']['input'];
+};
+
+
+export type SubscriptionNameVotingUpdatedArgs = {
+  meetingId: Scalars['UUID']['input'];
+};
+
+
+export type SubscriptionPlanningMeetingPageChangedArgs = {
+  meetingId: Scalars['UUID']['input'];
+};
+
+
+export type SubscriptionPlanningMeetingUpdatedArgs = {
+  meetingId: Scalars['UUID']['input'];
+};
+
+
+export type SubscriptionSprintGoalVotingUpdatedArgs = {
+  meetingId: Scalars['UUID']['input'];
+};
+
+export type UpdateProjectInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  endDate: Scalars['DateTime']['input'];
+  name: Scalars['String']['input'];
+  projectSettings: ProjectSettingsInput;
+  startDate: Scalars['DateTime']['input'];
+};
+
+export type UpdateRoleInput = {
+  gamifiedName: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  permissions: Array<ProjectPrivilege>;
+};
+
+export type UpdateUserInput = {
+  avatar?: InputMaybe<Scalars['String']['input']>;
+  username: Scalars['String']['input'];
+};
+
+export type UserInProject = {
+  __typename?: 'UserInProject';
+  privateInfo: PrivateUserInfo;
+  project: Project;
+  projectId: Scalars['UUID']['output'];
+  roles: Array<UserRoleInProject>;
+  user: GlobalUser;
+  userId: Scalars['UUID']['output'];
+};
+
+export type UserRoleInProject = {
+  __typename?: 'UserRoleInProject';
+  gamifiedName: Scalars['String']['output'];
+  id: Scalars['UUID']['output'];
+  name: Scalars['String']['output'];
+  project: Project;
+  projectId: Scalars['UUID']['output'];
+  projectPrivileges: Array<ProjectPrivilege>;
+  projectPrivilegesDetails: Array<ProjectPrivilegeDetails>;
+};
+
+export enum UserState {
+  Away = 'AWAY',
+  Offline = 'OFFLINE',
+  Online = 'ONLINE'
+}
+
+export type UserStats = {
+  __typename?: 'UserStats';
+  commits: Scalars['Int']['output'];
+  hoursWorked: Scalars['Int']['output'];
+  issuesClosed: Scalars['Int']['output'];
+  issuesCreated: Scalars['Int']['output'];
+  project: Project;
+  storyPoints: Scalars['Int']['output'];
+  user: GlobalUser;
+};
+
+export type VotingState = {
+  __typename?: 'VotingState';
+  totalVotes: Scalars['Int']['output'];
+  /**  todo animal type */
+  userVotes: Array<AnimalVote>;
+  votedFor: Scalars['String']['output'];
+};
+
+export type BaseGlobalUserFragment = { __typename?: 'GlobalUser', id: any, avatar?: string | null, username: string, roles: Array<{ __typename?: 'GlobalUserRole', id: any, name: string, globalPrivileges: Array<GlobalPrivilege> }> } & { ' $fragmentName'?: 'BaseGlobalUserFragment' };
+
+export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: (
+    { __typename?: 'GlobalUser' }
+    & { ' $fragmentRefs'?: { 'BaseGlobalUserFragment': BaseGlobalUserFragment } }
+  ) | null };
+
+export type ProjectsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: any, name: string, description?: string | null, startDate: any, endDate: any }> };
+
+export const BaseGlobalUserFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BaseGlobalUser"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GlobalUser"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"roles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"globalPrivileges"}}]}}]}}]} as unknown as DocumentNode<BaseGlobalUserFragment, unknown>;
+export const CurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BaseGlobalUser"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BaseGlobalUser"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GlobalUser"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"roles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"globalPrivileges"}}]}}]}}]} as unknown as DocumentNode<CurrentUserQuery, CurrentUserQueryVariables>;
+export const ProjectsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"projects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"projects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}}]}}]}}]} as unknown as DocumentNode<ProjectsQuery, ProjectsQueryVariables>;

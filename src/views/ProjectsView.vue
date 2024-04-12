@@ -5,27 +5,38 @@ import { useAppStore } from '@/stores/appStore'
 import { useQuery } from '@vue/apollo-composable'
 import { computed, ref } from 'vue'
 import router from '@/router'
+import { formatGqlDate } from '@/utils/date-utils'
 
-const { userId, projectId } = storeToRefs(useAppStore())
+const { projectId } = storeToRefs(useAppStore())
 const { result } = useQuery(graphql(`
-  query getGames($userId: UUID!) {
-    games(userId: $userId) {
+  query projects {
+    projects {
       id
       name
+      description
+      startDate
+      endDate
     }
   }
-`), () => ({ userId: userId.value }))
+`))
 
 const projects = computed(() => {
-  // return result.value?.games
+  return result.value?.projects ?? []
+})
 
-  // temp:
-  return [
-    {
-      id: "1010101",
-      name: "StuproSoSe2024"
-    }
-  ]
+const filterString = ref('')
+
+const filteredProjects = computed(() => {
+  return projects.value.filter(project => {
+    return project.name.toLowerCase().includes(filterString.value.toLowerCase())
+    || project.description?.toLowerCase().includes(filterString.value.toLowerCase())
+  })
+})
+
+const pageSize = ref(5)
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredProjects.value.length / pageSize.value)
 })
 
 const page = ref(1)
@@ -44,7 +55,7 @@ function selectProject(id: string) {
         <v-col cols="12" sm="8" md="8">
           <h2 class="my-3">Select project</h2>
           <v-data-iterator
-            :items="projects"
+            :items="filteredProjects"
             :page="page"
             :items-per-page="5"
           >
@@ -55,6 +66,7 @@ function selectProject(id: string) {
                   single-line
                   hide-details
                   density="comfortable"
+                  v-model="filterString"
                 />
 
                 <v-btn icon="mdi-plus" variant="flat" />
@@ -64,16 +76,17 @@ function selectProject(id: string) {
               <v-divider class="my-4" />
             </template>
 
+            <!-- Template for each project -->
             <template #default="{ items }">
-              <template v-for="item in items" :key="item.id">
-                <v-card @click="selectProject(item.raw.id)" dark>
+              <template v-for="project in items" :key="project.id">
+                <v-card @click="selectProject(project.raw.id)" dark>
                   <v-card-title>
                     <div class="d-flex justify-space-between">
 
-                      <div>{{ item.raw.name }}</div>
+                      <div>{{ project.raw.name }}</div>
 
                       <div class="text-grey-lighten-1 text-sm-body-1">
-                        Sep 12, 2021 to Sep 19, 2021
+                        {{ formatGqlDate(project.raw.startDate) + ' - ' + formatGqlDate(project.raw.endDate) }}
                       </div>
                     </div>
                   </v-card-title>
@@ -92,7 +105,7 @@ function selectProject(id: string) {
             <template #footer>
               <v-divider class="my-4" />
 
-              <v-pagination v-model="page" :length="3" />
+              <v-pagination v-model="page" :length="totalPages" total-visible="10"/>
             </template>
           </v-data-iterator>
 

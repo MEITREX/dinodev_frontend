@@ -4,6 +4,7 @@ import MainProjectView from '@/views/MainProjectView/MainProjectView.vue'
 import IssueBoardView from '@/views/IssueBoardView.vue'
 import MainTab from '@/views/MainProjectView/MainTab.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import { routes } from '@/router/routes'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,7 +23,12 @@ const router = createRouter({
       component: () => import('../views/LoginView.vue')
     },
     {
-      path: '/project',
+      path: routes.register,
+      name: 'register',
+      component: () => import('../views/RegisterView.vue')
+    },
+    {
+      path: routes.projects,
       name: 'projectList',
       component: () => import('../views/ProjectsView.vue')
     },
@@ -33,7 +39,7 @@ const router = createRouter({
       component: MainProjectView,
       children: [
         {
-          path: 'sprint',
+          path: '',
           name: 'project',
           component: MainTab
         },

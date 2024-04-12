@@ -1,36 +1,13 @@
 import '@mdi/font/css/materialdesignicons.css'
 
 import { createApp, h, provide } from 'vue'
-import { createPinia } from 'pinia'
 
 import App from './App.vue'
-import router from './router'
 
 import 'vuetify/styles'
-import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
+import { registerPlugins } from '@/setup'
 import { DefaultApolloClient } from '@vue/apollo-composable'
-import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client'
-
-// HTTP connection to the API
-const httpLink = createHttpLink({
-  // You should use an absolute URL here
-  uri: 'http://localhost:11000/graphql',
-  headers: {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-  }
-})
-
-// Cache implementation
-const cache = new InMemoryCache()
-
-// Create the apollo client
-const apolloClient = new ApolloClient({
-  link: httpLink,
-  cache,
-})
+import { apolloClient } from '@/setup/apolloClient'
 
 const app = createApp({
   setup () {
@@ -40,13 +17,6 @@ const app = createApp({
   render: () => h(App),
 })
 
-const vuetify = createVuetify({
-  components,
-  directives
-})
-
-app.use(createPinia())
-app.use(vuetify)
-app.use(router)
+registerPlugins(app)
 
 app.mount('#app')

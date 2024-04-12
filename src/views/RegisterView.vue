@@ -1,38 +1,17 @@
 <script setup lang="ts">
 
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useAuth } from '@/composables/use-auth'
 import router from '@/router'
 import { routes } from '@/router/routes'
 import { graphql } from '@/gql'
-import { useLazyQuery } from '@vue/apollo-composable'
-import { useGlobalUser } from '@/composables/use-global-user'
 
 const username = ref('')
-const password = ref('')
-const valid = ref(false)
 
-const { login } = useAuth()
-const { loadUser } = useGlobalUser()
+const valid = computed(() => {
+  return username.value.length > 0
+})
 
-function loginButtonClicked() {
-  login(username.value, password.value)
-    .then(() => nextPage())
-    .catch((e) => {
-      alert('Login failed')
-      console.error(e)
-    })
-}
-
-async function nextPage() {
-  const user = await loadUser()
-  console.table(user)
-  if (user !== null) {
-    await router.push(routes.projects)
-  } else {
-    await router.push(routes.register)
-  }
-}
 
 </script>
 
@@ -53,14 +32,7 @@ async function nextPage() {
                   required
                 ></v-text-field>
 
-                <v-text-field
-                  v-model="password"
-                  label="Password"
-                  type="password"
-                  required
-                ></v-text-field>
-
-                <v-btn :disabled="!valid" @click="loginButtonClicked">Login</v-btn>
+                <v-btn :disabled="!valid">Create Profile</v-btn>
               </v-form>
             </v-card-text>
           </v-card>
