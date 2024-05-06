@@ -11,6 +11,7 @@ export function registerPlugins(app: App): void {
     directives
   })
 
+  registerToast(app)
   app.use(createPinia())
   app.use(vuetify)
   app.use(router)
