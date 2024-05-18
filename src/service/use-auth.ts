@@ -11,17 +11,20 @@ interface TokenResponse {
 const token = useLocalStorage('token', null as string | null)
 const refreshToken = useLocalStorage('refreshToken', null as string | null)
 
-const tokenExpiration = useLocalStorage('tokenExpiration', null as Date | null)
+const tokenExpiration = useLocalStorage('tokenExpiration', null as string | null)
+const tokenExpirationDate = computed(() => new Date(tokenExpiration.value ?? 0))
 const tokenDefaultExpiration = 30 * 60 * 1000 // 30 minutes
+
+const loading = ref(false)
 
 function isLoggedIn(): boolean {
   if (token.value === null) {
     return false
   }
-  if (tokenExpiration.value === null) {
+  if (tokenExpirationDate.value === null) {
     return false
   }
-  return tokenExpiration.value >= new Date();
+  return tokenExpirationDate.value >= new Date();
 
 }
 
@@ -29,33 +32,42 @@ function canRefresh() {
   return refreshToken.value !== null
 }
 
-const loginUrl = 'http://localhost:9009/realms/GITS/protocol/openid-connect/token'
-const clientId = 'scrum-game-frontend'
-
+const loginUrl = 'http://localhost:3000/authenticate/oauth/139a95cb-e308-4b4d-862a-dd567843100a/token/login'
+const clientId = '8ee1287d-71ff-4c85-becd-cba829f390a0'
+const redirectUri = 'http://localhost:3000/authenticate/oauth/139a95cb-e308-4b4d-862a-dd567843100a/token/callback'
 
 async function postLoginRequest(data: string): Promise<string> {
+
+  token.value = null
+  refreshToken.value = null
+  tokenExpiration.value = null
+
+  loading.value = true
+
   const config = {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
   }
 
-  const response = await axios.post<TokenResponse>(loginUrl, data, config)
+  try {
+    const response = await axios.post<TokenResponse>(loginUrl, data, config)
 
-  if (response.status === 200 && response.data.access_token) {
-    token.value = response.data.access_token
-    refreshToken.value = response.data.refresh_token
+    if (response.status >= 200 && response.status < 300 && response.data.access_token) {
+      token.value = response.data.access_token
+      refreshToken.value = response.data.refresh_token
 
-    tokenExpiration.value = new Date(Date.now() + tokenDefaultExpiration)
+      tokenExpiration.value = new Date(Date.now() + tokenDefaultExpiration).toISOString()
 
-    return token.value
+      return token.value
+    }
+  } finally {
+    loading.value = false
   }
-
-  throw new Error('Login failed')
+  throw "Login was not successful"
 }
 
 async function login(username: string, password: string): Promise<string> {
-  console.info('Logging in')
   const data = qs.stringify({
     username: username,
     password: password,
@@ -63,13 +75,10 @@ async function login(username: string, password: string): Promise<string> {
     client_id: clientId,
   })
 
-  const token =  await postLoginRequest(data)
-  console.info('Logged in successfully')
-  return token
+  return await postLoginRequest(data)
 }
 
 async function refreshLogin() {
-  console.info('Refreshing token')
   if (!refreshToken.value) {
     throw new Error('No refresh token available')
   }
@@ -78,9 +87,15 @@ async function refreshLogin() {
     refresh_token: refreshToken.value,
     grant_type: 'refresh_token',
     client_id: clientId,
+    redirectUri: redirectUri
   })
 
-  return await postLoginRequest(data)
+  try {
+    return await postLoginRequest(data)
+  } catch (e) {
+    refreshToken.value = null
+    throw e;
+  }
 }
 
 async function ensureLogin() : Promise<string> {
@@ -94,7 +109,7 @@ async function ensureLogin() : Promise<string> {
 
   // check if token is about to expire
   const dateInFiveMinutes = new Date(Date.now() + 5 * 60 * 1000)
-  if (tokenExpiration.value !== null && tokenExpiration.value < dateInFiveMinutes) {
+  if (tokenExpiration.value !== null && tokenExpirationDate.value < dateInFiveMinutes) {
     return await refreshLogin()
   }
 
@@ -105,17 +120,26 @@ function logout() {
   token.value = null
   refreshToken.value = null
   tokenExpiration.value = null
+
+  logoutCallbacks.forEach(cb => cb())
+}
+
+const logoutCallbacks: (() => void)[] = []
+
+// adds a callback that is called on logout
+function onLogout(callback: () => void) {
+  logoutCallbacks.push(callback)
 }
 
 export function useAuth() {
   return {
     isLoggedIn,
-    canRefresh,
     login,
-    refreshLogin,
     token,
     refreshToken,
     ensureLogin,
-    logout
+    logout,
+    loading,
+    onLogout
   }
 }

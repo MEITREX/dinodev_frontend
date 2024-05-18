@@ -1,18 +1,26 @@
-<script setup lang="ts">
-import TheSideMenu from '@/components/TheSideMenu.vue'
-import { computed } from 'vue'
-import { useAppStore } from '@/stores/appStore'
-import TheTopBar from '@/components/TheTopBar.vue'
-
-const isLoggedIn = computed(() => useAppStore().isLoggedIn)
-const isProjectSelected = computed(() => useAppStore().isProjectSelected)
-
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <v-app>
 
     <router-view />
+
+<!--    <v-snackbar-->
+<!--      v-model="hasError"-->
+<!--      color="error"-->
+<!--      multi-line-->
+<!--    >-->
+<!--      {{ currentError }}-->
+
+<!--      <template #actions>-->
+<!--        <v-btn-->
+<!--          color="white"-->
+<!--          @click="clearError"-->
+<!--        >-->
+<!--          Close-->
+<!--        </v-btn>-->
+<!--      </template>-->
+<!--    </v-snackbar>-->
   </v-app>
 </template>
 

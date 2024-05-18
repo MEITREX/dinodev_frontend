@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import RepositoryLinkButton from '@/components/menu/RepositoryLinkButton.vue'
+import RepositoryLinkButton from '@/components/top-menu/RepositoryLinkButton.vue'
 import GropiusIcon from '@/assets/GropiusIcon.vue'
 
 import { ref } from 'vue'

@@ -2,13 +2,14 @@ import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache, split } from '
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
 import { getMainDefinition } from '@apollo/client/utilities'
-import { useAuth } from '@/composables/use-auth'
+import { useAuth } from '@/service/use-auth'
+import { useErrorManager } from '@/utils/error-manager'
+import { onError } from '@apollo/client/link/error'
 
-const baseUrl = 'http://localhost:12001/'
-const httpUrl = `${baseUrl}graphql`
-const wsUrl = `${baseUrl}graphql-ws`
+const httpUrl = `http://localhost:12001/graphql`
+const wsUrl = `ws://localhost:12001/graphql-ws`
 
-const { ensureLogin, token } = useAuth()
+const { isLoggedIn, token } = useAuth()
 
 function createApolloClient() {
 
@@ -24,18 +25,17 @@ function createApolloClient() {
 
   const authLink = new ApolloLink((operation, forward) => {
 
-    // add the authorization to the headers
-    operation.setContext(({ headers = {} }) => {
-      ensureLogin().catch(e => console.error(e))
-
-      return ({
-        headers: {
-          ...headers,
-          authorization: `Bearer ${token.value}` || null,
-          'Content-Type': 'application/json'
-        }
+    if (isLoggedIn()) { // add the authorization to the headers
+      operation.setContext(({ headers = {} }) => {
+        return ({
+          headers: {
+            ...headers,
+            authorization: `Bearer ${token.value}` || null,
+            'Content-Type': 'application/json'
+          }
+        })
       })
-    })
+    }
 
     return forward(operation)
   })
@@ -60,14 +60,23 @@ function createApolloClient() {
     cache,
     defaultOptions: {
       query: {
-        errorPolicy: 'all',
-        fetchPolicy: 'no-cache'
+        fetchPolicy: 'network-only',
+        errorPolicy: 'all'
       },
       mutate: {
-        errorPolicy: 'all',
+        errorPolicy: 'all'
       },
     }
   })
 }
+
+onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach(e => useErrorManager().catchError(e))
+  }
+  if (networkError) {
+    useErrorManager().catchError(networkError)
+  }
+});
 
 export const apolloClient = createApolloClient()

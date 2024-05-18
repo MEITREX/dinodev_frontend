@@ -3,8 +3,8 @@
 import { useRoute } from 'vue-router'
 import router from '@/router'
 import EndSprintSuccessDialog from '@/components/dialog/EndSprintDialog.vue'
-import { ref, watch } from 'vue'
-import { useMagicKeys } from '@vueuse/core'
+import { ref } from 'vue'
+import { useSprintService } from '@/service/sprint-service'
 
 defineProps<{showButtons: boolean}>()
 
@@ -15,21 +15,7 @@ function openBoard() {
   router.push(`/project/${projectId}/board`)
 }
 
-const sprintDays = ref(10)
-const issueNum = ref(32)
-
-
-const keys = useMagicKeys()
-const ctrlAltC = keys['Ctrl+Alt+C']
-watch(ctrlAltC, () => {
-  sprintDays.value = 14
-})
-
-const ctrlAltL = keys['Ctrl+Alt+L']
-watch(ctrlAltL, () => {
-  issueNum.value = 100
-})
-
+const { currentSprint } = useSprintService()
 
 </script>
 
@@ -40,14 +26,14 @@ watch(ctrlAltL, () => {
       <p class="mt-2 text-caption">Sprint progress</p>
 
       <p class="mt-2 text-caption">
-        {{ issueNum }}%
+        {{ currentSprint?.stats.percentageStoryPointsCompleted }}%
       </p>
     </div>
 
     <v-progress-linear
       color="red-darken-3"
       height="15"
-      v-model="issueNum"
+      :model-value="currentSprint?.stats.percentageStoryPointsCompleted"
     >
     </v-progress-linear>
 
@@ -55,27 +41,16 @@ watch(ctrlAltL, () => {
       <p class="mt-2 text-caption">Time elapsed</p>
 
       <p class="mt-2 text-caption">
-        {{ 14 - sprintDays}} days left
+        {{ currentSprint?.stats.daysLeft }} days left
       </p>
     </div>
     <v-progress-linear
       color="secondary"
       height="15"
-      :model-value="sprintDays"
-      max="14"
+      :model-value="currentSprint?.stats.percentageTimeElapsed"
+      max="100"
     >
     </v-progress-linear>
-
-    <!--    <h4 class="my-3">Oh no! Herbert is not doing well!</h4>
-
-        <p>You can do one of your assigned issues to feed him:</p>
-
-        <v-card class="mb-2 mt-3">
-          <v-card-title>Issue 1</v-card-title>
-          <v-card-text>
-            <p>Herbert is hungry</p>
-          </v-card-text>
-        </v-card>-->
 
     <div v-if="showButtons">
 

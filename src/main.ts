@@ -7,7 +7,8 @@ import App from './App.vue'
 import 'vuetify/styles'
 import { registerPlugins } from '@/setup'
 import { DefaultApolloClient } from '@vue/apollo-composable'
-import { apolloClient } from '@/setup/apolloClient'
+import { apolloClient } from '@/setup/apollo-client'
+import { useErrorManager } from '@/utils/error-manager'
 
 const app = createApp({
   setup () {
@@ -17,6 +18,7 @@ const app = createApp({
   render: () => h(App),
 })
 
+app.config.errorHandler = useErrorManager().catchError
 registerPlugins(app)
 
 app.mount('#app')

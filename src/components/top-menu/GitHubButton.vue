@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import RepositoryLinkButton from '@/components/menu/RepositoryLinkButton.vue'
+import RepositoryLinkButton from '@/components/top-menu/RepositoryLinkButton.vue'
 
 const repositories = ref([
   {

@@ -1,32 +1,34 @@
 <script setup lang="ts">
 
-import { ref } from 'vue'
-import { useAuth } from '@/composables/use-auth'
+import { computed, ref } from 'vue'
+import { useAuth } from '@/service/use-auth'
 import router from '@/router'
 import { routes } from '@/router/routes'
-import { graphql } from '@/gql'
-import { useLazyQuery } from '@vue/apollo-composable'
-import { useGlobalUser } from '@/composables/use-global-user'
+import { useGlobalUserService } from '@/service/global-user-service'
+import { useErrorManager } from '@/utils/error-manager'
 
-const username = ref('')
-const password = ref('')
+// form data
+const credentials = ref({
+  username: '',
+  password: ''
+})
 const valid = ref(false)
 
-const { login } = useAuth()
-const { loadUser } = useGlobalUser()
+const { login, loading: authLoading } = useAuth()
+const { refetchUser, loading: globalUserLoading } = useGlobalUserService()
 
-function loginButtonClicked() {
-  login(username.value, password.value)
+const loading = computed(() => authLoading.value || globalUserLoading.value)
+
+function tryLogin() {
+  login(credentials.value.username, credentials.value.password)
     .then(() => nextPage())
-    .catch((e) => {
-      alert('Login failed')
-      console.error(e)
-    })
+    .catch(useErrorManager().catchError)
 }
 
 async function nextPage() {
-  const user = await loadUser()
-  console.table(user)
+  console.info("Logged in", useAuth().isLoggedIn())
+  const user = await refetchUser()
+  console.info('User:', user)
   if (user !== null) {
     await router.push(routes.projects)
   } else {
@@ -45,22 +47,30 @@ async function nextPage() {
             <v-card-title class="justify-center">
               ScrumZoo
             </v-card-title>
+
             <v-card-text>
               <v-form ref="form" v-model="valid" lazy-validation>
                 <v-text-field
-                  v-model="username"
+                  v-model="credentials.username"
                   label="Username"
                   required
-                ></v-text-field>
+                />
 
                 <v-text-field
-                  v-model="password"
+                  v-model="credentials.password"
                   label="Password"
                   type="password"
+                  @keydown.enter="tryLogin"
                   required
-                ></v-text-field>
+                />
 
-                <v-btn :disabled="!valid" @click="loginButtonClicked">Login</v-btn>
+                <v-btn
+                  :disabled="!valid"
+                  @click="tryLogin"
+                  :loading="loading"
+                >
+                  Login
+                </v-btn>
               </v-form>
             </v-card-text>
           </v-card>

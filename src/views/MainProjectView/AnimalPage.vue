@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import ForestBackground from '@/assets/mock-forest.webp'
 
 import SprintStats from '@/components/SprintStats.vue'
+import Animal from '@/components/Animal.vue'
 </script>
 
 <template>
   <v-container class="ga-2">
-    <v-img :src="ForestBackground" height="500" />
 
-    <h3> Luna </h3>
+<!--    <h3> Luna </h3>-->
     <sprint-stats show-buttons/>
+
+    <div class="mt-5 h-100">
+      <animal />
+    </div>
 
   </v-container>
 </template>
