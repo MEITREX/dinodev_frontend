@@ -114,7 +114,7 @@ const bars = [
           <h3>Activity</h3>
         </v-card-title>
         <v-card-text>
-          <event-list :custom-member="props.userName" />
+          <event-list :events="[]" :show-comment-block="false" :show-comment-button="false" /> <!-- TODO -->
         </v-card-text>
       </v-card>
     </v-col>

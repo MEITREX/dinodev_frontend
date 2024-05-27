@@ -1,0 +1,23 @@
+GET http://localhost:8080/sdl
+
+
+###
+GET http://localhost:3000/login/strategyInstance
+Accept: application/json
+
+###
+POST http://localhost:3000/authenticate/oauth/139a95cb-e308-4b4d-862a-dd567843100a/token/login
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&username=admin&password=admin&redirect_uri=http://localhost:3000/login/strategyInstance
+
+###
+POST http://localhost:3000/authenticate/oauth/139a95cb-e308-4b4d-862a-dd567843100a/token/login
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&username=paul&password=paul&redirect_uri=http://localhost:3000/login/strategyInstance
+###
+POST http://localhost:3000/authenticate/oauth/139a95cb-e308-4b4d-862a-dd567843100a/token/login
+Content-Type: application/x-www-form-urlencoded
+
+client_id=8ee1287d-71ff-4c85-becd-cba829f390a0&grant_type=refresh_token&refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiI4ZWUxMjg3ZC03MWZmLTRjODUtYmVjZC1jYmE4MjlmMzkwYTAiLCJpYXQiOjE3MTYzNzU3MjMsImF1ZCI6WyJ0b2tlbiJdLCJpc3MiOiJncm9waXVzLWxvZ2luIiwic3ViIjoiZDMxMzMzN2QtYzM1Zi00YWNiLWI1ZGItNTkwOWYwMzlkN2FiIiwianRpIjoiMCJ9.37a1vcWyV2-7UyuAPlpy222l3NFk4pFV8nH07gz2MwI

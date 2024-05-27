@@ -1,3 +1,2 @@
 schema:
-  # hint: local development, should maybe be changed
-  - "http://localhost:12001/graphql"
+  "http://localhost:12001/graphql"

@@ -1,10 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAppStore } from '@/stores/appStore'
 import MainProjectView from '@/views/MainProjectView/MainProjectView.vue'
-import IssueBoardView from '@/views/IssueBoardView.vue'
-import MainTab from '@/views/MainProjectView/MainTab.vue'
+import IssueBoardView from '@/views/IssueBoardView/IssueBoardView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import { routes } from '@/router/routes'
+import { useAuth } from '@/service/use-auth'
+import CreateProjectView from '@/views/CreateProjectView.vue'
+import MainTab from '@/views/MainProjectView/MainTab.vue'
+import AllMeetingsView from '@/views/MeetingView/AllMeetingsView.vue'
+import PlanningSettingsView from '@/views/MeetingView/PlanningView/PlanningSettingsView.vue'
+import { useAppStore } from '@/stores/appStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,15 +16,13 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
     },
     {
-      path: '/login',
+      path: routes.login,
       name: 'login',
-      component: () => import('../views/LoginView.vue')
+      component: () => import('../views/LoginView.vue'),
+      alias: '/'
     },
     {
       path: routes.register,
@@ -30,10 +32,15 @@ const router = createRouter({
     {
       path: routes.projects,
       name: 'projectList',
-      component: () => import('../views/ProjectsView.vue')
+      component: () => import('../views/AllProjectsView/AllProjectsView.vue')
     },
     {
-      path: '/project/:projectId',
+      path: routes.createProject,
+      name: 'createProject',
+      component: CreateProjectView
+    },
+    {
+      path: routes.project(':projectId').main,
       name: 'projects',
       props: true,
       component: MainProjectView,
@@ -41,37 +48,59 @@ const router = createRouter({
         {
           path: '',
           name: 'project',
-          component: MainTab
+          component: MainTab,
+          alias: 'sprint'
         },
         {
-          path: 'board',
+          path: routes.projectSubRoutes.board,
           name: 'board',
           component: IssueBoardView
         },
         {
-          path: 'planning',
+          path: routes.projectSubRoutes.planning,
           name: 'planning',
-          component: () => import('../views/PlanningView/PlanningView.vue')
+          component: PlanningSettingsView
         },
         {
-          path: 'meeting',
+          path: routes.projectSubRoutes.meeting,
           name: 'meeting',
-          component: () => import('../views/MeetingView.vue')
+          component: AllMeetingsView,
         },
         {
-          path: 'standup',
+          path: routes.projectSubRoutes.planningLive,
+          name: 'livePlanning',
+          component: () => import('@/views/MeetingView/PlanningView/PlanningView.vue')
+        },
+        {
+          path: routes.projectSubRoutes.standup + '-live',
+          name: 'liveStandup',
+          component: () => import('@/views/MeetingView/StandupView/StandupView.vue')
+        },
+        {
+          path: routes.projectSubRoutes.retrospective + '-live',
+          name: 'liveRetrospective',
+          component: () => import('@/views/MeetingView/RetrospectiveView/RetrospectiveView.vue')
+        },
+        {
+          path: routes.projectSubRoutes.standup,
           name: 'standup',
-          component: () => import('../views/StandupView.vue')
+          component: () => import('@/views/MeetingView/StandupView/StandupSettingsView.vue')
+        },
+        {
+          path: 'issue/:issueId',
+          props: true,
+          name: 'issue',
+          component: () => import('@/views/IssueBoardView/IssueView.vue')
         },
         {
           path: 'retrospective',
           name: 'retrospective',
-          component: () => import('../views/RetrospectiveView/RetrospectiveView.vue')
+          component: () => import('@/views/MeetingView/RetrospectiveView/RetrospectiveView.vue')
         },
         {
           path: 'team',
           name: 'team',
-          component: () => import('../views/TeamView.vue')
+          component: () => import('@/views/TeamView.vue')
         },
         {
           path: 'profile/:userName',
@@ -89,6 +118,11 @@ const router = createRouter({
           name: 'store',
           component: () => import('../views/StoreView.vue')
         },
+        {
+          path: 'sprint-stats',
+          name: 'sprintStats',
+          component: () => import('../views/SprintStatsView.vue')
+        }
       ]
     },
   ]
@@ -98,14 +132,20 @@ const router = createRouter({
 // and if the project is selected, if not it redirects to the
 // login or projects page.
 router.beforeEach((to, from, next) => {
-  const store = useAppStore()
-  if (!store.isLoggedIn && to.path !== '/login') {
-    next('/login')
-  } else if (!store.isProjectSelected && to.path !== '/login' && to.path !== '/project') {
-    next('/project')
+  const auth = useAuth()
+  if (!auth.isLoggedIn() && to.path !== '/login') {
+    next(routes.login)
+  } else if (auth.isLoggedIn() && (to.path === '/login' || to.path === '/')) {
+    next(routes.projects)
+  } else if (useAppStore().isProjectSelected() && to.path === routes.projects) {
+    next(routes.project(useAppStore().getProjectIdOrThrow()).main)
   } else {
     next()
   }
+})
+
+useAuth().onLogout(() => {
+  router.push(routes.login).then()
 })
 
 export default router
