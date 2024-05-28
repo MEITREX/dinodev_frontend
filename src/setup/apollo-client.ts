@@ -1,4 +1,4 @@
-import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache, type ServerError, split } from '@apollo/client/core'
+import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache, split } from '@apollo/client/core'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
 import { getMainDefinition } from '@apollo/client/utilities'
@@ -6,10 +6,10 @@ import { useAuth } from '@/service/use-auth'
 import { onError } from '@apollo/client/link/error'
 import { Observable } from '@apollo/client'
 
-const httpUrl = `http://localhost:12001/graphql`
-const wsUrl = `ws://localhost:12001/graphql-ws`
+const httpUrl = import.meta.env.VITE_APP_BACKEND_URL ?? `/graphql`
+const wsUrl = import.meta.env.VITE_APP_BACKEND_WS_URL ??`/graphql-ws`
 
-const { isLoggedIn, token, onLogout, refreshLogin, logout } = useAuth()
+const { isLoggedIn, token, onLogout, refreshLogin } = useAuth()
 
 function createApolloClient() {
 

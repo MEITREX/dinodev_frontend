@@ -21,9 +21,10 @@ function isLoggedIn(): boolean {
   return refreshToken.value !== null
 }
 
-const loginUrl = 'http://localhost:3000/authenticate/oauth/139a95cb-e308-4b4d-862a-dd567843100a/token/login'
+// get url from env
+const loginUrl = import.meta.env.VITE_APP_LOGIN_URL ?? 'http://localhost:12200/authenticate/oauth/139a95cb-e308-4b4d-862a-dd567843100a/token'
 const clientId = '8ee1287d-71ff-4c85-becd-cba829f390a0'
-const redirectUri = 'http://localhost:3000/authenticate/oauth/139a95cb-e308-4b4d-862a-dd567843100a/token/callback'
+const redirectUri = 'http://localhost:12200/authenticate/oauth/139a95cb-e308-4b4d-862a-dd567843100a/token/callback'
 
 async function postLoginRequest(data: string): Promise<string> {
   loading.value = true
