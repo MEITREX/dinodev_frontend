@@ -1,4 +1,0 @@
-POST http://localhost:9009/realms/GITS/protocol/openid-connect/token
-Content-Type: application/x-www-form-urlencoded
-
-client_id=scrum-game-frontend&grant_type=password&username=paul&password=paul
