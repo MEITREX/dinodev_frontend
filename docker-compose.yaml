@@ -1,0 +1,21 @@
+name: frontend
+services:
+  frontend:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "12200:80"
+    environment:
+      - GRAPHQL_ENDPOINT=http://scrum_game:12001/graphql
+      - GRAPHQL_WS_ENDPOINT=http://scrum_game:12001/graphql-ws
+      - WEBHOOK_ENDPOINT=http://scrum_game:12001/webhook
+      - LOGIN_ENDPOINT=http://gropius-testing-login-service-1:3000/authenticate/oauth/139a95cb-e308-4b4d-862a-dd567843100a/token/login
+      - GRAPHIQL_ENDPOINT=http://scrum_game:12001/graphiql
+    networks:
+      - scrum-game-network
+
+networks:
+  scrum-game-network:
+    external: true
