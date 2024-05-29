@@ -8,6 +8,10 @@ WORKDIR /app
 COPY / /app
 RUN rm .env
 
+ENV VITE_APP_LOGIN_URL=/login
+ENV VITE_APP_BACKEND_URL=/graphql
+ENV VITE_APP_BACKEND_WS_URL=/graphql-ws
+
 # Install dependencies and build the frontend
 RUN npm ci
 RUN npm run build
