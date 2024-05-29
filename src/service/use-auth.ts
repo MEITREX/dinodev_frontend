@@ -22,9 +22,20 @@ function isLoggedIn(): boolean {
 }
 
 // get url from env
-const loginUrl = import.meta.env.VITE_APP_LOGIN_URL ?? 'http://localhost:12200/authenticate/oauth/139a95cb-e308-4b4d-862a-dd567843100a/token'
-const clientId = '8ee1287d-71ff-4c85-becd-cba829f390a0'
-const redirectUri = 'http://localhost:12200/authenticate/oauth/139a95cb-e308-4b4d-862a-dd567843100a/token/callback'
+const loginUrl = import.meta.env.VITE_APP_LOGIN_URL ?? '/api/login'
+const clientIdUrl = import.meta.env.VITE_APP_CLIENT_ID_URL ?? '/api/client-id'
+let clientId: string | null = import.meta.env.VITE_APP_FIXED_CLIENT_ID ?? null
+
+async function getClientId() {
+  if (clientId !== null) {
+    return clientId
+  }
+
+  // client id api returns id in plain text
+  const response = await axios.get(clientIdUrl)
+  clientId = response.data
+  return clientId
+}
 
 async function postLoginRequest(data: string): Promise<string> {
   loading.value = true
@@ -44,10 +55,6 @@ async function postLoginRequest(data: string): Promise<string> {
 
       return token.value
     }
-  } catch (e) {
-    token.value = null
-    refreshToken.value = null
-    throw new Error('Login failed')
   } finally {
     loading.value = false
   }
@@ -63,7 +70,7 @@ async function login(username: string, password: string): Promise<string> {
     username: username,
     password: password,
     grant_type: 'password',
-    client_id: clientId,
+    client_id: await getClientId(),
   })
 
   return await postLoginRequest(data)
@@ -79,8 +86,7 @@ async function refreshLogin() {
   const data = qs.stringify({
     refresh_token: refreshToken.value,
     grant_type: 'refresh_token',
-    client_id: clientId,
-    redirectUri: redirectUri
+    client_id: await getClientId(),
   })
 
   if (refreshOperationInProgress) {
