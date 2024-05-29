@@ -15,7 +15,7 @@ const bars = [
   { label: 'Sprint 5', value: 8 },
   { label: 'Sprint 6', value: 19 },
   { label: 'Sprint 7', value: 17 },
-  { label: 'Sprint 8', value: 10 },
+  { label: 'Sprint 8', value: 10 }
 ]
 </script>
 
@@ -98,9 +98,9 @@ const bars = [
             <div v-for="(bar, index) in bars" :key="index" class="my-3">
               <div>{{ bar.label }}</div>
               <v-progress-linear :model-value="bar.value" color="secondary" height="20" max="50">
-                  <template #default>
-                    <div>{{ bar.value }} SP</div>
-                  </template>
+                <template #default>
+                  <div>{{ bar.value }} SP</div>
+                </template>
               </v-progress-linear>
             </div>
           </v-sheet>
@@ -114,7 +114,12 @@ const bars = [
           <h3>Activity</h3>
         </v-card-title>
         <v-card-text>
-          <event-list :custom-member="props.userName" />
+          <event-list
+            :events="[]"
+            :show-comment-block="false"
+            :show-comment-button="false"
+            :show-issue-information="false"
+          /> <!-- TODO -->
         </v-card-text>
       </v-card>
     </v-col>

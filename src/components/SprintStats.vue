@@ -1,53 +1,57 @@
 <script setup lang="ts">
+import { useSprintService } from '@/service/sprint-service'
+import { computed } from 'vue'
 
-import { useRoute } from 'vue-router'
-import router from '@/router'
-import EndSprintSuccessDialog from '@/components/dialog/EndSprintDialog.vue'
-import { ref, watch } from 'vue'
-import { useMagicKeys } from '@vueuse/core'
+const { currentSprint } = useSprintService()
 
-defineProps<{showButtons: boolean}>()
-
-const route = useRoute()
-
-function openBoard() {
-  const projectId = route.params.projectId
-  router.push(`/project/${projectId}/board`)
-}
-
-const sprintDays = ref(10)
-const issueNum = ref(32)
-
-
-const keys = useMagicKeys()
-const ctrlAltC = keys['Ctrl+Alt+C']
-watch(ctrlAltC, () => {
-  sprintDays.value = 14
+const percentageCompleted = computed(() => {
+  const percentage = currentSprint.value?.stats.percentageStoryPointsCompleted
+  return Math.round(percentage ?? 0)
 })
 
-const ctrlAltL = keys['Ctrl+Alt+L']
-watch(ctrlAltL, () => {
-  issueNum.value = 100
+const percentageCompletedPlusInProgess = computed(() => {
+  const percentage = currentSprint.value?.stats.percentageStoryPointsInProgress
+  return Math.round(percentage ?? 0) + percentageCompleted.value
 })
 
+const percentageTimeElapsed = computed(() => {
+  const percentage = currentSprint.value?.stats.percentageTimeElapsed
+  return Math.round(percentage ?? 0)
+})
+
+const progressbarColor = computed(() => {
+  // yellow if in 10% range of time elapsed
+  if (percentageTimeElapsed.value - 10 <= percentageCompleted.value
+    && percentageCompleted.value <= percentageTimeElapsed.value + 10) {
+    return 'warning'
+  }
+  if (percentageCompleted.value < percentageTimeElapsed.value) {
+    return 'error'
+  }
+  return 'success'
+})
 
 </script>
 
 <template>
-  <div>
+  <div class="w-50">
 
     <div class="d-flex flex-row justify-space-between">
       <p class="mt-2 text-caption">Sprint progress</p>
 
       <p class="mt-2 text-caption">
-        {{ issueNum }}%
+        {{ percentageCompleted }}%
       </p>
     </div>
 
     <v-progress-linear
-      color="red-darken-3"
+      :color="progressbarColor"
       height="15"
-      v-model="issueNum"
+      :model-value="percentageCompleted"
+      :buffer-value="percentageCompletedPlusInProgess"
+      :buffer-color="progressbarColor"
+      :buffer-opacity="0.3"
+      rounded
     >
     </v-progress-linear>
 
@@ -55,57 +59,17 @@ watch(ctrlAltL, () => {
       <p class="mt-2 text-caption">Time elapsed</p>
 
       <p class="mt-2 text-caption">
-        {{ 14 - sprintDays}} days left
+        {{ currentSprint?.stats.daysLeft }} days left
       </p>
     </div>
     <v-progress-linear
       color="secondary"
       height="15"
-      :model-value="sprintDays"
-      max="14"
+      :model-value="percentageTimeElapsed"
+      max="100"
+      rounded
     >
     </v-progress-linear>
-
-    <!--    <h4 class="my-3">Oh no! Herbert is not doing well!</h4>
-
-        <p>You can do one of your assigned issues to feed him:</p>
-
-        <v-card class="mb-2 mt-3">
-          <v-card-title>Issue 1</v-card-title>
-          <v-card-text>
-            <p>Herbert is hungry</p>
-          </v-card-text>
-        </v-card>-->
-
-    <div v-if="showButtons">
-
-      <v-btn
-        variant="elevated"
-        @click="openBoard"
-        class="mt-10 "
-        color="primary"
-      >
-        View issue board
-      </v-btn>
-
-      <v-btn
-        variant="elevated"
-        @click="openBoard"
-        class="mt-10 ml-3"
-      >
-        View my issues
-      </v-btn>
-
-      <v-btn
-        variant="elevated"
-        id="btn-end-sprint"
-        class="mt-10 ml-3"
-        :disabled="sprintDays != 14"
-      >
-        End Sprint
-      </v-btn>
-      <end-sprint-success-dialog activator="#btn-end-sprint" :success="issueNum == 100" />
-    </div>
 
   </div>
 </template>

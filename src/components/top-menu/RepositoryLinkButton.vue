@@ -1,9 +1,13 @@
 <script setup lang="ts">
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   icon: String,
   text: String,
   repositories: Array<{ name: string; url: string }>
 })
+
+const numberOfRepositories = computed(() => props.repositories?.length ?? 0)
 </script>
 
 <template>
@@ -14,12 +18,22 @@ defineProps({
       </slot>
     </template>
     <template #append>
-      <v-icon>mdi-menu-down</v-icon>
+      <v-icon v-if="numberOfRepositories > 1">
+        mdi-menu-down
+      </v-icon>
     </template>
 
-    {{ text }}
+    <span v-if="numberOfRepositories !== 1"> {{ text }} </span>
 
-    <v-menu activator="parent">
+    <a
+      v-else-if="numberOfRepositories === 1"
+       :href="repositories!![0].url"
+      target="_blank" class="text-black"
+    >
+      {{ repositories!![0].name }}
+    </a>
+
+    <v-menu activator="parent" v-if="numberOfRepositories > 1">
       <v-list>
         <v-list-item v-for="(repo, index) in repositories" :key="index" :value="index">
           <v-list-item-title>

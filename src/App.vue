@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import TheSideMenu from '@/components/TheSideMenu.vue'
-import { computed } from 'vue'
-import { useAppStore } from '@/stores/appStore'
-import TheTopBar from '@/components/TheTopBar.vue'
+import { onMounted } from 'vue'
+import { setupToast } from '@/components/toast/toast'
 
-const isLoggedIn = computed(() => useAppStore().isLoggedIn)
-const isProjectSelected = computed(() => useAppStore().isProjectSelected)
-
+onMounted(() => {
+  setupToast();
+})
 </script>
-
 <template>
   <v-app>
-
+    <!-- actual view depending on the route -->
     <router-view />
   </v-app>
 </template>

@@ -1,8 +1,5 @@
 <script setup lang="ts">
 
-import deerFail from '@/assets/deer-fail.jpg'
-import deerSuccess from '@/assets/deer-success.jpg'
-
 defineProps<{
   activator: string,
   success: boolean
@@ -20,7 +17,7 @@ function startRetro() {
       <v-card :title="success ? 'Successful sprint!' : 'Luna has to leave the zoo 😢'">
         <v-card-text>
 
-          <v-img :src="success ? deerSuccess : deerFail" height="300" class="my-2" />
+<!--          <v-img :src="success ? deerSuccess : deerFail" height="300" class="my-2" />-->
 
           <p v-if="success">
             Congratulations! You finished all planned 52 story points of this sprint!
