@@ -1,4 +1,10 @@
-import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache, split } from '@apollo/client/core'
+import {
+  ApolloClient,
+  ApolloLink,
+  createHttpLink,
+  InMemoryCache,
+  split
+} from '@apollo/client/core'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
 import { getMainDefinition } from '@apollo/client/utilities'
@@ -6,11 +12,18 @@ import { useAuth } from '@/service/use-auth'
 import { onError } from '@apollo/client/link/error'
 import { Observable } from '@apollo/client'
 
-const httpUrl = import.meta.env.VITE_APP_BACKEND_URL ?? `/graphql`
-const wsUrl = import.meta.env.VITE_APP_BACKEND_WS_URL ??`/graphql-ws`
+// get backend urls from environment variables
+const httpUrl = import.meta.env.VITE_APP_BACKEND_URL ?? `/api/graphql`
+const wsUrl = import.meta.env.VITE_APP_BACKEND_WS_URL ?? `/api/graphql-ws`
 
 const { isLoggedIn, token, onLogout, refreshLogin } = useAuth()
 
+/**
+ * Creates the Apollo Client.
+ * This function sets up the client with necessary configurations including
+ * WebSocket link for subscriptions, HTTP link for queries and mutations,
+ * and a refresh token mechanism for handling expired tokens.
+ */
 function createApolloClient() {
 
   const wsLink = new GraphQLWsLink(
@@ -23,6 +36,10 @@ function createApolloClient() {
     uri: httpUrl,
   })
 
+  /**
+   * Auth link for adding the Authorization header to requests.
+   * This link adds the Authorization header to the request if the user is logged in.
+   */
   const authLink = new ApolloLink((operation, forward) => {
 
     if (isLoggedIn()) { // add the authorization to the headers
@@ -40,7 +57,10 @@ function createApolloClient() {
     return forward(operation)
   })
 
-
+  /**
+   * Error link for handling network errors.
+   * This link catches network errors, refreshes the login, and retries the request with the new token.
+   */
   const errorLink = onError(({ networkError, operation, forward }) => {
     if (networkError) {
       return new Observable(observer => {
@@ -66,8 +86,11 @@ function createApolloClient() {
     }
   })
 
+  /**
+   * Link for splitting the request based on the operation type.
+   * If the operation is a subscription, it uses the WebSocket link.
+   */
   const link = split(
-    // split based on operation type
     ({ query }) => {
       const definition = getMainDefinition(query)
       return (
