@@ -90,6 +90,7 @@ async function refreshLogin() {
   })
 
   if (refreshOperationInProgress) {
+    // prevent multiple refresh operations
     return refreshOperationInProgress;
   }
 
