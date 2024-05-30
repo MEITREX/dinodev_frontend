@@ -79,6 +79,7 @@ class ProjectService {
           id
           name
           description
+          currentSprintNumber
 
           projectSettings {
               imsSettings {
@@ -87,6 +88,13 @@ class ProjectService {
                       path
                   }
                   imsProjectUrl
+                  issueStates {
+                      name
+                      type
+                  }
+                  issueTypes {
+                      name
+                  }
               }
               codeRepositorySettings {
                   repositories {
