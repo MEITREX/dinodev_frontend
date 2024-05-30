@@ -2,6 +2,7 @@ import '@mdi/font/css/materialdesignicons.css'
 
 import { createApp, h, provide } from 'vue'
 
+import "unfonts.css";
 import App from './App.vue'
 
 import 'vuetify/styles'
