@@ -5,7 +5,7 @@ import { useAuth } from '@/service/use-auth'
 import { useAppStore } from '@/stores/appStore'
 import { computed, ref } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
-import type { DefinitionOfDoneConfirmState } from '@/gql/graphql'
+import type { CreateIssueInput, DefinitionOfDoneConfirmState } from '@/gql/graphql'
 
 class IssueService {
 
@@ -50,10 +50,19 @@ class IssueService {
     return useFragment(issueBaseFragment, result?.data?.mutateProject?.mutateIssue?.assignIssue)
   }
 
+  public createIssue = async (input: CreateIssueInput) => {
+    const result = await this.createIssueMutation.mutate({
+      projectId: useAppStore().projectId.value,
+      input
+    })
+    return useFragment(issueBaseFragment, result?.data?.mutateProject?.createIssue)
+  }
+
   public loading = computed(() => this.boardQuery.loading.value
     || this.changeStateMutation.loading.value
     || this.assignIssueMutation.loading.value
     || this.finishIssueMutation.loading.value
+    || this.createIssueMutation.loading.value
     || this.issueQuery.loading.value)
 
 
@@ -69,6 +78,7 @@ class IssueService {
     this.finishIssueMutation.onError(useErrorManager().catchError)
     this.assignIssueMutation.onError(useErrorManager().catchError)
     this.issueQuery.onError(useErrorManager().catchError)
+    this.createIssueMutation.onError(useErrorManager().catchError)
   }
 
   private projectBoardFragment = graphql(`
@@ -143,6 +153,20 @@ class IssueService {
                     finishIssue(doneStateName: $doneStateName, dodConfirmStates: $dodConfirmStates) {
                         ...IssueBase
                     }
+                }
+            }
+        }
+    `), () => ({
+      refetchQueries: ['BoardQuery']
+    }))
+  })
+
+  private createIssueMutation = provideApolloClient(apolloClient)(() => {
+    return useMutation(graphql(`
+        mutation CreateIssueMutation($projectId: UUID!, $input: CreateIssueInput!) {
+            mutateProject(id: $projectId) {
+                createIssue(input: $input) {
+                    ...IssueBase
                 }
             }
         }

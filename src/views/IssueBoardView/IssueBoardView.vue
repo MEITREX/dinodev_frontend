@@ -3,13 +3,13 @@ import { useIssueService } from '@/service/issue-service'
 import { type DefinitionOfDoneConfirmState, type Exact, type IssueState, IssueStateType } from '@/gql/graphql'
 import IssueBoardColumn from '@/views/IssueBoardView/IssueBoardColumn.vue'
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
-import ConfirmMoveIssueOutOfSprintDialog from '@/components/dialog/ConfirmMoveIssueOutOfSprintDialog.vue'
+import ConfirmMoveIssueOutOfSprintDialog from '@/components/dialog/board/ConfirmMoveIssueOutOfSprintDialog.vue'
 import { computed, onMounted, ref, watch } from 'vue'
-import ConfirmMoveIssueIntoSprintDialog from '@/components/dialog/ConfirmMoveIssueIntoSprintDialog.vue'
-import ConfirmReopenIssueDialog from '@/components/dialog/ConfirmReopenIssueDialog.vue'
-import DefinitionOfDoneDialog from '@/components/dialog/DefinitionOfDoneDialog.vue'
+import ConfirmMoveIssueIntoSprintDialog from '@/components/dialog/board/ConfirmMoveIssueIntoSprintDialog.vue'
+import ConfirmReopenIssueDialog from '@/components/dialog/board/ConfirmReopenIssueDialog.vue'
+import DefinitionOfDoneDialog from '@/components/dialog/board/DefinitionOfDoneDialog.vue'
 import { useGlobalUserService } from '@/service/global-user-service'
-import MoveIntoProgressWithoutAssigneeDialog from '@/components/dialog/MoveIntoProgressWithoutAssigneeDialog.vue'
+import MoveIntoProgressWithoutAssigneeDialog from '@/components/dialog/board/MoveIntoProgressWithoutAssigneeDialog.vue'
 import {
   isMovedIntoSprint,
   isMovedOutOfSprint,
@@ -19,8 +19,11 @@ import {
 } from '@/utils/state-utils'
 import { useMagicKeys } from '@vueuse/core'
 import { useAppTitle } from '@/stores/app-title'
+import NewIssueDialog from '@/components/dialog/issue/NewIssueDialog.vue'
+import { useNewIssueDialog } from '@/components/dialog/issue/new-issue-dialog-controller'
 
 const { issueBoard, loading, changeState, finishIssue, assignIssue } = useIssueService()
+const { openNewIssueDialog } = useNewIssueDialog()
 
 useAppTitle().appTitle.value = 'Issue Board'
 
@@ -175,7 +178,11 @@ onMounted(() => {
         </v-btn>
       </v-btn-toggle>
 
-      <div></div> <!-- spacer -->
+      <div class="mr-3">
+        <v-btn prepend-icon="mdi-plus" @click="openNewIssueDialog" variant="flat">
+          New Issue
+        </v-btn>
+      </div>
     </div>
     <div class="d-flex flex-row overflow-x-auto h-100" ref="scrollContainer">
       <loading-overlay :loading="loading" />
@@ -193,6 +200,7 @@ onMounted(() => {
     </div>
 
     <!-- Dialogs -->
+    <new-issue-dialog />
     <confirm-move-issue-out-of-sprint-dialog
       :visible="visibleDialog === VisibleDialog.ConfirmMoveIssueOutOfSprint"
       @confirm="onConfirmStateChange"
