@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import {
-  type IssueBaseFragment,
-  TShirtSizeEstimation
-} from '@/gql/graphql'
+import { type IssueBaseFragment, TShirtSizeEstimation } from '@/gql/graphql'
 import { isPresent } from '@/utils/types'
 import { computed } from 'vue'
 import IssueTypeIcon from '@/components/issue/IssueTypeIcon.vue'
 import IssuePriorityIcon from '@/components/issue/IssuePriorityIcon.vue'
+import { capitalCase } from 'capital-case'
 
 const props = defineProps<{
   issue: IssueBaseFragment
@@ -63,20 +61,15 @@ function getEmoji(estimation: TShirtSizeEstimation) {
     <v-card-title>
       <div class="d-flex flex-row align-center justify-space-between w-100">
         <div class="d-flex flex-row align-center">
-          <v-tooltip location="bottom">
-            <template v-slot:activator="{ props }">
-              <issue-type-icon :type="issue.type" v-bind="props" style="height: 25px; width: 25px"/>
-            </template>
-            <span>{{ issue.type.name }}</span>
-          </v-tooltip>
+          <issue-type-icon :type="issue.type" height="25" />
 
           <v-tooltip location="bottom">
             <template v-slot:activator="{ props }">
               <span v-bind="props">
-                <issue-priority-icon :priority="issue.priority" style="height: 25px; width: 25px"/>
+                <issue-priority-icon :priority="issue.priority" style="height: 25px; width: 25px" />
               </span>
             </template>
-            <span>{{ issue.priority }}</span>
+            <span>Priority: {{ capitalCase(issue.priority.toLowerCase()) }}</span>
           </v-tooltip>
         </div>
 
@@ -98,15 +91,26 @@ function getEmoji(estimation: TShirtSizeEstimation) {
       </div>
     </v-card-title>
 
-    <v-card-text class="pb-1">
+    <v-card-text class="pb-1 pl-5">
       {{ issue.title }}
     </v-card-text>
 
     <div class="pa-3 d-flex flex-row justify-space-between">
-      <v-chip v-if="isPresent(issue.effortEstimation)"
-              :color="color" density="comfortable">
-        <b>{{ issue.effortEstimation }}</b> {{ getEmoji(issue.effortEstimation) }}
-      </v-chip>
+      <div>
+        <v-chip v-if="isPresent(issue.effortEstimation)"
+                :color="color" density="comfortable">
+          <b>{{ issue.effortEstimation }}</b> {{ getEmoji(issue.effortEstimation) }}
+        </v-chip>
+        <v-chip
+          v-for="label in issue.labels"
+          :key="label"
+          color="secondary"
+          density="comfortable"
+          class="ml-1"
+        >
+          <p>{{ label }}</p>
+        </v-chip>
+      </div>
       <v-tooltip location="bottom" v-if="isPresent(issue.sprintNumber)">
         <template v-slot:activator="{ props }">
           <v-chip v-bind="props" color="grey" density="comfortable">
@@ -115,6 +119,7 @@ function getEmoji(estimation: TShirtSizeEstimation) {
         </template>
         <span>Sprint number</span>
       </v-tooltip>
+
     </div>
   </v-card>
 </template>

@@ -5,9 +5,10 @@ import IssueTypeIcon from '@/components/issue/IssueTypeIcon.vue'
 import { issueBaseFragment, useIssueService } from '@/service/issue-service'
 import { computed } from 'vue'
 import { useFragment } from '@/gql'
-import { type IssueWithEventsFragment } from '@/gql/graphql'
+import { IssuePriority, type IssueWithEventsFragment } from '@/gql/graphql'
 import GropiusIcon from '@/assets/GropiusIcon.vue'
-import { useEventService } from '@/service/event-service'
+import { eventWithChildrenFragment, useEventService } from '@/service/event-service'
+import IssuePriorityIcon from '@/components/issue/IssuePriorityIcon.vue'
 
 const props = defineProps<{
   issue: IssueWithEventsFragment | null
@@ -32,13 +33,9 @@ const { commentOnIssue } = useIssueService()
 
       <div class="d-flex flex-row justify-space-between align-center">
         <div class="d-flex flex-row align-center" v-if="!loading">
-          <v-btn variant="flat" size="50">
-            <issue-type-icon :type="issueBase?.type ?? {}" style="height: 40px;" />
-          </v-btn>
-          <!--        <span class="text-h4">&centerdot;</span>-->
-          <!--        <v-btn variant="flat" size="50">-->
-          <!--          <issue-priority-icon :priority="issueBase?.priority ?? IssuePriority.Medium" style="height: 40px;" />-->
-          <!--        </v-btn>-->
+          <issue-type-icon :type="issueBase?.type ?? {}" height="50" />
+          <span class="text-h4">&centerdot;</span>
+            <issue-priority-icon :priority="issueBase?.priority ?? IssuePriority.Medium" size="50" />
           <span class="text-h4 mr-3">&centerdot;</span>
           <p class="text-h4">{{ issueBase?.title }}</p>
         </div>
@@ -60,6 +57,11 @@ const { commentOnIssue } = useIssueService()
           {{ assignee?.user.username }}
         </v-chip>
       </div>
+      <div v-for="label in issueBase?.labels ?? []" :key="label">
+        <v-chip v-if="label" color="success">
+          {{ label }}
+        </v-chip>
+      </div>
 
       <markdown-text-card
         v-if="!loading"
@@ -73,11 +75,10 @@ const { commentOnIssue } = useIssueService()
         :show-comment-button="true"
         :show-comment-block="true"
         :show-issue-information="false"
-        :events="eventsReversed"
+        :events="useFragment(eventWithChildrenFragment, eventsReversed)"
         :postCommentLoading="eventsLoading"
         @like-event="eventId => { console.log('final'); likeEvent(eventId).then() }"
-        @post-comment="(comment, parentEventId) => commentOnIssue(issueBase!!.id, comment, parentEventId)"
-
+        @post-comment="(comment, parentEvent) => commentOnIssue(issueBase!!.id, comment, parentEvent?.id!!)"
       />
 
       <v-skeleton-loader type="list-item" v-else-if="showEvents" />

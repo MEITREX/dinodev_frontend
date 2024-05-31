@@ -14,7 +14,7 @@ const plugins = [
 </script>
 
 <template>
-  <v-card class="w-100 px-3">
+  <v-card class="w-100 px-3 pb-2">
     <v-card-text class="pl-0">
       <div class="text-body-3 ">
         <vue-markdown class="markdown" :source="markdownText" :plugins="plugins" :options="{ breaks: true, html: true, typographer: true}"/>
