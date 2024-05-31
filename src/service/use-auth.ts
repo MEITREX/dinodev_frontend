@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import qs from 'qs'
 import { useLocalStorage } from '@vueuse/core'
+import { runOnce } from '@/utils/run-once'
 
 interface TokenResponse {
   access_token: string;
@@ -76,9 +77,7 @@ async function login(username: string, password: string): Promise<string> {
   return await postLoginRequest(data)
 }
 
-let refreshOperationInProgress: Promise<string> | null = null;
-
-async function refreshLogin() {
+const refreshLogin = runOnce(async () => {
   if (!refreshToken.value) {
     throw new Error('No refresh token available')
   }
@@ -89,22 +88,8 @@ async function refreshLogin() {
     client_id: await getClientId(),
   })
 
-  if (refreshOperationInProgress) {
-    // prevent multiple refresh operations
-    return refreshOperationInProgress;
-  }
-
-  // Start the refresh operation and store the promise
-  refreshOperationInProgress = (async () => {
-    try {
-      return await postLoginRequest(data);
-    } finally {
-      refreshOperationInProgress = null;
-    }
-  })();
-
-  return refreshOperationInProgress;
-}
+  return await postLoginRequest(data);
+})
 
 function logout() {
   token.value = null
