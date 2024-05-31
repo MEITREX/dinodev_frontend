@@ -113,24 +113,18 @@ function openUserProfile(userId: string | undefined) {
     <div class="d-flex flex-row w-100">
       <div v-if="type == 'PLAYER_MESSAGE' || type == 'COMMENT_ON_ISSUE'" class=" w-100 mr-10">
         <markdown-text-card :markdown-text="baseEvent?.message ?? ''" class="mr-3 w-100 "></markdown-text-card>
-
-        <v-tooltip location="bottom" text="Comment" v-if="showCommentButton">
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              prepend-icon="mdi-comment"
-              variant="text"
-              class="text-grey-darken-1"
-              size="small"
-              id="btn-comment"
-              density="comfortable"
-              @click="() => emit('select-event-to-comment', baseEvent!!)"
-            >
-              Add comment
-            </v-btn>
-          </template>
-        </v-tooltip>
-
+          <v-btn
+            v-if="showCommentButton"
+            prepend-icon="mdi-comment"
+            variant="text"
+            class="text-grey-darken-1"
+            size="small"
+            id="btn-comment"
+            density="comfortable"
+            @click="() => emit('select-event-to-comment', baseEvent!!)"
+          >
+            Respond
+          </v-btn>
       </div>
 
       <p v-else-if="type == 'ISSUE_COMPLETED'">
@@ -199,7 +193,7 @@ function openUserProfile(userId: string | undefined) {
             :image="childEvent.user?.avatar ?? ''"
             @click="() => openUserProfile(childEvent.user?.id)">
           </v-avatar>
-          <event-list-item class="w-75"
+          <event-list-item class="w-100"
             :event-without-children="childEvent"
             :event="null"
             :show-comment-button="false"

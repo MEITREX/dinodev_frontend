@@ -77,7 +77,6 @@ class IssueService {
     || this.commentOnIssueMutation.loading.value
   )
 
-
   public issueId = ref<string | null>(null)
 
   constructor() {
@@ -107,6 +106,7 @@ class IssueService {
                   title
                   issueUrl
                   description
+                  labels
                   storyPoints
                   effortEstimation
                   priority
@@ -259,6 +259,7 @@ export const issueBaseFragment = graphql(`
         effortEstimation
         priority
         sprintNumber
+        labels
         type {
             iconPath
             name
