@@ -58,12 +58,24 @@ class IssueService {
     return useFragment(issueBaseFragment, result?.data?.mutateProject?.createIssue)
   }
 
+  public commentOnIssue = async (issueId: string, message: string, optionalParentId?: string | null) => {
+    const result = await this.commentOnIssueMutation.mutate({
+      projectId: useAppStore().projectId.value,
+      issueId,
+      message,
+      optionalParentId
+    })
+    return useFragment(issueBaseFragment, result?.data?.mutateProject?.mutateIssue?.commentOnIssue)
+  }
+
   public loading = computed(() => this.boardQuery.loading.value
     || this.changeStateMutation.loading.value
     || this.assignIssueMutation.loading.value
     || this.finishIssueMutation.loading.value
     || this.createIssueMutation.loading.value
-    || this.issueQuery.loading.value)
+    || this.issueQuery.loading.value
+    || this.commentOnIssueMutation.loading.value
+  )
 
 
   public issueId = ref<string | null>(null)
@@ -79,6 +91,7 @@ class IssueService {
     this.assignIssueMutation.onError(useErrorManager().catchError)
     this.issueQuery.onError(useErrorManager().catchError)
     this.createIssueMutation.onError(useErrorManager().catchError)
+    this.commentOnIssueMutation.onError(useErrorManager().catchError)
   }
 
   private projectBoardFragment = graphql(`
@@ -191,6 +204,22 @@ class IssueService {
     }))
   })
 
+  private commentOnIssueMutation = provideApolloClient(apolloClient)(() => {
+    return useMutation(graphql(`
+        mutation CommentOnIssueMutation($projectId: UUID!, $issueId: ID!, $message: String!, $optionalParentId: String) {
+            mutateProject(id: $projectId) {
+                mutateIssue(id: $issueId) {
+                    commentOnIssue(comment: $message, optionalParentId: $optionalParentId) {
+                        ...IssueBase
+                    }
+                }
+            }
+        }
+    `), () => ({
+      refetchQueries: ['IssueQuery']
+    }))
+  })
+
   private issueQuery = provideApolloClient(apolloClient)(() => {
     return useQuery(graphql(`
         query IssueQuery($projectId: UUID!, $issueId: UUID!) {
@@ -247,20 +276,6 @@ export const issueWithEventsFragment = graphql(`
     fragment IssueWithEvents on Issue {
         ...IssueBase
         issueEvents {
-            id
-            timestamp
-            user {
-                id
-                username
-                avatar
-            }
-            message
-            eventType {
-                identifier
-            }
-            eventData {
-                key
-                value
-            }
+            ...EventWithChildren
         }
     }`)

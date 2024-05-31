@@ -1,17 +1,15 @@
 import { graphql, useFragment } from '@/gql'
-import { provideApolloClient, useLazyQuery, useQuery } from '@vue/apollo-composable'
+import { provideApolloClient, useLazyQuery, useMutation, useQuery } from '@vue/apollo-composable'
 import { apolloClient } from '@/setup/apollo-client'
 import { useAuth } from '@/service/use-auth'
 import { useAppStore } from '@/stores/appStore'
 import { computed } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
-import type { BaseEventFragment, EventsOfUserQuery } from '@/gql/graphql'
-import type { ApolloQueryResult } from '@apollo/client'
 
 class EventService {
 
   public events = computed(() => {
-    return useFragment(eventFragment, this.eventQuery.result.value?.project?.events) || []
+    return useFragment(eventWithChildrenFragment, this.eventQuery.result.value?.project?.events) || []
   })
 
   public fetchEventsOfUser = async (userId: string) => {
@@ -27,25 +25,41 @@ class EventService {
     return useFragment(eventFragment, this.eventsOfUserLazyQuery.result.value?.globalUser?.userInProject?.publicEvents) || []
   }
 
+  public likeEvent = async (eventId: string)  => {
+    const result = await this.likeEventMutation.mutate({
+      projectId: useAppStore().projectId.value,
+      eventId
+    })
+    return useFragment(eventFragment, result?.data?.mutateProject?.reactToEvent) || null
+  }
+
+  public addUserComment = async (message: string, optionalParentId?: string) => {
+    const result = await this.addUserCommentMutation.mutate({
+      projectId: useAppStore().projectId.value,
+      message,
+      optionalParentId
+    })
+    return useFragment(eventFragment, result?.data?.mutateProject?.postComment) || null
+  }
+
   public loading = computed(() => this.eventQuery.loading.value
-    || this.eventsOfUserLazyQuery.loading.value)
+    || this.eventsOfUserLazyQuery.loading.value
+    || this.likeEventMutation.loading.value
+    || this.addUserCommentMutation.loading.value)
 
   constructor() {
     this.eventQuery.onError(useErrorManager().catchError)
+    this.eventsOfUserLazyQuery.onError(useErrorManager().catchError)
+    this.likeEventMutation.onError(useErrorManager().catchError)
+    this.addUserCommentMutation.onError(useErrorManager().catchError)
   }
 
-  public findEventDataField(event: BaseEventFragment, key: string): string | null {
-    return event.eventData
-      .find(data => data.key === key)
-      ?.value || null
-  }
-
-  private eventQuery = provideApolloClient(apolloClient)(() => {
+  eventQuery = provideApolloClient(apolloClient)(() => {
       return useQuery(graphql(`
           query EventsOfProject($projectId: UUID!, $page: Int!, $pageSize: Int!) {
               project(id: $projectId) {
                   events(page: $page, size: $pageSize) {
-                      ...BaseEvent
+                      ...EventWithChildren
                   }
               }
           }`
@@ -60,17 +74,45 @@ class EventService {
   )
 
   private eventsOfUserLazyQuery = provideApolloClient(apolloClient)(() => {
-      return useLazyQuery(graphql(`
-          query EventsOfUser($userId: UUID!, $projectId: UUID!, $page: Int!, $pageSize: Int!) {
-              globalUser(id: $userId) {
-                  userInProject(projectId: $projectId) {
-                      publicEvents(page: $page, size: $pageSize) {
-                          ...BaseEvent
-                      }
-                  }
-              }
-          }`
-      ))
+    return useLazyQuery(graphql(`
+        query EventsOfUser($userId: UUID!, $projectId: UUID!, $page: Int!, $pageSize: Int!) {
+            globalUser(id: $userId) {
+                userInProject(projectId: $projectId) {
+                    publicEvents(page: $page, size: $pageSize) {
+                        ...BaseEvent
+                    }
+                }
+            }
+        }`
+    ))
+  })
+
+  private likeEventMutation = provideApolloClient(apolloClient)(() => {
+    return useMutation(graphql(`
+        mutation LikeEvent($projectId: UUID!, $eventId: UUID!) {
+            mutateProject(id: $projectId) {
+                reactToEvent(eventId: $eventId) {
+                    ...BaseEvent
+                }
+            }
+        }`
+    ), () => ({
+      refetchQueries: ['EventsOfProject', 'IssueQuery']
+    }))
+  })
+
+  private addUserCommentMutation = provideApolloClient(apolloClient)(() => {
+    return useMutation(graphql(`
+        mutation AddUserComment($projectId: UUID!, $optionalParentId: UUID, $message: String!) {
+            mutateProject(id: $projectId) {
+                postComment(optionalParentEventId: $optionalParentId, comment: $message) {
+                    ...BaseEvent
+                }
+            }
+        }`
+    ), () => ({
+      refetchQueries: ['EventsOfProject']
+    }))
   })
 }
 
@@ -96,6 +138,20 @@ export const eventFragment = graphql(`
         eventData {
             key
             value
+        }
+        issueId: field(name: "issueId") { value }
+        issueTitle: field(name: "issueTitle") { value }
+        reactions {
+            userId
+        }
+    }`
+)
+
+export const eventWithChildrenFragment = graphql(`
+    fragment EventWithChildren on DefaultEvent {
+        ...BaseEvent
+        children {
+            ...BaseEvent
         }
     }`
 )

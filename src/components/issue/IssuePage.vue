@@ -2,11 +2,12 @@
 import MarkdownTextCard from '@/components/MarkdownTextCard.vue'
 import EventList from '@/components/event/EventList.vue'
 import IssueTypeIcon from '@/components/issue/IssueTypeIcon.vue'
-import { issueBaseFragment } from '@/service/issue-service'
+import { issueBaseFragment, useIssueService } from '@/service/issue-service'
 import { computed } from 'vue'
 import { useFragment } from '@/gql'
 import { type IssueWithEventsFragment } from '@/gql/graphql'
 import GropiusIcon from '@/assets/GropiusIcon.vue'
+import { useEventService } from '@/service/event-service'
 
 const props = defineProps<{
   issue: IssueWithEventsFragment | null
@@ -18,6 +19,10 @@ const issueBase = computed(() => useFragment(issueBaseFragment, props.issue))
 
 // reverse events -> show oldest at the top like in Gropius
 const eventsReversed = computed(() => props.issue?.issueEvents?.slice().reverse() ?? [])
+
+const { likeEvent, loading: eventsLoading } = useEventService()
+
+const { commentOnIssue } = useIssueService()
 </script>
 
 <template>
@@ -68,7 +73,12 @@ const eventsReversed = computed(() => props.issue?.issueEvents?.slice().reverse(
         :show-comment-button="true"
         :show-comment-block="true"
         :show-issue-information="false"
-        :events="eventsReversed" />
+        :events="eventsReversed"
+        :postCommentLoading="eventsLoading"
+        @like-event="eventId => { console.log('final'); likeEvent(eventId).then() }"
+        @post-comment="(comment, parentEventId) => commentOnIssue(issueBase!!.id, comment, parentEventId)"
+
+      />
 
       <v-skeleton-loader type="list-item" v-else-if="showEvents" />
 
