@@ -16,7 +16,8 @@ import { Observable } from '@apollo/client'
 const httpUrl = import.meta.env.VITE_APP_BACKEND_URL ?? `/api/graphql`
 let wsUrl = import.meta.env.VITE_APP_BACKEND_WS_URL ?? `/api/graphql-ws`
 
-const wsProtocol = 'ws:'
+// Determine the WebSocket protocol
+const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
 
 // Construct the full WebSocket URL
 wsUrl = `${wsProtocol}//${window.location.host}${wsUrl}`
