@@ -1,16 +1,14 @@
 <script setup lang="ts">
 
 import router from '@/router'
-import { useRoute } from 'vue-router'
+import { useAppStore } from '@/stores/app-store'
 
 const props = defineProps<{
   activatorId: string
 }>()
 
-const route = useRoute()
-
 function startPlanning() {
-  const projectId = route.params.projectId
+  const projectId = useAppStore().getProjectIdOrThrow()
   router.push(`/project/${projectId}/planning`)
 }
 </script>
@@ -25,20 +23,13 @@ function startPlanning() {
         <v-card-text class="d-flex flex-column ga-2">
           <p>
             Let's start a new sprint!
-            You can initiate an <b>interactive</b> sprint planning meeting with the whole team
-            to set a <b>sprint goal</b>, estimate issues, and decide on which <b>new animal</b>
-            should come into the zoo!
-          </p>
-          <p class="mb-3">
-            Alternatively, you can start the sprint without a planning meeting.
+            You can initiate an interactive sprint planning meeting with the whole team
+            to set a <b>sprint goal</b>, estimate issues, and decide on which <b>new prehistoric animal</b>
+            should come into the park!
           </p>
 
           <v-btn block color="primary" @click="startPlanning()">
             Start planning meeting
-          </v-btn>
-
-          <v-btn block color="white">
-            Start sprint without planning meeting
           </v-btn>
         </v-card-text>
         <v-card-actions>

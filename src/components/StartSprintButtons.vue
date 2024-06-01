@@ -1,23 +1,23 @@
 <script setup lang="ts">
 
 import router from '@/router'
-import { useRoute } from 'vue-router'
 import NewSprintDialog from '@/components/dialog/NewSprintDialog.vue'
-
-const emit = defineEmits<{
-  (e: 'start-sprint'): void
-}>()
-
-const route = useRoute()
+import { routes } from '@/router/routes'
+import { useAppStore } from '@/stores/app-store'
 
 function openBoard() {
-  const projectId = route.params.projectId
-  router.push(`/project/${projectId}/board`)
+  const projectId = useAppStore().getProjectIdOrThrow()
+  router.push(routes.project(projectId).board)
+}
+
+function openOlderSprints() {
+  const projectId = useAppStore().getProjectIdOrThrow()
+  router.push(routes.project(projectId).sprintStats)
 }
 </script>
 
 <template>
-  <div class="d-flex flex-column align-center">
+  <div class="d-flex flex-column align-center pa-5">
     <h2 class="text-sm-h5">No active sprint</h2>
     <p class="text-caption mb-5">Start a new sprint or goto the issue board</p>
 
@@ -26,7 +26,7 @@ function openBoard() {
         Start new sprint
       </v-btn>
       <new-sprint-dialog activator-id="#start-new-sprint" />
-      <v-btn variant="elevated" block size="large" @click="emit('start-sprint')">
+      <v-btn variant="elevated" block size="large" @click="openOlderSprints">
         View older sprints
       </v-btn>
       <v-btn variant="elevated" block size="large" @click="openBoard">

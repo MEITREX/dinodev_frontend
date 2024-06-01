@@ -37,7 +37,8 @@ const retroItems = ref<RetroItem[]>([
 </script>
 
 <template>
-  <v-row align="start" class="fill-height" no-gutters>
+  <p>WIP</p>
+  <!--v-row align="start" class="fill-height" no-gutters>
     <v-col cols="12" sm="8" md="8">
       <h2 class="my-3">Create Retrospective Meeting</h2>
         <v-data-iterator
@@ -66,10 +67,10 @@ const retroItems = ref<RetroItem[]>([
                   </div>
                 </v-card-title>
 
-<!--                <v-card-subtitle>-->
-<!--                  <p class="ml-8">-->
-<!--                    {{ item.raw.task }}</p>-->
-<!--                </v-card-subtitle>-->
+&lt;!&ndash;                <v-card-subtitle>&ndash;&gt;
+&lt;!&ndash;                  <p class="ml-8">&ndash;&gt;
+&lt;!&ndash;                    {{ item.raw.task }}</p>&ndash;&gt;
+&lt;!&ndash;                </v-card-subtitle>&ndash;&gt;
 
               </v-card>
             </template>
@@ -89,7 +90,7 @@ const retroItems = ref<RetroItem[]>([
 
         <v-btn block color="primary" size="large">Start Meeting</v-btn>
     </v-col>
-  </v-row>
+  </v-row>-->
 </template>
 
 <style scoped>
