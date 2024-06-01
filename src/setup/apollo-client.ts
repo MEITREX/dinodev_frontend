@@ -14,7 +14,12 @@ import { Observable } from '@apollo/client'
 
 // get backend urls from environment variables
 const httpUrl = import.meta.env.VITE_APP_BACKEND_URL ?? `/api/graphql`
-const wsUrl = import.meta.env.VITE_APP_BACKEND_WS_URL ?? `/api/graphql-ws`
+let wsUrl = import.meta.env.VITE_APP_BACKEND_WS_URL ?? `/api/graphql-ws`
+
+const wsProtocol = 'ws:'
+
+// Construct the full WebSocket URL
+wsUrl = `${wsProtocol}//${window.location.host}${wsUrl}`
 
 const { isLoggedIn, token, onLogout, refreshLogin } = useAuth()
 
@@ -28,7 +33,7 @@ function createApolloClient() {
 
   const wsLink = new GraphQLWsLink(
     createClient({
-      url: wsUrl
+      url: wsUrl,
     })
   )
 
