@@ -1,7 +1,7 @@
 import { graphql, useFragment } from '@/gql'
 import { provideApolloClient, useMutation, useSubscription } from '@vue/apollo-composable'
 import { apolloClient } from '@/setup/apollo-client'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import { computed } from 'vue'
 import {
   type DefaultStandupMeetingFragment,
@@ -10,11 +10,11 @@ import {
 import { useErrorManager } from '@/utils/error-manager'
 import { useAuth } from '@/service/use-auth'
 
-class PlanningMeetingService {
+class StandupMeetingService {
 
   public standupMeeting = computed(() => {
     return useFragment(defaultStandupMeetingFragment,
-      this.standupMeetingSubscription.result.value?.standupMeeting) || null
+      this.standupMeetingSubscription.result.value?.standupMeeting) ?? null
   })
 
   public createStandupMeeting = async (input: StandupMeetingInput): Promise<DefaultStandupMeetingFragment | null> => {
@@ -137,7 +137,7 @@ class PlanningMeetingService {
 
 }
 
-const standupMeetingService = new PlanningMeetingService()
+const standupMeetingService = new StandupMeetingService()
 
 export function useStandupMeetingService() {
   return standupMeetingService

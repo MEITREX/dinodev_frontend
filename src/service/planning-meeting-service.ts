@@ -1,7 +1,7 @@
 import { graphql, useFragment } from '@/gql'
 import { provideApolloClient, useMutation, useSubscription } from '@vue/apollo-composable'
 import { apolloClient } from '@/setup/apollo-client'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import { computed } from 'vue'
 import { useAuth } from '@/service/use-auth'
 import {
@@ -14,7 +14,6 @@ import {
 } from '@/gql/graphql'
 import { sprintFragment } from '@/service/sprint-service'
 import { useErrorManager } from '@/utils/error-manager'
-import { watchImmediate } from '@vueuse/core'
 
 class PlanningMeetingService {
 

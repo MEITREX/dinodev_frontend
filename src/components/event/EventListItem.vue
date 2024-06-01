@@ -6,7 +6,7 @@ import MarkdownTextCard from '@/components/MarkdownTextCard.vue'
 import { useGlobalUserService } from '@/service/global-user-service'
 import router from '@/router'
 import { routes } from '@/router/routes'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import { useFragment } from '@/gql'
 import { eventFragment } from '@/service/event-service'
 

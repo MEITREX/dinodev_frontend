@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import router from '@/router'
 import { routes } from '@/router/routes'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 
 function joinMeeting() {
-  router.push(routes.project(useAppStore().getProjectIdOrThrow()).livePlanning)
+  router.push(routes.project(useAppStore().getProjectIdOrThrow()).liveStandup)
 }
 </script>
 

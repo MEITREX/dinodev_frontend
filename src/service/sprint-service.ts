@@ -3,7 +3,7 @@ import { provideApolloClient, useQuery } from '@vue/apollo-composable'
 import { apolloClient } from '@/setup/apollo-client'
 import { computed } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import { useAuth } from '@/service/use-auth'
 
 

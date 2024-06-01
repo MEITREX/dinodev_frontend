@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { issueBaseFragment, useIssueService } from '@/service/issue-service'
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import { useFragment } from '@/gql'
 import { useAppTitle } from '@/stores/app-title'
 import { watchImmediate } from '@vueuse/core'

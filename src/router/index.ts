@@ -8,7 +8,7 @@ import CreateProjectView from '@/views/CreateProjectView.vue'
 import MainTab from '@/views/MainProjectView/MainTab.vue'
 import AllMeetingsView from '@/views/MeetingView/AllMeetingsView.vue'
 import PlanningSettingsView from '@/views/MeetingView/PlanningView/PlanningSettingsView.vue'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

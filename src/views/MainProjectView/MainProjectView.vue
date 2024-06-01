@@ -3,7 +3,7 @@
 import TheTopBar from '@/components/top-menu/TheTopBar.vue'
 import TheSideMenu from '@/components/side-menu/TheSideMenu.vue'
 import { useProjectService } from '@/service/project-service'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
 import { isPresent } from '@/utils/types'
 import router from '@/router'

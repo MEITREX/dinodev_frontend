@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import PlanningAnimalView from '@/views/MeetingView/PlanningView/PlanningAnimalView.vue'
 import PlanningAnimalNameView from '@/views/MeetingView/PlanningView/PlanningAnimalNameView.vue'
 import IssueEstimationView from '@/views/MeetingView/PlanningView/IssueEstimationView.vue'
@@ -12,8 +12,18 @@ import { useFragment } from '@/gql'
 import { meetingFragment } from '@/service/meeting-service'
 import { useGlobalUserService } from '@/service/global-user-service'
 import AnimalAvatar from '@/views/MeetingView/PlanningView/AnimalAvatar.vue'
+import router from '@/router'
+import { useAppStore } from '@/stores/app-store'
+import { routes } from '@/router/routes'
 
 const { planningMeeting, changePage, loading } = usePlanningMeetingService()
+
+onMounted(() => {
+  if (!planningMeeting.value) {
+    useErrorManager().catchError("There is no active planning meeting.")
+    router.push(routes.project(useAppStore().getProjectIdOrThrow()).main)
+  }
+})
 
 const planningSteps = ref([
   {

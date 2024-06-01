@@ -5,7 +5,7 @@ import { computed, type ComputedRef } from 'vue'
 import type { CreateProjectInput, ProjectBaseFragment, ProjectMainFragment, UpdateProjectInput } from '@/gql/graphql'
 import { isPresent, type Nullable } from '@/utils/types'
 import { useAuth } from '@/service/use-auth'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import { useErrorManager } from '@/utils/error-manager'
 
 /**

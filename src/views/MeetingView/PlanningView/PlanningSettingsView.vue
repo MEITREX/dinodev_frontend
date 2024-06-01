@@ -6,7 +6,7 @@ import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
 import { userInProjectService } from '@/service/user-in-project-service'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import { usePlanningMeetingService } from '@/service/planning-meeting-service'
 
 const start = ref<Date>(new Date())

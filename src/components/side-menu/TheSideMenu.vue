@@ -8,7 +8,7 @@ import UserAvatarListItem from '@/components/side-menu/UserAvatarListItem.vue'
 import { isPresent } from '@/utils/types'
 import { useRoute } from 'vue-router'
 import { userInProjectService } from '@/service/user-in-project-service'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 
 const { currentUser } = userInProjectService()
 

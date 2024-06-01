@@ -1,4 +1,5 @@
 import { useLocalStorage } from '@vueuse/core'
+import { useAuth } from '@/service/use-auth'
 
 // remark: there are store management libraries like Vuex or Pinia, however,
 // the Vue 3 composition API is powerful enough to manage global state
@@ -14,8 +15,11 @@ const getProjectIdOrThrow = () => {
   return projectId.value;
 }
 
-export function useAppStore() {
+useAuth().onLogout(() => {
+  projectId.value = null
+})
 
+export function useAppStore() {
   return {
     projectId,
     getProjectIdOrThrow,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import router from '@/router'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import { routes } from '@/router/routes'
 
 function joinMeeting() {

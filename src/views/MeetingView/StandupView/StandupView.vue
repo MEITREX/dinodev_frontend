@@ -1,111 +1,199 @@
 <script setup lang="ts">
 
 import SprintStats from '@/components/SprintStats.vue'
-import { computed, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import MeetingView from '@/views/MeetingView/MeetingView.vue'
-import { MeetingType } from '@/gql/graphql'
+import { MeetingRole, MeetingType, type ProjectBoardFragment } from '@/gql/graphql'
+import { useStandupMeetingService } from '@/service/standup-meeting-service'
+import { useFragment } from '@/gql'
+import { meetingFragment } from '@/service/meeting-service'
+import { useGlobalUserService } from '@/service/global-user-service'
+import { useIssueService } from '@/service/issue-service'
+import IssueCard from '@/components/issue/IssueCard.vue'
+import { useEventService } from '@/service/event-service'
+import { computedAsync } from '@vueuse/core'
 import EventList from '@/components/event/EventList.vue'
+import { useAppTitle } from '@/stores/app-title'
+import { getEmojisForStateType } from '@/utils/emojis'
+import router from '@/router'
+import { routes } from '@/router/routes'
+import { useAppStore } from '@/stores/app-store'
 
-type Member = {
-  name: string
-  avatar: string
-  online?: boolean
+const { standupMeeting, startStandupMeeting, changeCurrentAttendee, finishMeeting } = useStandupMeetingService()
+const { issueBoard } = useIssueService()
+const { fetchEventsOfUser } = useEventService()
+const { setAppTitle } = useAppTitle()
+
+onMounted(() => {
+  setAppTitle('Standup Meeting')
+})
+
+const baseMeeting = computed(() => useFragment(meetingFragment, standupMeeting.value) || null)
+
+const meetingStarted = computed(() => (standupMeeting.value?.currentAttendee != null))
+
+const meetingFinished = computed(() => baseMeeting.value?.active === false)
+
+const isMeetingLeader = computed(() => {
+  return baseMeeting.value?.attendees
+    ?.filter(attendee => attendee.role === MeetingRole.MeetingLeader)
+    ?.find(attendee => attendee.user.id === useGlobalUserService().currentGlobalUser.value?.id) != null
+})
+
+const selected = computed(() => {
+  return (standupMeeting.value?.order
+    ?.findIndex(attendee => attendee.user.id === currentAttendee.value?.user.id) ?? 10) + 1
+})
+
+const currentAttendee = computed(() => {
+  return standupMeeting.value?.currentAttendee
+})
+
+function getIssuesOfCurrentAttendee(state: ProjectBoardFragment['states'][0]) {
+  return state.issues.filter(i => i.assignees.some(a => a?.user.id === currentAttendee.value?.user.id))
 }
-const members = ref<Array<Member>>([
-  { name: 'Alice', avatar: 'https://i.pravatar.cc/60', online: true },
-  { name: 'Bob', avatar: 'https://i.pravatar.cc/61', online: true },
-  { name: 'Charlie', avatar: 'https://i.pravatar.cc/2' },
-  { name: 'David', avatar: 'https://i.pravatar.cc/31', online: true },
-  { name: 'Eve', avatar: 'https://i.pravatar.cc/21', online: true }
-])
 
-const steps = ref([])
+const eventsOfUser = computedAsync(() => {
+  if (!currentAttendee.value) return Promise.resolve([])
+  return fetchEventsOfUser(currentAttendee.value?.user.id ?? '')
+})
 
-const onlineMembers = computed(() => members.value.filter(m => m.online))
-const offlineMembers = computed(() => members.value.filter(m => !m.online))
-
-const meetingStarted = ref(false)
-
-function shuffle<T>(a: Array<T>): Array<T> {
-  let j, x, i
-  for (i = a.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1))
-    x = a[i]
-    a[i] = a[j]
-    a[j] = x
+function next() {
+  if (standupMeeting.value?.order.length === selected.value) {
+    finishMeeting()
+  } else {
+    const nextAttendee = standupMeeting.value?.order[selected.value]
+    if (nextAttendee) changeCurrentAttendee(nextAttendee.user.id)
   }
-  return a
 }
 
-const e1 = ref(1)
+function previous() {
+  if (selected.value > 1) {
+    const previousAttendee = standupMeeting.value?.order[selected.value - 2]
+    if (previousAttendee) changeCurrentAttendee(previousAttendee.user.id)
+  }
+}
+
+function youAreNext() {
+  return currentAttendee.value?.user.id === useGlobalUserService().currentGlobalUser.value?.id
+}
+
 </script>
 
 <template>
-  <meeting-view :meeting-type="MeetingType.Standup" :meeting="null">
+  <meeting-view :meeting-type="MeetingType.Standup" :meeting="baseMeeting" class="pa-5">
 
-    <h1 class="mb-2 text-h5"> Standup Meeting </h1>
+    <sprint-stats v-if="!meetingStarted" />
 
-    <sprint-stats :show-buttons="false" />
-    <v-row class="mt-2">
-      <v-col cols="4" md="2">
-        <h2 class="mb-3 text-h6"> Members </h2>
+    <p v-if="!meetingStarted && isMeetingLeader" class="my-5">
+      Hint: Wait for all participants to join the meeting before starting.
+    </p>
 
-        <h3 class="mb-3 text-sm-h6"> Online </h3>
+    <v-btn
+      v-if="!meetingStarted && isMeetingLeader"
+      @click="() => startStandupMeeting()"
+    >
+      Start standup
+    </v-btn>
 
-        <v-card v-for="member in onlineMembers" :key="member.name" class="mb-2" outlined>
-          <v-card-title>
-            <v-avatar>
-              <v-img :src="member.avatar" />
-            </v-avatar>
-            <span class="ml-2">{{ member.name }}</span>
-          </v-card-title>
-        </v-card>
+    <div v-if="meetingStarted && !meetingFinished" class="w-100 py-3">
+      <v-stepper :model-value="selected" non-linear>
+        <v-stepper-header>
+          <template
+            v-for="(attendee, index) of standupMeeting?.order" :key="attendee.user.id">
+            <v-stepper-item
+              :title="attendee.user.username"
+              :value="index + 1">
 
-        <h3 class="mb-3 text-sm-h6"> Offline </h3>
+            </v-stepper-item>
+            <v-divider />
+          </template>
 
-        <v-card v-for="member in offlineMembers" :key="member.name" class="mb-2" outlined>
-          <v-card-title>
-            <v-avatar>
-              <v-img :src="member.avatar" />
-            </v-avatar>
-            <span class="ml-2">{{ member.name }}</span>
-          </v-card-title>
-        </v-card>
+        </v-stepper-header>
 
-      </v-col>
-      <v-col>
+        <v-stepper-window>
+          <div class="d-flex flex-row justify-space-between mb-4 pa-1">
+            <div class="d-flex flex-row align-end">
+              <v-avatar :image="currentAttendee?.user.avatar ?? undefined" size="40" class="mr-5" />
+              <p class="text-sm-h4"> {{ currentAttendee?.user.username }}</p>
+            </div>
 
-        <v-btn
-          v-if="!meetingStarted"
-          color="primary"
-          @click="meetingStarted = true"
-          class="mt-10"
-        >
-          Start standup
-        </v-btn>
+            <div class="d-flex flex-row ga-2">
+              <v-btn
+                size="large"
+                @click="previous"
+                width="160"
+                prepend-icon="mdi-arrow-left"
+                :disabled="selected === 1"
+                v-if="isMeetingLeader"
+              >
+                Previous
+              </v-btn>
+              <v-btn
+                v-if="isMeetingLeader || youAreNext()"
+                width="160"
+                prepend-icon="mdi-arrow-right"
+                size="large"
+                @click="next">
+                {{ standupMeeting?.order.length === selected ? 'Finish' : 'Next' }}
+              </v-btn>
 
-        <div v-else>
-          <v-stepper :items="steps" v-model="e1">
-            <template #item="step">
-              <v-card>
-                <v-card-title>
-                  <h3> {{ step }} </h3>
-                </v-card-title>
-                <v-card-subtitle>{{ step }}'s activity this sprint:</v-card-subtitle>
-                <v-card-text>
-                  <event-list
-                    :events="[]"
-                    :show-comment-block="false"
-                    :show-comment-button="false"
-                    :show-issue-information="false"
-                  /> <!-- TODO -->
-                </v-card-text>
+            </div>
+          </div>
+
+          <v-row>
+            <v-col cols="7" class="mr-5">
+              <v-card class="pa-3 ma-2">
+                <h2 class="text-sm-h5 mb-1">
+                  Recent activity
+                </h2>
+                <event-list
+                  :post-comment-loading="false"
+                  :show-issue-information="true"
+                  :show-comment-button="false"
+                  :show-comment-block="false"
+                  :events="eventsOfUser"></event-list>
               </v-card>
-            </template>
-          </v-stepper>
-        </div>
-      </v-col>
-    </v-row>
+            </v-col>
+            <v-col class="pa-1">
+              <v-card class="pa-3 ma-2 w-100">
+                <h2 class="text-sm-h5 mb-1">
+                  Issues assigned to {{ currentAttendee?.user.username }}
+                </h2>
+                <div v-for="state in issueBoard?.states" :key="state.state.name">
+                  <div v-if="getIssuesOfCurrentAttendee(state).length > 0">
+                    <h3 class="text-sm-body-1 py-3">
+                      {{ getEmojisForStateType(state.state.type) + ' ' + state.state.name }}
+                    </h3>
+                    <div class="d-flex flex-row flex-wrap ga-2">
+                      <div
+                        v-for="issue in getIssuesOfCurrentAttendee(state)"
+                        :key="issue.id">
+                        <issue-card
+                          :issue="issue"
+                          @click="() => router.push(routes.project(useAppStore().getProjectIdOrThrow()).issue(issue.id))"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-stepper-window>
+      </v-stepper>
+    </div>
+
+    <div v-if="meetingFinished" class="w-100">
+      <v-card class="pa-3 w-100">
+        <h2 class="text-sm-h5 mb-1">
+          Meeting finished! 🎉
+        </h2>
+        <p>
+          Thank you for participating in the standup meeting!
+        </p>
+      </v-card>
+    </div>
   </meeting-view>
 </template>
 

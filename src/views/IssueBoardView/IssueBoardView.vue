@@ -25,7 +25,7 @@ import { useNewIssueDialog } from '@/components/dialog/issue/new-issue-dialog-co
 const { issueBoard, loading, changeState, finishIssue, assignIssue } = useIssueService()
 const { openNewIssueDialog } = useNewIssueDialog()
 
-useAppTitle().appTitle.value = 'Issue Board'
+useAppTitle().setAppTitle('Issue Board')
 
 // filtering
 const mode = ref<0 | 1>(0) // 0 = all issues, 1 = my issues
