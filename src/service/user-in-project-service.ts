@@ -5,7 +5,7 @@ import { isPresent, type Nullable } from '@/utils/types'
 import { useAuth } from '@/service/use-auth'
 import { computed, type ComputedRef } from 'vue'
 import type { UserInProjectFragment } from '@/gql/graphql'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 
 class UserInProjectService {
 
@@ -15,7 +15,6 @@ class UserInProjectService {
   })
 
   public allUsers: ComputedRef<readonly UserInProjectFragment[]> = computed(() => {
-    console.log('All users in project:', this.allUsersInProjectQuery.result.value?.project?.users)
     return useFragment(this.UserInProjectFragment,
       this.allUsersInProjectQuery.result.value?.project?.users) || []
   })

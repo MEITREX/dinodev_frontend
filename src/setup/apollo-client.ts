@@ -63,6 +63,7 @@ function createApolloClient() {
    */
   const errorLink = onError(({ networkError, operation, forward }) => {
     if (networkError) {
+      console.warn('Network error', networkError);
       return new Observable(observer => {
         refreshLogin().then(() => {
           const headers = operation.getContext().headers;

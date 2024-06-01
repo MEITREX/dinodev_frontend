@@ -5,13 +5,20 @@ import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
 import { usePlanningMeetingService } from '@/service/planning-meeting-service'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
+import { useStandupMeetingService } from '@/service/standup-meeting-service'
+import { useFragment } from '@/gql'
+import { meetingFragment } from '@/service/meeting-service'
+import { useAppTitle } from '@/stores/app-title'
 
 const { planningMeeting } = usePlanningMeetingService()
+const { standupMeeting } = useStandupMeetingService()
+const { setAppTitle } = useAppTitle()
+setAppTitle('Meetings')
 
-const planningActive = computed(() => isPresent(planningMeeting.value))
+const planningActive = computed(() => isPresent(planningMeeting.value) && useFragment(meetingFragment, planningMeeting.value).active)
 const retrospectiveActive = ref(false)
-const standupActive = ref(false)
+const standupActive = computed(() => isPresent(standupMeeting.value) && useFragment(meetingFragment, standupMeeting.value).active)
 
 const knownMeetings = computed(() => {
   const projectId = useAppStore().projectId.value
@@ -28,6 +35,14 @@ const knownMeetings = computed(() => {
       description: 'Estimate issues and set the sprint goal.'
     },
     {
+      type: 'Standup Meeting',
+      icon: 'mdi-account-group',
+      active: standupActive.value,
+      joinRoute: routes.project(projectId).liveStandup,
+      startRoute: routes.project(projectId).standup,
+      description: 'Discuss the progress of the sprint and any blockers.'
+    },
+    {
       type: 'Retrospective Meeting',
       icon: 'mdi-comment-check',
       active: retrospectiveActive.value,
@@ -35,14 +50,6 @@ const knownMeetings = computed(() => {
       startRoute: routes.project(projectId).retrospective,
       description: 'Discuss what went well and what could be improved in the last sprint.'
     },
-    {
-      type: 'Standup Meeting',
-      icon: 'mdi-account-group',
-      active: standupActive.value,
-      joinRoute: routes.project(projectId).liveStandup,
-      startRoute: routes.project(projectId).standup,
-      description: 'Discuss the progress of the sprint and any blockers.'
-    }
   ]
 })
 

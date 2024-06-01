@@ -45,7 +45,7 @@ async function nextPage() {
         <v-col cols="12" sm="8" md="4">
           <v-card class="mx-auto my-auto">
             <v-card-title class="justify-center">
-              ScrumZoo
+              🦖 DinoDev &centerdot; Login with Gropius
             </v-card-title>
 
             <v-card-text>

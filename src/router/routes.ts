@@ -24,7 +24,7 @@ export const routes = {
         return `${mainRoute}/issue/${issueId}`
       },
 
-      sprintStats: `${mainRoute}/sprint-stats`,
+      sprintStats: `${mainRoute}/sprint-stats`
     }
   },
 
@@ -37,6 +37,8 @@ export const routes = {
     team: 'team',
     sprintStats: 'sprint-stats',
     planningLive: 'planning-live',
+    standupLive: 'standup-live',
+    retrospectiveLive: 'retrospective-live'
   }
 
 }

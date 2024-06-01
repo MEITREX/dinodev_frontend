@@ -46,6 +46,10 @@ function colorForUser(userId: string): string {
   }
 }
 
+function copyMeetingLink() {
+  navigator.clipboard.writeText(window.location.href)
+}
+
 </script>
 
 <template>
@@ -68,7 +72,11 @@ function colorForUser(userId: string): string {
           </v-chip>
 
           <v-spacer />
-          <v-btn variant="flat" prepend-icon="mdi-link">Copy meeting link</v-btn>
+          <v-btn
+            variant="flat" prepend-icon="mdi-link"
+            @click="copyMeetingLink"
+          >
+            Copy meeting link</v-btn>
         </div>
       </v-card-item>
     </v-card>

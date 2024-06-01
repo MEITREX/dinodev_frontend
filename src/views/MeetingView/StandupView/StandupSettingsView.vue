@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import DatePicker from '@/components/DatePicker.vue'
-import { computed, ref, watch } from 'vue'
-import type { PlanningMeetingInput, StandupMeetingInput } from '@/gql/graphql'
+import { computed, ref } from 'vue'
+import type { StandupMeetingInput } from '@/gql/graphql'
 import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
 import { userInProjectService } from '@/service/user-in-project-service'
-import { useAppStore } from '@/stores/appStore'
-import { usePlanningMeetingService } from '@/service/planning-meeting-service'
+import { useAppStore } from '@/stores/app-store'
 import { useStandupMeetingService } from '@/service/standup-meeting-service'
+import { useGlobalUserService } from '@/service/global-user-service'
 
-const meetingLeaderId = ref<string | null>(null)
-const customGoldChallengeReward = ref<string | null>(null)
+const meetingLeaderId = ref<string | null>(useGlobalUserService().currentGlobalUser.value?.id ?? null)
 
 const projectId = computed(() => useAppStore().projectId.value)
 

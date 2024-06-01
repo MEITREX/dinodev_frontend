@@ -2,7 +2,7 @@ import { graphql, useFragment } from '@/gql'
 import { provideApolloClient, useLazyQuery, useMutation, useQuery } from '@vue/apollo-composable'
 import { apolloClient } from '@/setup/apollo-client'
 import { useAuth } from '@/service/use-auth'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import { computed } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
 
@@ -22,7 +22,7 @@ class EventService {
 
     await (this.eventsOfUserLazyQuery.load(null, variables) || this.eventsOfUserLazyQuery.refetch(variables))
 
-    return useFragment(eventFragment, this.eventsOfUserLazyQuery.result.value?.globalUser?.userInProject?.publicEvents) || []
+    return useFragment(eventWithChildrenFragment, this.eventsOfUserLazyQuery.result.value?.globalUser?.userInProject?.publicEvents) || []
   }
 
   public likeEvent = async (eventId: string)  => {
@@ -79,7 +79,7 @@ class EventService {
             globalUser(id: $userId) {
                 userInProject(projectId: $projectId) {
                     publicEvents(page: $page, size: $pageSize) {
-                        ...BaseEvent
+                        ...EventWithChildren
                     }
                 }
             }

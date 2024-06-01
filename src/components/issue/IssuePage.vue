@@ -35,7 +35,7 @@ const { commentOnIssue } = useIssueService()
         <div class="d-flex flex-row align-center" v-if="!loading">
           <issue-type-icon :type="issueBase?.type ?? {}" height="50" />
           <span class="text-h4">&centerdot;</span>
-            <issue-priority-icon :priority="issueBase?.priority ?? IssuePriority.Medium" size="50" />
+          <issue-priority-icon :priority="issueBase?.priority ?? IssuePriority.Medium" :size="50" />
           <span class="text-h4 mr-3">&centerdot;</span>
           <p class="text-h4">{{ issueBase?.title }}</p>
         </div>
@@ -76,9 +76,9 @@ const { commentOnIssue } = useIssueService()
         :show-comment-block="true"
         :show-issue-information="false"
         :events="useFragment(eventWithChildrenFragment, eventsReversed)"
-        :postCommentLoading="eventsLoading"
-        @like-event="eventId => { console.log('final'); likeEvent(eventId).then() }"
-        @post-comment="(comment, parentEvent) => commentOnIssue(issueBase!!.id, comment, parentEvent?.id!!)"
+        :post-comment-loading="eventsLoading"
+        @like-event="eventId => likeEvent(eventId).then()"
+        @post-comment="(comment, parentEvent) => commentOnIssue(issueBase!!.id, comment, parentEvent.id)"
       />
 
       <v-skeleton-loader type="list-item" v-else-if="showEvents" />

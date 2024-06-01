@@ -2,7 +2,7 @@ import { provideApolloClient, useMutation, useQuery } from '@vue/apollo-composab
 import { apolloClient } from '@/setup/apollo-client'
 import { graphql, useFragment } from '@/gql'
 import { useAuth } from '@/service/use-auth'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import { computed, ref } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
 import type { CreateIssueInput, DefinitionOfDoneConfirmState } from '@/gql/graphql'

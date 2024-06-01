@@ -71,7 +71,7 @@ const handleDrop = (event: DragEvent) => {
         <v-col cols="12" sm="8" md="4">
           <v-card class="mx-auto my-auto">
             <v-card-title class="justify-center">
-              ScrumZoo
+              🦖 DinoDev &centerdot; Create DinoDev Profile
             </v-card-title>
             <v-card-text>
               <v-form class="py-3" ref="form" v-model="valid">

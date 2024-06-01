@@ -114,12 +114,6 @@ const bars = [
           <h3>Activity</h3>
         </v-card-title>
         <v-card-text>
-          <event-list
-            :events="[]"
-            :show-comment-block="false"
-            :show-comment-button="false"
-            :show-issue-information="false"
-          /> <!-- TODO -->
         </v-card-text>
       </v-card>
     </v-col>

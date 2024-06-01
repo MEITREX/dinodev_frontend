@@ -56,11 +56,13 @@ async function postLoginRequest(data: string): Promise<string> {
 
       return token.value
     }
+  } catch (e) {
+    logout()
+    throw new Error('Login failed')
   } finally {
     loading.value = false
   }
-  token.value = null
-  refreshToken.value = null
+  logout()
   throw new Error('Login failed')
 }
 

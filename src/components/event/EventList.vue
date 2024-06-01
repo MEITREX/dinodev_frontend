@@ -5,7 +5,7 @@ import type { BaseEventFragment, EventWithChildrenFragment } from '@/gql/graphql
 import EventListItem from '@/components/event/EventListItem.vue'
 import { useFragment } from '@/gql'
 import { eventFragment } from '@/service/event-service'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import router from '@/router'
 import { routes } from '@/router/routes'
 
@@ -18,13 +18,15 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'post-comment', comment: string, parentEvent: BaseEventFragment | null): void
+  (e: 'post-comment', comment: string, parentEvent: BaseEventFragment): void
   (e: 'like-event', eventId: string): void
 }>()
 
 const newMessage = ref('')
 
 function postMessage() {
+  if (!eventSelectedToComment.value) return
+
   emit('post-comment', newMessage.value, eventSelectedToComment.value)
   newMessage.value = ''
 }
@@ -83,7 +85,7 @@ function openUserProfile(baseEvent: BaseEventFragment) {
         :show-comment-button="showCommentButton"
         :show-issue-information="showIssueInformation"
         @select-event-to-comment="() => selectEvent(useFragment(eventFragment, event))"
-        @like-event="event1 => { console.log('here', event1.id); emit('like-event', event1.id) }"
+        @like-event="event1 => emit('like-event', event1.id)"
       >
       </event-list-item>
     </v-timeline-item>

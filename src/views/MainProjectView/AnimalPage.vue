@@ -5,7 +5,7 @@ import { computed } from 'vue'
 import { isPresent } from '@/utils/types'
 import AnimalAvatar from '@/views/MeetingView/PlanningView/AnimalAvatar.vue'
 import router from '@/router'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import { routes } from '@/router/routes'
 
 const { currentSprint } = useSprintService()

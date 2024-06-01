@@ -4,7 +4,7 @@ import { apolloClient } from '@/setup/apollo-client'
 import { type DefaultMeetingFragment, MeetingType } from '@/gql/graphql'
 import { computed } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 
 class MeetingService {
 

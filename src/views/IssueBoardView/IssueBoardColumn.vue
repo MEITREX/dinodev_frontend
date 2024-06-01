@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { type IssueBaseFragment, IssuePriority, type IssueState, IssueStateType } from '@/gql/graphql'
+import { type IssueBaseFragment, IssuePriority, type IssueState } from '@/gql/graphql'
 import { computed, ref } from 'vue'
 import { useDropZone } from '@vueuse/core'
 import IssueCard from '@/components/issue/IssueCard.vue'
-import { useAppStore } from '@/stores/appStore'
+import { useAppStore } from '@/stores/app-store'
 import router from '@/router'
 import { routes } from '@/router/routes'
+import { getEmojisForStateType } from '@/utils/emojis'
 
 const props = defineProps<{
   state: IssueState,
@@ -55,21 +56,6 @@ function onDrop(event: DragEvent) {
 }
 
 const emoji = computed(() => getEmojisForStateType(props.state.type))
-
-function getEmojisForStateType(type: IssueStateType) {
-  switch (type) {
-    case IssueStateType.Backlog:
-      return '📥'
-    case IssueStateType.SprintBacklog:
-      return '📦'
-    case IssueStateType.InProgress:
-      return '🚀'
-    case IssueStateType.Done:
-      return '✅'
-    case IssueStateType.DoneSprint:
-      return '☑️'
-  }
-}
 
 function openIssue(issue: IssueBaseFragment) {
   const projectId = useAppStore().getProjectIdOrThrow()
