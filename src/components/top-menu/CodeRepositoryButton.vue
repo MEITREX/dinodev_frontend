@@ -12,7 +12,7 @@ const repositories = computed(() => {
     return {
       name: repo.name,
       url: repo.url,
-      icon: repo.icon.mdiIcon ?? 'mdi-github'
+      icon: repo.icon?.mdiIcon ?? 'mdi-github'
     }
   })
 })
