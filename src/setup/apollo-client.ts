@@ -44,7 +44,6 @@ function createApolloClient() {
    * This link adds the Authorization header to the request if the user is logged in.
    */
   const authLink = new ApolloLink((operation, forward) => {
-
     if (isLoggedIn()) { // add the authorization to the headers
       operation.setContext(({ headers = {} }) => {
         return ({
@@ -123,6 +122,7 @@ function createApolloClient() {
   })
 }
 
+// reset all caches and data when the user logs out
 onLogout(() => {
   apolloClient.resetStore().then()
 })

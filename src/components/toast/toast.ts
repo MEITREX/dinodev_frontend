@@ -7,7 +7,7 @@ import PlanningMeetingStartedToast from './PlanningMeetingStartedToast.vue'
 import { routes } from '@/router/routes'
 import { useStandupMeetingService } from '@/service/standup-meeting-service'
 import StandupMeetingStartedToast from '@/components/toast/StandupMeetingStartedToast.vue'
-import { eventFragment, reducedEventFragment, useEventService } from '@/service/event-service'
+import { reducedEventFragment, useEventService } from '@/service/event-service'
 import { useFragment } from '@/gql'
 import { useGlobalUserService } from '@/service/global-user-service'
 import { getDisplayUserName } from '@/utils/user-utils'
@@ -46,6 +46,9 @@ export function setupToast() {
     }
     if (event?.eventType.identifier === 'XP_GAIN') {
       toast.success(event.message)
+    }
+    if (event?.eventType.identifier === 'EVENT_REACTION') {
+      toast.success("❤️ from " + getDisplayUserName(event.user))
     }
     // add other toasts here if needed
   })
