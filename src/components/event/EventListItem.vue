@@ -172,7 +172,7 @@ function openUserProfile(userId: string | undefined) {
               size="small"
               id="btn-like"
               density="comfortable"
-              v-show="baseEvent?.user?.id !== useGlobalUserService().currentGlobalUser.value?.id"
+              :disabled="baseEvent?.user?.id === useGlobalUserService().currentGlobalUser.value?.id"
             >
             </v-btn>
           </template>
