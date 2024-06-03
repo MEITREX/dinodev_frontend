@@ -27,7 +27,7 @@ function openOlderSprints() {
       </v-btn>
       <new-sprint-dialog activator-id="#start-new-sprint" />
       <v-btn variant="elevated" block size="large" @click="openOlderSprints">
-        View older sprints
+        View sprint stats
       </v-btn>
       <v-btn variant="elevated" block size="large" @click="openBoard">
         View issue board

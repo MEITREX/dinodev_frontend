@@ -88,11 +88,11 @@ function createMeeting() {
           <v-col>
             <v-slider
               :disabled="!useCountdownPerAttendee"
-              min="30"
+              min="15"
               max="300"
               v-model="countdownSecondsSetting"
               thumb-label="always"
-              step="30" />
+              step="5" />
           </v-col>
         </v-row>
 

@@ -78,7 +78,8 @@ const { commentOnIssue } = useIssueService()
         :events="useFragment(eventWithChildrenFragment, eventsReversed)"
         :post-comment-loading="eventsLoading"
         @like-event="eventId => likeEvent(eventId).then()"
-        @post-comment="(comment, parentEvent) => commentOnIssue(issueBase!!.id, comment, parentEvent.id)"
+        :events-loading="loading"
+        @post-comment="(comment, parentEvent) => commentOnIssue(issueBase!!.id, comment, parentEvent?.id)"
       />
 
       <v-skeleton-loader type="list-item" v-else-if="showEvents" />

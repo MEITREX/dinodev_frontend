@@ -1,10 +1,11 @@
 import { graphql, useFragment } from '@/gql'
-import { provideApolloClient, useLazyQuery, useMutation, useQuery } from '@vue/apollo-composable'
+import { provideApolloClient, useLazyQuery, useMutation, useQuery, useSubscription } from '@vue/apollo-composable'
 import { apolloClient } from '@/setup/apollo-client'
 import { useAuth } from '@/service/use-auth'
 import { useAppStore } from '@/stores/app-store'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
+import { useGlobalUserService } from '@/service/global-user-service'
 
 class EventService {
 
@@ -12,13 +13,19 @@ class EventService {
     return useFragment(eventWithChildrenFragment, this.eventQuery.result.value?.project?.events) || []
   })
 
+  public eventsPageSize = ref(10)
+
   public fetchEventsOfUser = async (userId: string) => {
+    if (!userId) return []
+
     const variables = {
       userId,
       projectId: useAppStore().projectId.value,
       page: 0,
       pageSize: 10
     }
+
+    console.log('fetchEventsOfUser', variables)
 
     await (this.eventsOfUserLazyQuery.load(null, variables) || this.eventsOfUserLazyQuery.refetch(variables))
 
@@ -66,14 +73,17 @@ class EventService {
       ), () => ({
         projectId: useAppStore().projectId.value,
         page: 0,
-        pageSize: 10
+        pageSize: this.eventsPageSize.value
       }), () => ({
-        enabled: useAuth().isLoggedIn() && useAppStore().isProjectSelected()
+        enabled: useAuth().isLoggedIn() && useAppStore().isProjectSelected(),
+        refetchWritePolicy: 'overwrite',
+        pollInterval: 60_000,
+        keepPreviousResult: true
       }))
     }
   )
 
-  private eventsOfUserLazyQuery = provideApolloClient(apolloClient)(() => {
+  eventsOfUserLazyQuery = provideApolloClient(apolloClient)(() => {
     return useLazyQuery(graphql(`
         query EventsOfUser($userId: UUID!, $projectId: UUID!, $page: Int!, $pageSize: Int!) {
             globalUser(id: $userId) {
@@ -87,7 +97,7 @@ class EventService {
     ))
   })
 
-  private likeEventMutation = provideApolloClient(apolloClient)(() => {
+  likeEventMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation LikeEvent($projectId: UUID!, $eventId: UUID!) {
             mutateProject(id: $projectId) {
@@ -114,6 +124,23 @@ class EventService {
       refetchQueries: ['EventsOfProject']
     }))
   })
+
+  newEventSubscription = provideApolloClient(apolloClient)(() => {
+    return useSubscription(graphql(`
+        subscription NewEvent($projectId: UUID!, $userId: UUID!) {
+            event(projectId: $projectId, userId: $userId) {
+                ...ReducedEvent
+            }
+        }`),
+      () => ({
+        projectId: useAppStore().projectId.value,
+        userId: useGlobalUserService().currentGlobalUser.value?.id as string
+      }), () => ({
+        enabled: useAuth().isLoggedIn()
+          && useAppStore().isProjectSelected()
+          && useGlobalUserService().currentGlobalUser.value?.id
+      }))
+  })
 }
 
 const eventService = new EventService()
@@ -121,6 +148,30 @@ const eventService = new EventService()
 export function useEventService() {
   return eventService
 }
+
+export const reducedEventFragment = graphql(`
+    fragment ReducedEvent on DefaultEvent {
+        id
+        timestamp
+        user {
+            id
+            username
+            avatar
+        }
+        message
+        eventType {
+            identifier
+        }
+        eventData {
+            key
+            value
+        }
+        issueId: field(name: "issueId") { value }
+        issueTitle: field(name: "issueTitle") { value }
+        repositoryName: field(name: "repositoryName") { value }
+        repositoryUrl: field(name: "repositoryUrl") { value }
+    }`
+)
 
 export const eventFragment = graphql(`
     fragment BaseEvent on DefaultEvent {
@@ -141,9 +192,12 @@ export const eventFragment = graphql(`
         }
         issueId: field(name: "issueId") { value }
         issueTitle: field(name: "issueTitle") { value }
+        repositoryName: field(name: "repositoryName") { value }
+        repositoryUrl: field(name: "repositoryUrl") { value }
         reactions {
             userId
         }
+        xpForCurrentUser
     }`
 )
 

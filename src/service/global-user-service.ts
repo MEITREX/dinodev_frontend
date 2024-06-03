@@ -91,7 +91,8 @@ class GlobalUserService {
         }
     `), {}, () => ({
       enabled: useAuth().isLoggedIn(),
-      fetchPolicy: 'no-cache'
+      fetchPolicy: 'no-cache',
+      pollInterval: 60_000
     }))
   })
 

@@ -11,6 +11,7 @@ import IssueCard from '@/components/issue/IssueCard.vue'
 import type { IssueBaseFragment } from '@/gql/graphql'
 import { isPresent } from '@/utils/types'
 import IssueEstimationItem from '@/components/issue/IssueEstimationItem.vue'
+import CountdownDisplay from '@/components/CountdownDisplay.vue'
 
 const props = defineProps<{
   issueEstimation: DefaultPlanningMeetingFragment['issueEstimation'] | null
@@ -178,16 +179,10 @@ watchImmediate(() => props.issueEstimation?.finished, () => {
 
         <h3 class="my-3">
           Estimation
-          <span
+          <countdown-display
             class="mr-2"
-            :class="{ 'text-red' : currentCountdownSeconds <= 5 }"
             v-if="isPresent(issueEstimation?.countdownSeconds)"
-          >
-            ends in: {{ currentCountdownSeconds }}
-            <v-icon :class="{ 'jiggle-animation' : currentCountdownSeconds <= 5 }">
-              mdi-clock
-            </v-icon>
-          </span>
+            :current-countdown-seconds="currentCountdownSeconds" />
         </h3>
 
         <!-- T-Shirt sizes as cards -->
@@ -267,15 +262,4 @@ watchImmediate(() => props.issueEstimation?.finished, () => {
 </template>
 
 <style scoped>
-@keyframes jiggle {
-  0% { transform: rotate(0deg) translate(0, 0); }
-  25% { transform: rotate(-5deg) translate(2px, 0); }
-  50% { transform: rotate(5deg) translate(-2px, 0); }
-  75% { transform: rotate(-5deg) translate(2px, 0); }
-  100% { transform: rotate(0deg) translate(0, 0); }
-}
-
-.jiggle-animation {
-  animation: jiggle 0.5s infinite;
-}
 </style>

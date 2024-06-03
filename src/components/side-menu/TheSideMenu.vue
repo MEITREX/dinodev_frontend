@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import LevelUpDialog from '@/components/dialog/LevelUpDialog.vue'
 import { routes } from '@/router/routes'
 import { useAuth } from '@/service/use-auth'
 import router from '@/router'
@@ -18,17 +17,10 @@ function subRouteTo(route: string) {
   return `/project/${projectId}/${route}`
 }
 
-const xp = ref(0)
-const level = ref(0)
-const percent = computed(() => (xp.value / 8000) * 100)
+const xp = computed(() => currentUser.value?.userStats.xp ?? 0)
+const percent = computed(() => (xp.value) / ((currentUser.value?.userStats.xpToNextLevel ?? 1) + xp.value) * 100)
 
-const levelUpReady = computed(() => percent.value >= 100)
-
-const rail = ref(false)
-
-function toggleRail() {
-  rail.value = !rail.value
-}
+const rail = ref(true)
 
 function logout() {
   useAuth().logout()
@@ -41,10 +33,9 @@ function openProjects() {
 </script>
 
 <template>
-  <v-navigation-drawer permanent location="right" :rail="rail">
+  <v-navigation-drawer location="right" v-model:rail="rail">
     <v-list v-if="isPresent(currentUser)">
-      <user-avatar-list-item @click="toggleRail"
-                             :user-in-project="currentUser"/>
+      <user-avatar-list-item :user-in-project="currentUser"/>
     </v-list>
 
     <v-divider></v-divider>
@@ -56,19 +47,19 @@ function openProjects() {
         :width="rail ? 3 : 16"
         color="green"
       >
-        <level-up-dialog activator="#btn-level-up" />
-        <v-btn
-          v-show="levelUpReady"
-          color="white"
-          id="btn-level-up"
-          class="btn-levelup"
-          variant="flat">
-          Level up
-        </v-btn>
-        <div v-if="!levelUpReady">
+<!--        <level-up-dialog activator="#btn-level-up" />-->
+<!--        <v-btn-->
+<!--          v-show="levelUpReady"-->
+<!--          color="white"-->
+<!--          id="btn-level-up"-->
+<!--          class="btn-levelup"-->
+<!--          variant="flat">-->
+<!--          Level up-->
+<!--        </v-btn>-->
+        <div>
           <div class="d-flex flex-column align-center" v-if="!rail">
-            <b>Level {{ level }}</b>
-            <p class="text-sm-center">{{ xp }} XP</p>
+            <b>Level {{ currentUser?.userStats.level }}</b>
+            <p class="text-sm-center">{{ currentUser?.userStats.totalXp }} XP</p>
           </div>
           <div v-else class="sm">3</div>
         </div>
@@ -81,7 +72,9 @@ function openProjects() {
 
     <v-list density="compact" nav>
 
-      <v-list-subheader class="text-button">Project</v-list-subheader>
+      <v-list-subheader class="text-button" v-if="!rail">
+        Project
+      </v-list-subheader>
       <v-list-item prepend-icon="mdi-reiterate" :to="subRouteTo('sprint')">
           Current Sprint
       </v-list-item>
@@ -95,7 +88,9 @@ function openProjects() {
     </v-list>
     <v-divider class="my-2" />
     <v-list density="compact" nav>
-      <v-list-subheader class="text-button">Administration</v-list-subheader>
+      <v-list-subheader class="text-button" v-if="!rail">
+        Administration
+      </v-list-subheader>
       <v-list-item prepend-icon="mdi-forum" :to="subRouteTo('meeting')"> Meetings</v-list-item>
       <v-list-item prepend-icon="mdi-chart-bar" :to="subRouteTo('sprint-stats')"> Stats</v-list-item>
 
@@ -108,6 +103,16 @@ function openProjects() {
       <!-- Logout -->
       <v-list-item prepend-icon="mdi-logout" @click="logout"
       > Logout
+      </v-list-item>
+    </v-list>
+
+    <v-divider  class="my-2" />
+
+    <!-- button that closes the side menu -->
+    <v-list density="compact" nav>
+      <v-list-item :prepend-icon="rail ? 'mdi-chevron-left' : 'mdi-chevron-right'"
+                   @click="rail = !rail"
+      > Collapse
       </v-list-item>
     </v-list>
   </v-navigation-drawer>

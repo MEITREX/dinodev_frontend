@@ -6,6 +6,7 @@ import { useAuth } from '@/service/use-auth'
 import { computed, type ComputedRef } from 'vue'
 import type { UserInProjectFragment } from '@/gql/graphql'
 import { useAppStore } from '@/stores/app-store'
+import { useErrorManager } from '@/utils/error-manager'
 
 class UserInProjectService {
 
@@ -19,7 +20,7 @@ class UserInProjectService {
       this.allUsersInProjectQuery.result.value?.project?.users) || []
   })
 
-  public async joinProject(projectId: string) {
+  public joinProject = async (projectId: string) => {
     const result = await this.joinProjectMutation.mutate({ projectId })
     return useFragment(this.UserInProjectFragment, result?.data?.joinProject)
   }
@@ -30,8 +31,9 @@ class UserInProjectService {
     || this.joinProjectMutation.loading.value)
 
   constructor() {
-    // Bind methods to this instance
-    this.joinProject = this.joinProject.bind(this)
+    this.joinProjectMutation.onError(useErrorManager().catchError)
+    this.userInProjectQuery.onError(useErrorManager().catchError)
+    this.allUsersInProjectQuery.onError(useErrorManager().catchError)
   }
 
   private UserInProjectFragment = graphql(`
@@ -45,6 +47,12 @@ class UserInProjectService {
               gamifiedName
               name
               projectPrivileges
+          }
+          userStats {
+              xp
+              level
+              xpToNextLevel
+              totalXp
           }
       }`)
 

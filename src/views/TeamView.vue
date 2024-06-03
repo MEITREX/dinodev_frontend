@@ -57,31 +57,31 @@ function getMembersByCategory(category: string) {
 </script>
 
 <template>
+<p>TODO</p>
+<!--  <h3 class="mb-2 text-h5"> {{ teamName }} </h3>-->
 
-  <h3 class="mb-2 text-h5"> {{ teamName }} </h3>
+<!--  <div v-for="category in ['dev', 'manager', 'other']" :key="category" class="my-3">-->
+<!--    <h2 class="mb-3 text-h6"> {{ getCategoryName(category) }} </h2>-->
 
-  <div v-for="category in ['dev', 'manager', 'other']" :key="category" class="my-3">
-    <h2 class="mb-3 text-h6"> {{ getCategoryName(category) }} </h2>
+<!--    <v-row>-->
+<!--      <v-col v-for="member in getMembersByCategory(category)" :key="member.name" cols="6" md="3">-->
+<!--        <v-card outlined @click="openProfile(member)">-->
+<!--          <v-card-title>-->
+<!--            <v-avatar>-->
+<!--              <v-img :src="member.avatar" />-->
+<!--            </v-avatar>-->
+<!--          </v-card-title>-->
+<!--          <v-card-text>-->
+<!--            <h3> {{ member.name }} </h3>-->
+<!--            <p class="text-caption">-->
 
-    <v-row>
-      <v-col v-for="member in getMembersByCategory(category)" :key="member.name" cols="6" md="3">
-        <v-card outlined @click="openProfile(member)">
-          <v-card-title>
-            <v-avatar>
-              <v-img :src="member.avatar" />
-            </v-avatar>
-          </v-card-title>
-          <v-card-text>
-            <h3> {{ member.name }} </h3>
-            <p class="text-caption">
-
-              {{member.role}}
-            </p>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </div>
+<!--              {{member.role}}-->
+<!--            </p>-->
+<!--          </v-card-text>-->
+<!--        </v-card>-->
+<!--      </v-col>-->
+<!--    </v-row>-->
+<!--  </div>-->
 </template>
 
 <style scoped>

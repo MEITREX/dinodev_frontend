@@ -1,10 +1,4 @@
-import {
-  ApolloClient,
-  ApolloLink,
-  createHttpLink,
-  InMemoryCache,
-  split
-} from '@apollo/client/core'
+import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache, split } from '@apollo/client/core'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
 import { getMainDefinition } from '@apollo/client/utilities'
@@ -16,11 +10,14 @@ import { Observable } from '@apollo/client'
 const httpUrl = import.meta.env.VITE_APP_BACKEND_URL ?? `/api/graphql`
 let wsUrl = import.meta.env.VITE_APP_BACKEND_WS_URL ?? `/api/graphql-ws`
 
-// Determine the WebSocket protocol
-const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+// check if ws url is relative
+if (!wsUrl.startsWith('ws')) {
+  // Determine the WebSocket protocol
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
 
-// Construct the full WebSocket URL
-wsUrl = `${wsProtocol}//${window.location.host}${wsUrl}`
+  // Construct the full WebSocket URL
+  wsUrl = `${wsProtocol}//${window.location.host}${wsUrl}`
+}
 
 const { isLoggedIn, token, onLogout, refreshLogin } = useAuth()
 
@@ -34,12 +31,12 @@ function createApolloClient() {
 
   const wsLink = new GraphQLWsLink(
     createClient({
-      url: wsUrl,
+      url: wsUrl
     })
   )
 
   const httpLink = createHttpLink({
-    uri: httpUrl,
+    uri: httpUrl
   })
 
   /**
@@ -69,27 +66,27 @@ function createApolloClient() {
    */
   const errorLink = onError(({ networkError, operation, forward }) => {
     if (networkError) {
-      console.warn('Network error', networkError);
+      console.warn('Network error', networkError)
       return new Observable(observer => {
         refreshLogin().then(() => {
-          const headers = operation.getContext().headers;
+          const headers = operation.getContext().headers
           operation.setContext({
             headers: {
               ...headers,
-              Authorization: `Bearer ${token.value}`,
-            },
-          });
+              Authorization: `Bearer ${token.value}`
+            }
+          })
           // Retry the request with the new token
           const subscriber = {
             next: observer.next.bind(observer),
             error: observer.error.bind(observer),
-            complete: observer.complete.bind(observer),
-          };
-          forward(operation).subscribe(subscriber);
+            complete: observer.complete.bind(observer)
+          }
+          forward(operation).subscribe(subscriber)
         }).catch(error => {
-          observer.error(error);
-        });
-      });
+          observer.error(error)
+        })
+      })
     }
   })
 
@@ -121,7 +118,7 @@ function createApolloClient() {
       },
       mutate: {
         errorPolicy: 'all'
-      },
+      }
     }
   })
 }

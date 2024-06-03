@@ -9,6 +9,8 @@ import { routes } from '@/router/routes'
 import { useAppStore } from '@/stores/app-store'
 import { useFragment } from '@/gql'
 import { eventFragment } from '@/service/event-service'
+import { abbreviate } from '@/utils/string-utils'
+import { getDisplayUserName } from '@/utils/user-utils'
 
 const props = defineProps<{
   event: EventWithChildrenFragment | null
@@ -44,7 +46,7 @@ const hasLiked = computed(() => {
 })
 
 const xp = computed(() => {
-  return undefined // TODO
+  return baseEvent.value?.xpForCurrentUser
 })
 
 const type = computed(() => {
@@ -57,23 +59,18 @@ const shouldShowInteractionButtons = computed(() => {
   return true
 })
 
-const userName = computed(() => {
-  if (baseEvent.value?.user?.id
-    && baseEvent.value?.user?.id === useGlobalUserService().currentGlobalUser.value?.id) {
-    return 'You'
-  }
-  return baseEvent.value?.user?.username ?? 'An unknown user'
-})
+const userName = computed(() => getDisplayUserName(baseEvent.value?.user))
 
 const issueTitle = computed(() => {
   const title = baseEvent.value?.issueTitle?.value ?? null
   // limit to 40 characters
-  return title === null || title.length <= 40
-    ? title
-    : title.substring(0, 40) + '...'
+  return abbreviate(title, 40)
 })
 
 const issueId = computed(() => baseEvent.value?.issueId?.value ?? null)
+
+const repositoryName = computed(() => baseEvent.value?.repositoryName?.value ?? null)
+const repositoryUrl = computed(() => baseEvent.value?.repositoryUrl?.value ?? null)
 
 function openIssue() {
   const { projectId } = useAppStore()
@@ -94,37 +91,52 @@ function openUserProfile(userId: string | undefined) {
   <div>
     <div class="d-flex flex-row ">
       <p class="text-grey text-caption">
+
         <strong>
           <a @click="() => openUserProfile(baseEvent?.user?.id)" class="cursor-pointer hover-underline">
             {{ userName }}
           </a>
         </strong> &centerdot; {{ timeAgo }}
+
         <span v-if="showIssueInformation && issueTitle">
-            &centerdot; on issue
-            <strong>
-              <a @click="() => openIssue()" class="cursor-pointer hover-underline">
-                {{ issueTitle }}
-              </a>
-            </strong>
-          </span>
+          &centerdot; on issue
+          <strong>
+            <a @click="() => openIssue()" class="cursor-pointer hover-underline">
+              {{ issueTitle }}
+            </a>
+          </strong>
+        </span>
+
+        <span v-if="repositoryName && repositoryUrl">
+          &centerdot; in
+          <strong>
+            <a :href="repositoryUrl" target="_blank" class="cursor-pointer hover-underline">
+              {{ repositoryName }}
+            </a>
+          </strong>
+        </span>
+
+        <span v-if="xp">
+          &centerdot; + {{ xp }} XP
+        </span>
       </p>
     </div>
 
     <div class="d-flex flex-row w-100">
       <div v-if="type == 'PLAYER_MESSAGE' || type == 'COMMENT_ON_ISSUE'" class=" w-100 mr-10">
         <markdown-text-card :markdown-text="baseEvent?.message ?? ''" class="mr-3 w-100 "></markdown-text-card>
-          <v-btn
-            v-if="showCommentButton"
-            prepend-icon="mdi-comment"
-            variant="text"
-            class="text-grey-darken-1"
-            size="small"
-            id="btn-comment"
-            density="comfortable"
-            @click="() => emit('select-event-to-comment', baseEvent!!)"
-          >
-            Respond
-          </v-btn>
+        <v-btn
+          v-if="showCommentButton"
+          prepend-icon="mdi-comment"
+          variant="text"
+          class="text-grey-darken-1"
+          size="small"
+          id="btn-comment"
+          density="comfortable"
+          @click="() => emit('select-event-to-comment', baseEvent!!)"
+        >
+          Respond
+        </v-btn>
       </div>
 
       <p v-else-if="type == 'ISSUE_COMPLETED'">
@@ -142,9 +154,7 @@ function openUserProfile(userId: string | undefined) {
       </p>
 
       <v-spacer />
-      <p v-if="xp !== undefined" class="text-grey text-lg-caption">
-        +{{ xp }} XP
-      </p>
+
       <div v-if="shouldShowInteractionButtons" class="d-flex flex-row align-center">
 
         <div v-if="likes > 0" class="text-caption">
@@ -162,6 +172,7 @@ function openUserProfile(userId: string | undefined) {
               size="small"
               id="btn-like"
               density="comfortable"
+              v-show="baseEvent?.user?.id !== useGlobalUserService().currentGlobalUser.value?.id"
             >
             </v-btn>
           </template>
@@ -193,7 +204,9 @@ function openUserProfile(userId: string | undefined) {
             :image="childEvent.user?.avatar ?? ''"
             @click="() => openUserProfile(childEvent.user?.id)">
           </v-avatar>
-          <event-list-item class="w-100"
+
+          <event-list-item
+            class="w-100"
             :event-without-children="childEvent"
             :event="null"
             :show-comment-button="false"

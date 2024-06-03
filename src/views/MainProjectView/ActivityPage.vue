@@ -5,7 +5,7 @@ import { computed } from 'vue'
 import { useIssueService } from '@/service/issue-service'
 import type { BaseEventFragment } from '@/gql/graphql'
 
-const { events, eventQuery, likeEvent, addUserComment } = useEventService()
+const { events, eventQuery, likeEvent, addUserComment, eventsPageSize } = useEventService()
 
 const { commentOnIssue, loading: issueLoading } = useIssueService()
 
@@ -22,13 +22,17 @@ function postComment(event: BaseEventFragment | null, comment: string) {
     addUserComment(comment, event.id)
   }
 }
+
+function loadMore() {
+  eventsPageSize.value += 10
+}
 </script>
 
 <template>
   <v-container>
 
     <h3>Activity</h3>
-    <event-list v-if="!loading"
+    <event-list :events-loading="loading"
                 :events="events"
                 :show-comment-block="true"
                 :show-comment-button="true"
@@ -36,12 +40,12 @@ function postComment(event: BaseEventFragment | null, comment: string) {
                 :post-comment-loading="issueLoading"
                 @like-event="eventId => likeEvent(eventId).then()"
                 @post-comment="(comment, parentEvent) => postComment(parentEvent, comment)"
+    >
+      <v-btn @click="loadMore">
+        Load more
+      </v-btn>
+    </event-list>
 
-    />
-
-    <div v-else>
-      <v-skeleton-loader type="list-item-avatar"  v-for="n in 12" :key="n" />
-    </div>
   </v-container>
 
 </template>

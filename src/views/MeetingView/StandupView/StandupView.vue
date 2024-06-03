@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import SprintStats from '@/components/SprintStats.vue'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import MeetingView from '@/views/MeetingView/MeetingView.vue'
 import { MeetingRole, MeetingType, type ProjectBoardFragment } from '@/gql/graphql'
 import { useStandupMeetingService } from '@/service/standup-meeting-service'
@@ -11,17 +11,19 @@ import { useGlobalUserService } from '@/service/global-user-service'
 import { useIssueService } from '@/service/issue-service'
 import IssueCard from '@/components/issue/IssueCard.vue'
 import { useEventService } from '@/service/event-service'
-import { computedAsync } from '@vueuse/core'
+import { computedAsync, watchImmediate } from '@vueuse/core'
 import EventList from '@/components/event/EventList.vue'
 import { useAppTitle } from '@/stores/app-title'
 import { getEmojisForStateType } from '@/utils/emojis'
 import router from '@/router'
 import { routes } from '@/router/routes'
 import { useAppStore } from '@/stores/app-store'
+import CountdownDisplay from '@/components/CountdownDisplay.vue'
+import { isPresent } from '@/utils/types'
 
 const { standupMeeting, startStandupMeeting, changeCurrentAttendee, finishMeeting } = useStandupMeetingService()
 const { issueBoard } = useIssueService()
-const { fetchEventsOfUser } = useEventService()
+const { fetchEventsOfUser, eventsOfUserLazyQuery } = useEventService()
 const { setAppTitle } = useAppTitle()
 
 onMounted(() => {
@@ -47,6 +49,25 @@ const selected = computed(() => {
 
 const currentAttendee = computed(() => {
   return standupMeeting.value?.currentAttendee
+})
+
+const countdownSetting = computed(() => standupMeeting.value?.standupMeetingSettings.countdownPerAttendee)
+const currentCountdownSeconds = ref(countdownSetting.value ?? 0)
+const countdownActive = ref(false)
+
+watch(() => currentAttendee.value, () => {
+  currentCountdownSeconds.value = countdownSetting.value ?? 0
+
+  if (currentCountdownSeconds.value > 0 && !countdownActive.value) {
+    countdownActive.value = true
+    const interval = setInterval(() => {
+      currentCountdownSeconds.value--
+      if (currentCountdownSeconds.value <= 0) {
+        clearInterval(interval)
+        countdownActive.value = false
+      }
+    }, 1000)
+  }
 })
 
 function getIssuesOfCurrentAttendee(state: ProjectBoardFragment['states'][0]) {
@@ -116,6 +137,10 @@ function youAreNext() {
             <div class="d-flex flex-row align-end">
               <v-avatar :image="currentAttendee?.user.avatar ?? undefined" size="40" class="mr-5" />
               <p class="text-sm-h4"> {{ currentAttendee?.user.username }}</p>
+              <countdown-display
+                class="ml-5 text-sm-h5"
+                v-if="isPresent(countdownSetting)"
+                :current-countdown-seconds="currentCountdownSeconds" />
             </div>
 
             <div class="d-flex flex-row ga-2">
@@ -148,11 +173,14 @@ function youAreNext() {
                   Recent activity
                 </h2>
                 <event-list
+                  :events-loading="eventsOfUserLazyQuery.loading.value ?? false"
                   :post-comment-loading="false"
                   :show-issue-information="true"
                   :show-comment-button="false"
                   :show-comment-block="false"
-                  :events="eventsOfUser"></event-list>
+                  :events="eventsOfUser">
+
+                </event-list>
               </v-card>
             </v-col>
             <v-col class="pa-1">
