@@ -8,6 +8,7 @@ import LoadingOverlay from '@/components/LoadingOverlay.vue'
 import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
+import { useAppTitle } from '@/stores/app-title'
 
 const props = defineProps<{
   projectId: string
@@ -15,11 +16,13 @@ const props = defineProps<{
 
 useAppStore().projectId.value = props.projectId
 
-const { loading, projectMainQueryResult } = useProjectService()
+const { loading, projectMainQueryResult, project } = useProjectService()
 
 projectMainQueryResult.onResult((result) => {
   if (!isPresent(result?.data?.project)) {
     router.push(routes.projects)
+  } else {
+    useAppTitle().setAppTitle(project.value?.name ?? 'Project')
   }
 })
 
