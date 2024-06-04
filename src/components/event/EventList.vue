@@ -59,10 +59,6 @@ function openUserProfile(baseEvent: BaseEventFragment) {
 
   <div>
 
-    <div v-if="eventsLoading">
-      <v-progress-linear indeterminate class="my-5"  />
-    </div>
-
     <v-timeline
       align="start"
       side="end"
@@ -96,22 +92,33 @@ function openUserProfile(baseEvent: BaseEventFragment) {
         </event-list-item>
       </v-timeline-item>
 
-      <v-timeline-item hide-dot>
+      <!-- provide a slot to add custom elements as last item -->
+      <v-timeline-item hide-dot v-if="!eventsLoading">
         <slot></slot>
       </v-timeline-item>
     </v-timeline>
 
     <v-card class="pa-3 d-flex flex-row align-center ga-3" v-if="eventSelectedToComment">
-      <v-btn @click="eventSelectedToComment = null" icon="mdi-close" density="compact" variant="text" />
+
+      <v-btn
+        @click="eventSelectedToComment = null"
+        icon="mdi-close"
+        density="compact"
+        variant="text" />
+
       Commenting on: <strong>{{ abbreviate(eventSelectedToComment.message, 40) }}</strong>
     </v-card>
-    <v-textarea v-if="showCommentBlock" label="Add comment..." v-model="newMessage"
-                class="mb-0"
+
+    <v-textarea
+      v-if="showCommentBlock && !eventsLoading"
+      label="Add comment..."
+      v-model="newMessage"
+      class="mb-0"
     ></v-textarea>
 
     <div class="d-flex flex-row justify-end">
       <v-btn
-        v-if="showCommentBlock"
+        v-if="showCommentBlock && !eventsLoading"
         @click="postMessage"
         :loading="postCommentLoading"
       >

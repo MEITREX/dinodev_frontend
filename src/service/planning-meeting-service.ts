@@ -384,7 +384,9 @@ class PlanningMeetingService {
                 }
             }
         }`
-    ))
+    ), () => ({
+      refetchQueries: ['BoardQuery']
+    }))
   })
 
   private addSprintIssueMutation = provideApolloClient(apolloClient)(() => {

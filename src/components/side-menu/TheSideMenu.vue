@@ -75,7 +75,7 @@ function openProjects() {
       <v-list-subheader class="text-button" v-if="!rail">
         Project
       </v-list-subheader>
-      <v-list-item prepend-icon="mdi-reiterate" :to="subRouteTo('sprint')">
+      <v-list-item prepend-icon="mdi-reiterate" :to="subRouteTo('sprint')" :active="false">
           Current Sprint
       </v-list-item>
       <v-list-item prepend-icon="mdi-view-dashboard" :to="subRouteTo('board')"> Issue Board</v-list-item>

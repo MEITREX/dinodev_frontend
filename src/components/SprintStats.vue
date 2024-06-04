@@ -34,7 +34,7 @@ const progressbarColor = computed(() => {
 </script>
 
 <template>
-  <div class="w-100">
+  <div>
 
     <div class="d-flex flex-row justify-space-between">
       <p class="mt-2 text-caption">Sprint progress</p>

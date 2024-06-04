@@ -2,7 +2,6 @@
 import { useIssueService } from '@/service/issue-service'
 import { type DefinitionOfDoneConfirmState, type Exact, type IssueState, IssueStateType } from '@/gql/graphql'
 import IssueBoardColumn from '@/views/IssueBoardView/IssueBoardColumn.vue'
-import LoadingOverlay from '@/components/LoadingOverlay.vue'
 import ConfirmMoveIssueOutOfSprintDialog from '@/components/dialog/board/ConfirmMoveIssueOutOfSprintDialog.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import ConfirmMoveIssueIntoSprintDialog from '@/components/dialog/board/ConfirmMoveIssueIntoSprintDialog.vue'
@@ -21,8 +20,10 @@ import { useMagicKeys } from '@vueuse/core'
 import { useAppTitle } from '@/stores/app-title'
 import NewIssueDialog from '@/components/dialog/issue/NewIssueDialog.vue'
 import { useNewIssueDialog } from '@/components/dialog/issue/new-issue-dialog-controller'
+import { useGlobalLoading } from '@/utils/use-global-loading'
 
 const { issueBoard, loading, changeState, finishIssue, assignIssue } = useIssueService()
+useGlobalLoading().watchLoading(loading)
 const { openNewIssueDialog } = useNewIssueDialog()
 
 useAppTitle().setAppTitle('Issue Board')
@@ -185,8 +186,6 @@ onMounted(() => {
       </div>
     </div>
     <div class="d-flex flex-row overflow-x-auto h-100" ref="scrollContainer">
-      <loading-overlay :loading="loading" />
-
       <div v-for="boardState in issueBoard?.states"
            :key="boardState.state.name"
            class="flex-grow-1">

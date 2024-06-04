@@ -4,12 +4,14 @@ import { useEventService } from '@/service/event-service'
 import { computed } from 'vue'
 import { useIssueService } from '@/service/issue-service'
 import type { BaseEventFragment } from '@/gql/graphql'
+import { useGlobalLoading } from '@/utils/use-global-loading'
 
 const { events, eventQuery, likeEvent, addUserComment, eventsPageSize } = useEventService()
 
 const { commentOnIssue, loading: issueLoading } = useIssueService()
 
 const loading = computed(() => eventQuery.loading.value)
+useGlobalLoading().watchLoading(loading)
 
 function postComment(event: BaseEventFragment | null, comment: string) {
   if (!event) {

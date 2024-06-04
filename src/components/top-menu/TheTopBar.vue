@@ -43,6 +43,7 @@ const { project } = useProjectService()
 
       <ims-button v-if="project?.projectSettings.imsSettings" :imsSettings="project.projectSettings.imsSettings" />
     </template>
+
   </v-toolbar>
   <div>
   </div>
