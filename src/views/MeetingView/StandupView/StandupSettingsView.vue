@@ -4,7 +4,7 @@ import type { StandupMeetingInput } from '@/gql/graphql'
 import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
-import { userInProjectService } from '@/service/user-in-project-service'
+import { useUserInProjectService } from '@/service/user-in-project-service'
 import { useAppStore } from '@/stores/app-store'
 import { useStandupMeetingService } from '@/service/standup-meeting-service'
 import { useGlobalUserService } from '@/service/global-user-service'
@@ -13,7 +13,7 @@ const meetingLeaderId = ref<string | null>(useGlobalUserService().currentGlobalU
 
 const projectId = computed(() => useAppStore().projectId.value)
 
-const users = computed(() => userInProjectService().allUsers.value?.map(user => {
+const users = computed(() => useUserInProjectService().allUsers.value?.map(user => {
   return {
     title: user.user?.username ?? 'Unknown user',
     value: user.user.id

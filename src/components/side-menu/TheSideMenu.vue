@@ -6,10 +6,10 @@ import router from '@/router'
 import UserAvatarListItem from '@/components/side-menu/UserAvatarListItem.vue'
 import { isPresent } from '@/utils/types'
 import { useRoute } from 'vue-router'
-import { userInProjectService } from '@/service/user-in-project-service'
+import { useUserInProjectService } from '@/service/user-in-project-service'
 import { useAppStore } from '@/stores/app-store'
 
-const { currentUser } = userInProjectService()
+const { currentUser, userStats } = useUserInProjectService()
 
 const projectId = useRoute().params.projectId
 
@@ -17,16 +17,17 @@ function subRouteTo(route: string) {
   return `/project/${projectId}/${route}`
 }
 
-const xp = computed(() => currentUser.value?.userStats.xp ?? 0)
-const percent = computed(() => (xp.value) / ((currentUser.value?.userStats.xpToNextLevel ?? 1) + xp.value) * 100)
+const xp = computed(() => userStats.value?.xp ?? 0)
+const percent = computed(() => (xp.value) / ((userStats.value?.xpToNextLevel ?? 1) + xp.value) * 100)
 
-const rail = ref(true)
+const rail = ref(false)
 
 function logout() {
   useAuth().logout()
 }
 
 function openProjects() {
+  // reset project id that is stored in local storage
   useAppStore().projectId.value = null
   router.push(routes.projects)
 }
@@ -59,12 +60,11 @@ function openProjects() {
         <div>
           <div class="d-flex flex-column align-center" v-if="!rail">
             <b>Level {{ currentUser?.userStats.level }}</b>
-            <p class="text-sm-center">{{ currentUser?.userStats.totalXp }} XP</p>
+            <p class="text-sm-center">{{ userStats?.totalXp }} XP</p>
           </div>
-          <div v-else class="sm">3</div>
+          <div v-else class="sm"> {{ userStats?.level }} </div>
         </div>
       </v-progress-circular>
-
 
     </div>
 

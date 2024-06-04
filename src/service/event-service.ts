@@ -6,6 +6,7 @@ import { useAppStore } from '@/stores/app-store'
 import { computed, ref } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
 import { useGlobalUserService } from '@/service/global-user-service'
+import { useUserInProjectService } from '@/service/user-in-project-service'
 
 class EventService {
 
@@ -25,11 +26,12 @@ class EventService {
       pageSize: 10
     }
 
-    console.log('fetchEventsOfUser', variables)
+    // load = first fetch, refetch = subsequent fetches
+    await (this.eventsOfUserLazyQuery.load(null, variables)
+      || this.eventsOfUserLazyQuery.refetch(variables))
 
-    await (this.eventsOfUserLazyQuery.load(null, variables) || this.eventsOfUserLazyQuery.refetch(variables))
-
-    return useFragment(eventWithChildrenFragment, this.eventsOfUserLazyQuery.result.value?.globalUser?.userInProject?.publicEvents) || []
+    return useFragment(eventWithChildrenFragment,
+      this.eventsOfUserLazyQuery.result.value?.globalUser?.userInProject?.publicEvents) || []
   }
 
   public likeEvent = async (eventId: string)  => {
@@ -59,12 +61,19 @@ class EventService {
     this.eventsOfUserLazyQuery.onError(useErrorManager().catchError)
     this.likeEventMutation.onError(useErrorManager().catchError)
     this.addUserCommentMutation.onError(useErrorManager().catchError)
+
+    // load new events and update stats when subscription triggers
+    this.newEventSubscription.onResult(() => {
+      this.eventQuery.refetch()
+      useUserInProjectService().userStatsQuery.refetch()
+    })
   }
 
   eventQuery = provideApolloClient(apolloClient)(() => {
       return useQuery(graphql(`
           query EventsOfProject($projectId: UUID!, $page: Int!, $pageSize: Int!) {
               project(id: $projectId) {
+                  id
                   events(page: $page, size: $pageSize) {
                       ...EventWithChildren
                   }
@@ -77,7 +86,6 @@ class EventService {
       }), () => ({
         enabled: useAuth().isLoggedIn() && useAppStore().isProjectSelected(),
         refetchWritePolicy: 'overwrite',
-        pollInterval: 60_000,
         keepPreviousResult: true
       }))
     }

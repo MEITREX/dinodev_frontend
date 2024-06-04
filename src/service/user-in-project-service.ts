@@ -11,22 +11,28 @@ import { useErrorManager } from '@/utils/error-manager'
 class UserInProjectService {
 
   public currentUser: ComputedRef<Nullable<UserInProjectFragment>> = computed(() => {
-    return useFragment(this.UserInProjectFragment,
+    return useFragment(this.userInProjectFragment,
       this.userInProjectQuery.result.value?.project?.currentUser) || null
   })
 
+  public userStats = computed(() => {
+    return useFragment(this.userStatsFragment,
+      this.userStatsQuery.result.value?.project?.currentUser?.userStats) || null
+  })
+
   public allUsers: ComputedRef<readonly UserInProjectFragment[]> = computed(() => {
-    return useFragment(this.UserInProjectFragment,
+    return useFragment(this.userInProjectFragment,
       this.allUsersInProjectQuery.result.value?.project?.users) || []
   })
 
   public joinProject = async (projectId: string) => {
     const result = await this.joinProjectMutation.mutate({ projectId })
-    return useFragment(this.UserInProjectFragment, result?.data?.joinProject)
+    return useFragment(this.userInProjectFragment, result?.data?.joinProject)
   }
 
   public loading = computed(() =>
     this.userInProjectQuery.loading.value
+    || this.userStatsQuery.loading.value
     || this.allUsersInProjectQuery.loading.value
     || this.joinProjectMutation.loading.value)
 
@@ -34,9 +40,33 @@ class UserInProjectService {
     this.joinProjectMutation.onError(useErrorManager().catchError)
     this.userInProjectQuery.onError(useErrorManager().catchError)
     this.allUsersInProjectQuery.onError(useErrorManager().catchError)
+    this.userStatsQuery.onError(useErrorManager().catchError)
   }
 
-  private UserInProjectFragment = graphql(`
+  userStatsFragment = graphql(`
+      fragment UserStats on UserStats {
+          xp
+          level
+          xpToNextLevel
+          totalXp
+
+          bronzeMedals
+          silverMedals
+          goldMedals
+
+          virtualCurrency
+
+          commentsWritten
+          issuesCompleted
+          issuesCreated
+          pullRequestsClosed
+          pullRequestsCreated
+          pullRequestsReviewed
+          reactionsGiven
+      }`
+  )
+
+  userInProjectFragment = graphql(`
       fragment UserInProject on UserInProject {
           user {
               id
@@ -49,17 +79,15 @@ class UserInProjectService {
               projectPrivileges
           }
           userStats {
-              xp
               level
-              xpToNextLevel
-              totalXp
           }
       }`)
 
-  private userInProjectQuery = provideApolloClient(apolloClient)(() => {
+  userInProjectQuery = provideApolloClient(apolloClient)(() => {
     return useQuery(graphql(`
                 query UserInProjectQuery($projectId: UUID!) {
                     project(id: $projectId) {
+                        id
                         currentUser {
                             ... UserInProject
                         }
@@ -74,10 +102,32 @@ class UserInProjectService {
       }))
   })
 
-  private allUsersInProjectQuery = provideApolloClient(apolloClient)(() => {
+  userStatsQuery = provideApolloClient(apolloClient)(() => {
+    return useQuery(graphql(`
+                query UserStatsQuery($projectId: UUID!) {
+                    project(id: $projectId) {
+                        id
+                        currentUser {
+                            userStats {
+                                ... UserStats
+                            }
+                        }
+                    }
+                }
+      `), () => ({
+        projectId: useAppStore().projectId.value
+      }),
+      () => ({
+        enabled: isEnabled(),
+        fetchPolicy: 'no-cache'
+      }))
+  })
+
+  allUsersInProjectQuery = provideApolloClient(apolloClient)(() => {
     return useQuery(graphql(`
                 query AllUsersInProjectQuery($projectId: UUID!) {
                     project(id: $projectId) {
+                        id
                         users {
                             ... UserInProject
                         }
@@ -92,7 +142,7 @@ class UserInProjectService {
       }))
   })
 
-  private joinProjectMutation = provideApolloClient(apolloClient)(() => {
+  joinProjectMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation JoinProject($projectId: UUID!) {
             joinProject(projectId: $projectId) {
@@ -111,6 +161,6 @@ function isEnabled() {
 
 const userInProjectServiceInstance = new UserInProjectService()
 
-export function userInProjectService() {
+export function useUserInProjectService() {
   return userInProjectServiceInstance
 }

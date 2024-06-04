@@ -38,6 +38,7 @@ class SprintService {
   private currentSprintQuery = provideApolloClient(apolloClient)(() => useQuery(graphql(`
       query Sprint($projectId: UUID!) {
           project(id: $projectId) {
+              id
               currentSprint {
                   ...DefaultSprint
               }
@@ -53,6 +54,7 @@ class SprintService {
   private previousSprintQuery = provideApolloClient(apolloClient)(() => useQuery(graphql(`
       query PreviousSprint($projectId: UUID!) {
           project(id: $projectId) {
+              id
               previousSprint {
                   ...DefaultSprint
               }
@@ -68,6 +70,7 @@ class SprintService {
   allSprintsQuery = provideApolloClient(apolloClient)(() => useQuery(graphql(`
       query Sprints($projectId: UUID!) {
           project(id: $projectId) {
+              id
               sprints {
                   ...DefaultSprint
               }

@@ -5,7 +5,7 @@ import type { PlanningMeetingInput } from '@/gql/graphql'
 import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
-import { userInProjectService } from '@/service/user-in-project-service'
+import { useUserInProjectService } from '@/service/user-in-project-service'
 import { useAppStore } from '@/stores/app-store'
 import { usePlanningMeetingService } from '@/service/planning-meeting-service'
 
@@ -16,7 +16,7 @@ const customGoldChallengeReward = ref<string | null>(null)
 
 const projectId = computed(() => useAppStore().projectId.value)
 
-const users = computed(() => userInProjectService().allUsers.value?.map(user => {
+const users = computed(() => useUserInProjectService().allUsers.value?.map(user => {
   return {
     title: user.user?.username ?? 'Unknown user',
     value: user.user.id

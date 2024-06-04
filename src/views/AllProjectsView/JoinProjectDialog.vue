@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ProjectBaseFragment } from '@/gql/graphql'
-import { userInProjectService } from '@/service/user-in-project-service'
+import { useUserInProjectService } from '@/service/user-in-project-service'
 
 const props = defineProps<{
   activator: string,
@@ -10,7 +10,7 @@ const emit = defineEmits<{
   (e: 'joined-project'): void
 }>()
 
-const { loading, joinProject: runJoinMutation } = userInProjectService()
+const { loading, joinProject: runJoinMutation } = useUserInProjectService()
 
 function joinProject() {
   runJoinMutation(props.project.id).then(() => {

@@ -2,7 +2,7 @@
 import { onBeforeRouteLeave } from 'vue-router'
 import { computed, onMounted } from 'vue'
 import { type DefaultMeetingFragment, MeetingType, UserState } from '@/gql/graphql'
-import { userInProjectService } from '@/service/user-in-project-service'
+import { useUserInProjectService } from '@/service/user-in-project-service'
 import { useMeetingService } from '@/service/meeting-service'
 
 const props = defineProps<{
@@ -10,7 +10,7 @@ const props = defineProps<{
   meetingType: MeetingType
 }>()
 
-const { allUsers: usersInProject } = userInProjectService()
+const { allUsers: usersInProject } = useUserInProjectService()
 
 const meetingAttendees = computed(() => {
   return props.meeting?.attendees ?? []

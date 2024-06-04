@@ -39,39 +39,29 @@ class GlobalUserService {
       || this.updateGlobalUserMutation.loading.value
       || this.registerUserMutation.loading.value)
 
-  public async registerUser(input: CreateGlobalUserInput) {
+  public registerUser = async (input: CreateGlobalUserInput) => {
     const result = await this.registerUserMutation.mutate({ input })
     return useFragment(this.baseUserFragment, result?.data?.register)
   }
 
-  public async updateGlobalUser(userId: string, input: UpdateGlobalUserInput) {
+  public updateGlobalUser = async (userId: string, input: UpdateGlobalUserInput) => {
     const result = await this.updateGlobalUserMutation.mutate({ input, userId })
     return useFragment(this.baseUserFragment, result?.data?.updateGlobalUser)
   }
 
-  public async refetchUser() {
+  public refetchUser = async () => {
     const result = await this.currentUserQuery.refetch()
     return useFragment(this.baseUserFragment, result?.data?.currentUser) || null
   }
 
   constructor() {
-    // Bind methods to this instance
-    this.refetchUser = this.refetchUser.bind(this);
-    this.registerUser = this.registerUser.bind(this);
-    this.updateGlobalUser = this.updateGlobalUser.bind(this);
-
     this.currentUserQuery.onError((error) => useErrorManager().catchError(error))
     this.currentImsUserDataQuery.onError((error) => useErrorManager().catchError(error))
     this.registerUserMutation.onError((error) => useErrorManager().catchError(error))
     this.updateGlobalUserMutation.onError((error) => useErrorManager().catchError(error))
-
-    watch(() => useAuth().token, () => {
-      this.currentUserQuery.refetch()
-      this.currentImsUserDataQuery.refetch()
-    })
   }
 
-  private baseUserFragment = graphql(`
+  baseUserFragment = graphql(`
       fragment BaseGlobalUser on GlobalUser {
           id
           avatar
@@ -82,7 +72,7 @@ class GlobalUserService {
           }
       }`)
 
-  private currentUserQuery = provideApolloClient(apolloClient)(() => {
+  currentUserQuery = provideApolloClient(apolloClient)(() => {
     return useQuery(graphql(`
         query CurrentUser {
             currentUser {
@@ -92,18 +82,17 @@ class GlobalUserService {
     `), {}, () => ({
       enabled: useAuth().isLoggedIn(),
       fetchPolicy: 'no-cache',
-      pollInterval: 60_000
     }))
   })
 
-  private basicUserInfoFragment = graphql(`
+  basicUserInfoFragment = graphql(`
       fragment BasicUserInfo on BasicUserInfo {
           isAdmin
           avatar
           username
       }`)
 
-  private currentImsUserDataQuery = provideApolloClient(apolloClient)(() => {
+  currentImsUserDataQuery = provideApolloClient(apolloClient)(() => {
     return useQuery(graphql(`
         query CurrentBasicUserInfo {
             currentUserInfo {
@@ -116,7 +105,7 @@ class GlobalUserService {
     }))
   })
 
-  private registerUserMutation = provideApolloClient(apolloClient)(() => {
+  registerUserMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation registerUser($input: CreateGlobalUserInput!) {
             register(input: $input) {
@@ -128,7 +117,7 @@ class GlobalUserService {
     }))
   })
 
-  private updateGlobalUserMutation = provideApolloClient(apolloClient)(() => {
+  updateGlobalUserMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation updateGlobalUser($userId: UUID!, $input: UpdateGlobalUserInput!) {
             updateGlobalUser(id: $userId, input: $input) {

@@ -42,9 +42,11 @@ export function setupToast() {
   const { newEventSubscription } = useEventService()
   newEventSubscription.onResult((result) => {
     const event = useFragment(reducedEventFragment, result?.data?.event)
+
     if (event?.eventType.identifier === 'XP_GAIN') {
       toast.success(event.message)
     }
+
     if (event?.eventType.identifier === 'EVENT_REACTION') {
       if (event.parent?.userId === useGlobalUserService().currentGlobalUser.value?.id) {
         const message = '❤️ from ' + getDisplayUserName(event.user) + ' on "' + abbreviate(event?.parent?.message, 40) + '"'

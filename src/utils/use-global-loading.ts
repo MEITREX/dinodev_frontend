@@ -1,11 +1,12 @@
-import { type Ref, ref } from 'vue'
+import { computed, type Ref, ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 
-const globalLoading = ref(false);
+const globalLoading = computed(() => globalLoadingCount.value > 0);
+const globalLoadingCount = ref(0);
 
 function watchLoading(loadingRef: Ref<boolean>) {
   watchImmediate(loadingRef, (value) => {
-    globalLoading.value = value;
+    globalLoadingCount.value += value ? 1 : -1;
   })
 }
 

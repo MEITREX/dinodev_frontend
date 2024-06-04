@@ -35,15 +35,15 @@ function openSprintStats() {
 
 
     <div style="position: relative; height: 430px; width: 80%">
-<!--      <img src="@/assets/background.png"-->
-<!--           alt="background"-->
-<!--           class="h-100 w-100 rounded-xl"-->
-<!--        style="position: absolute; z-index: 0; object-fit: cover; object-position: center"-->
-<!--      />-->
+      <img src="@/assets/background.png"
+           alt="background"
+           class="h-100 w-100 rounded-xl"
+        style="position: absolute; z-index: 0; object-fit: cover; object-position: center"
+      />
       <div class="h-100 w-100 d-flex flex-column justify-end align-center pa-5" style="position: absolute">
         <!-- scale avatar by percentage complete -->
         <animal-avatar
-          :size="180 * percentageComplete + 180"
+          :size="18 * percentageComplete + 100"
           :animal="animal"
           v-if="isPresent(animal)"
           style="z-index: 1; position: absolute"/>

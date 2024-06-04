@@ -130,6 +130,7 @@ class IssueService {
     return useQuery(graphql(`
         query BoardQuery($projectId: UUID!) {
             project(id: $projectId) {
+                id
                 projectBoard {
                     ... ProjectBoard
                 }
@@ -224,6 +225,7 @@ class IssueService {
     return useQuery(graphql(`
         query IssueQuery($projectId: UUID!, $issueId: UUID!) {
             project(id: $projectId) {
+                id
                 issue(id: $issueId) {
                     ...IssueWithEvents
                 }

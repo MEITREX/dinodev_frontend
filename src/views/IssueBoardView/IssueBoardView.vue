@@ -185,7 +185,7 @@ onMounted(() => {
         </v-btn>
       </div>
     </div>
-    <div class="d-flex flex-row overflow-x-auto h-100" ref="scrollContainer">
+    <div class="d-flex flex-row overflow-auto h-100" ref="scrollContainer">
       <div v-for="boardState in issueBoard?.states"
            :key="boardState.state.name"
            class="flex-grow-1">

@@ -105,7 +105,13 @@ function createApolloClient() {
     httpLink
   )
 
-  const cache = new InMemoryCache()
+  const cache = new InMemoryCache({
+    typePolicies: {
+      Project: {
+        keyFields: ['id']
+      }
+    }
+  })
 
   return new ApolloClient({
     link: ApolloLink.from([errorLink, authLink, link]),
