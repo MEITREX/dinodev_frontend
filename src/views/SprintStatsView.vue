@@ -4,11 +4,10 @@ import { computed, onMounted } from 'vue'
 import { useSprintService } from '@/service/sprint-service'
 import AnimalAvatar from '@/views/MeetingView/PlanningView/AnimalAvatar.vue'
 import { isPresent, type Maybe } from '@/utils/types'
-import { type DefaultSprintFragment, type Sprint, SprintSuccessState } from '@/gql/graphql'
+import { type DefaultSprintFragment, SprintSuccessState } from '@/gql/graphql'
 
-const { setAppTitle } = useAppTitle()
 onMounted(() => {
-  setAppTitle('Sprint Stats')
+  useAppTitle().setAppTitle('Sprint Stats')
 })
 
 const { allSprints } = useSprintService()
@@ -21,6 +20,13 @@ function wasSuccessful(sprint: Maybe<DefaultSprintFragment>): boolean {
   return sprint.stats.successState === SprintSuccessState.Success
     || sprint.stats.successState === SprintSuccessState.SuccessWithGoldChallenge
     || false
+}
+
+function roundValue(value: string): number {
+  const numericValue = parseFloat(value)
+  if (isNaN(numericValue)) return 0
+  // round to two decimal places
+  return Math.round(numericValue * 100) / 100
 }
 </script>
 
@@ -41,7 +47,7 @@ function wasSuccessful(sprint: Maybe<DefaultSprintFragment>): boolean {
           :gradient="['#f72047', '#ffd200', '#1feaea'].reverse()"
         >
           <template #label="{ index, value }">
-            {{ index + 1 }} ({{ value }} SP)
+            {{ index + 1 }} ({{ roundValue(value) }} SP)
           </template>
         </v-sparkline>
       </v-card>
@@ -66,7 +72,7 @@ function wasSuccessful(sprint: Maybe<DefaultSprintFragment>): boolean {
           :color="'#1f69d7'"
         >
           <template #label="{ index, value }">
-            {{ index + 1 }} ({{ value }} SP)
+            {{ index + 1 }} ({{ roundValue(value)  }} SP)
           </template>
         </v-sparkline>
       </v-card>

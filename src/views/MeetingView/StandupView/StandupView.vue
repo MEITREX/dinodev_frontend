@@ -11,7 +11,7 @@ import { useGlobalUserService } from '@/service/global-user-service'
 import { useIssueService } from '@/service/issue-service'
 import IssueCard from '@/components/issue/IssueCard.vue'
 import { useEventService } from '@/service/event-service'
-import { computedAsync, watchImmediate } from '@vueuse/core'
+import { computedAsync } from '@vueuse/core'
 import EventList from '@/components/event/EventList.vue'
 import { useAppTitle } from '@/stores/app-title'
 import { getEmojisForStateType } from '@/utils/emojis'
@@ -104,7 +104,7 @@ function youAreNext() {
 <template>
   <meeting-view :meeting-type="MeetingType.Standup" :meeting="baseMeeting" class="pa-5">
 
-    <sprint-stats v-if="!meetingStarted" />
+    <sprint-stats v-if="!meetingStarted" class="w-100"/>
 
     <p v-if="!meetingStarted && isMeetingLeader" class="my-5">
       Hint: Wait for all participants to join the meeting before starting.

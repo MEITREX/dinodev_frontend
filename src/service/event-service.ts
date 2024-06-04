@@ -162,9 +162,9 @@ export const reducedEventFragment = graphql(`
         eventType {
             identifier
         }
-        eventData {
-            key
-            value
+        parent {
+            userId
+            message
         }
         issueId: field(name: "issueId") { value }
         issueTitle: field(name: "issueTitle") { value }
