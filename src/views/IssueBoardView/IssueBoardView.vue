@@ -21,6 +21,7 @@ import { useAppTitle } from '@/stores/app-title'
 import NewIssueDialog from '@/components/dialog/issue/NewIssueDialog.vue'
 import { useNewIssueDialog } from '@/components/dialog/issue/new-issue-dialog-controller'
 import { useGlobalLoading } from '@/utils/use-global-loading'
+import { useRoute } from 'vue-router'
 
 const { issueBoard, loading, changeState, finishIssue, assignIssue } = useIssueService()
 useGlobalLoading().watchLoading(loading)
@@ -29,7 +30,7 @@ const { openNewIssueDialog } = useNewIssueDialog()
 useAppTitle().setAppTitle('Issue Board')
 
 // filtering
-const mode = ref<0 | 1>(0) // 0 = all issues, 1 = my issues
+const mode = ref<0 | 1>(useRoute().query.mine ? 1 : 0) // 0 = all issues, 1 = my issues
 const searchString = ref<string | null>('')
 const issueFilter = computed(() => ({
   assigneeId: mode.value === 1 ? useGlobalUserService().currentGlobalUser?.value?.id : null,

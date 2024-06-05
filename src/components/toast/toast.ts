@@ -24,7 +24,7 @@ export function setupToast() {
   function showToastWhenMeetingStarts(routeName: string, component: any, active: Ref<boolean>) {
     watchImmediate(active, (value) => {
       const route = window.location.pathname // no access to useRoute here
-      if (route.includes(routeName)) { // user is already in the planning meeting
+      if (route.includes(routeName)) { // user is already in the meeting
         return
       }
 
@@ -56,6 +56,13 @@ export function setupToast() {
           })
       }
     }
-    // add other toasts here if needed
+
+    if (event?.eventType.identifier === 'ACHIEVEMENT_UNLOCKED' || event?.eventType.identifier === 'LEVEL_UP') {
+      toast.success(getDisplayUserName(event.user) + " " + event.message, {
+        timeout: 10_000
+      })
+    }
+
+
   })
 }

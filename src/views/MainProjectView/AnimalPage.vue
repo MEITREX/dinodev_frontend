@@ -24,6 +24,11 @@ function openBoard() {
   router.push(routes.project(projectId).board)
 }
 
+function openMyIssues() {
+  const projectId = useAppStore().getProjectIdOrThrow()
+  router.push(routes.project(projectId).boardMyIssues)
+}
+
 function openSprintStats() {
   const projectId = useAppStore().getProjectIdOrThrow()
   router.push(routes.project(projectId).sprintStats)
@@ -35,11 +40,11 @@ function openSprintStats() {
 
 
     <div style="position: relative; height: 430px; width: 80%">
-      <img src="@/assets/background.png"
+<!--      <img src="@/assets/background.png"
            alt="background"
            class="h-100 w-100 rounded-xl"
         style="position: absolute; z-index: 0; object-fit: cover; object-position: center"
-      />
+      />-->
       <div class="h-100 w-100 d-flex flex-column justify-end align-center pa-5" style="position: absolute">
         <!-- scale avatar by percentage complete -->
         <animal-avatar
@@ -64,6 +69,14 @@ function openSprintStats() {
         class="mt-10 "
       >
         View issue board
+      </v-btn>
+
+      <v-btn
+        variant="elevated"
+        @click="openMyIssues"
+        class="mt-10 ml-3"
+      >
+        View my issues
       </v-btn>
 
       <v-btn

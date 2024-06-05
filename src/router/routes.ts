@@ -9,6 +9,7 @@ export const routes = {
     return {
       main: mainRoute,
       board: `${mainRoute}/${routes.projectSubRoutes.board}`,
+      boardMyIssues: `${mainRoute}/${routes.projectSubRoutes.board}?mine=true`,
       planning: `${mainRoute}/${routes.projectSubRoutes.planning}`,
       standup: `${mainRoute}/${routes.projectSubRoutes.standup}`,
       retrospective: `${mainRoute}/${routes.projectSubRoutes.retrospective}`,
@@ -24,7 +25,10 @@ export const routes = {
         return `${mainRoute}/issue/${issueId}`
       },
 
-      sprintStats: `${mainRoute}/sprint-stats`
+      sprintStats: `${mainRoute}/sprint-stats`,
+      user(id: any) {
+        return `${mainRoute}/user/${id}`
+      }
     }
   },
 
@@ -38,7 +42,8 @@ export const routes = {
     sprintStats: 'sprint-stats',
     planningLive: 'planning-live',
     standupLive: 'standup-live',
-    retrospectiveLive: 'retrospective-live'
+    retrospectiveLive: 'retrospective-live',
+    user: 'user'
   }
 
 }

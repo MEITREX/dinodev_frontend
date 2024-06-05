@@ -14,11 +14,6 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/about',
-      name: 'about',
-      component: () => import('../views/AboutView.vue')
-    },
-    {
       path: routes.login,
       name: 'login',
       component: () => import('../views/LoginView.vue'),
@@ -103,8 +98,8 @@ const router = createRouter({
           component: () => import('@/views/TeamView.vue')
         },
         {
-          path: 'profile/:userName',
-          name: 'profile',
+          path: 'user/:userId',
+          name: 'user',
           props: true,
           component: ProfileView,
         },

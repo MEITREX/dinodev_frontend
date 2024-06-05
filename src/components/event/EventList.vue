@@ -9,6 +9,7 @@ import { useAppStore } from '@/stores/app-store'
 import router from '@/router'
 import { routes } from '@/router/routes'
 import { abbreviate } from '@/utils/string-utils'
+import UserAvatar from '@/components/user/UserAvatar.vue'
 
 defineProps<{
   events: readonly EventWithChildrenFragment[]
@@ -45,14 +46,6 @@ function selectEvent(event: BaseEventFragment) {
   textarea.focus()
 }
 
-
-function openUserProfile(baseEvent: BaseEventFragment) {
-  const { projectId } = useAppStore()
-  if (baseEvent?.user?.id && projectId.value) {
-    router.push(routes.project(projectId.value).main + '/user/' + baseEvent?.user.id)
-  }
-}
-
 </script>
 
 <template>
@@ -76,11 +69,9 @@ function openUserProfile(baseEvent: BaseEventFragment) {
         density="compact"
       >
         <template v-slot:icon>
-          <v-avatar
-            class="cursor-pointer"
-            :image="useFragment(eventFragment, event)?.user?.avatar ?? undefined"
-            @click="() => openUserProfile(useFragment(eventFragment, event))"
-          />
+          <user-avatar
+            :user="useFragment(eventFragment, event)?.user || null">
+          </user-avatar>
         </template>
         <event-list-item
           :event="event"

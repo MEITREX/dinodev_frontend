@@ -1,123 +1,145 @@
 <script setup lang="ts">
 
-import EventList from '@/components/event/EventList.vue'
+import { useAppTitle } from '@/stores/app-title'
+import { useUserInProjectService } from '@/service/user-in-project-service'
+import { watchImmediate } from '@vueuse/core'
+import BaseUserAvatar from '@/components/user/BaseUserAvatar.vue'
+import { useGlobalLoading } from '@/utils/use-global-loading'
+import MedalIcon from '@/components/user/MedalIcon.vue'
+import AchievementCard from '@/components/user/AchievementCard.vue'
+import { computed } from 'vue'
+import { useEventService } from '@/service/event-service'
 
 const props = defineProps<{
-  userName: string
-  projectId: string
+  userId: string
 }>()
 
-const bars = [
-  { label: 'Sprint 1', value: 20 },
-  { label: 'Sprint 2', value: 23 },
-  { label: 'Sprint 3', value: 27 },
-  { label: 'Sprint 4', value: 10 },
-  { label: 'Sprint 5', value: 8 },
-  { label: 'Sprint 6', value: 19 },
-  { label: 'Sprint 7', value: 17 },
-  { label: 'Sprint 8', value: 10 }
-]
+const { currentUser: currentLoggedInUser, userStats, loading, getUserById } = useUserInProjectService()
+
+const userToDisplay = computed(() => getUserById(props.userId))
+
+watchImmediate(userToDisplay, () => {
+  useAppTitle().setAppTitle(userToDisplay.value?.user?.username ?? 'User')
+})
+
+useGlobalLoading().watchLoading(loading)
+
+const isCurrentUser = computed(() => currentLoggedInUser.value?.user?.id === props.userId)
+
 </script>
 
 <template>
 
-  <h3>Profile of {{ props.userName }}</h3>
-
-  <v-row>
-    <v-col cols="1">
-      <v-avatar size="120">
-        <v-img src="https://i.pravatar.cc/62"></v-img>
-      </v-avatar>
-    </v-col>
-    <v-col>
-      <v-card>
-        <v-card-title>
-          <h3>Details</h3>
-        </v-card-title>
-        <v-card-text>
-          <p>
-            Name: {{ props.userName }}
-          </p>
-          <p>
-            Role: Developer
-          </p>
-          <p>
-            Email: {{ props.userName }}@zoo.com
-          </p>
-        </v-card-text>
-      </v-card>
-
-    </v-col>
-  </v-row>
-  <v-row>
-    <v-col cols="1">
-    </v-col>
-    <v-col>
-      <v-card>
-        <v-card-title>
-          <h3>Achievements</h3>
-        </v-card-title>
-        <v-card-text>
-          <v-icon size="x-large" color="yellow-darken-1">mdi-medal</v-icon>
-          <v-icon size="x-large" color="secondary">mdi-octagram</v-icon>
-          <v-icon size="x-large" color="blue-darken-3">mdi-owl</v-icon>
-          <v-icon size="x-large" color="green">mdi-leaf</v-icon>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
-
-  <v-row>
-    <v-col cols="1">
-    </v-col>
-    <v-col>
-      <v-card>
-        <v-card-title>
-          <h3>High Scores</h3>
-        </v-card-title>
-        <v-card-text>
-          <p>Most XP in a sprint: 2400</p>
-          <p>Most tasks completed in a sprint: 12</p>
-          <p>Most story points completed in a sprint: 24</p>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
-
-  <v-row>
-    <v-col cols="1">
-    </v-col>
-    <v-col>
-      <!-- diagram of sprint performance -->
-      <v-card>
-        <v-card-title>
-          <h3>Sprint Performance</h3>
-        </v-card-title>
-        <v-card-text>
-          <v-sheet class="pa-3" max-width="600" style="margin:auto;">
-            <div v-for="(bar, index) in bars" :key="index" class="my-3">
-              <div>{{ bar.label }}</div>
-              <v-progress-linear :model-value="bar.value" color="secondary" height="20" max="50">
-                <template #default>
-                  <div>{{ bar.value }} SP</div>
-                </template>
-              </v-progress-linear>
+  <div class="pa-3">
+    <v-row>
+      <v-col cols="1">
+        <base-user-avatar :user="userToDisplay?.user || null" :size="100" />
+      </v-col>
+      <v-col>
+        <v-card height="150">
+          <v-card-title>
+            <h3>Details</h3>
+          </v-card-title>
+          <v-card-text>
+            <p>
+              Name: {{ userToDisplay?.user.username }}
+            </p>
+            <p>
+              Roles: {{ userToDisplay?.roles.map(role => role.gamifiedName).join(', ') }}
+            </p>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col>
+        <v-card height="150">
+          <v-card-title>
+            <h3>Medals</h3>
+          </v-card-title>
+          <v-card-text>
+            <div class="d-flex flex-row ga-3">
+              <medal-icon medal="🥇" :number="userToDisplay?.userStats.goldMedals ?? 0" />
+              <medal-icon medal="🥈" :number="userToDisplay?.userStats.silverMedals ?? 0" />
+              <medal-icon medal="🥉" :number="userToDisplay?.userStats.bronzeMedals ?? 0" />
             </div>
-          </v-sheet>
-        </v-card-text>
-      </v-card>
-    </v-col>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="1">
+        &nbsp;
+      </v-col>
 
-    <v-col>
-      <v-card>
-        <v-card-title>
-          <h3>Activity</h3>
-        </v-card-title>
-        <v-card-text>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+      <v-col>
+        <v-card>
+          <v-card-title>
+            <h3>Achievements</h3>
+          </v-card-title>
+          <v-card-text>
+            <div class="d-flex flex-row flex-wrap ga-3">
+              <achievement-card
+                :achievement-progress="achievementProgress"
+                v-for="achievementProgress in userToDisplay?.achievements"
+                :key="achievementProgress.achievement.name" />
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row v-if="isCurrentUser">
+      <v-col cols="1">
+        &nbsp;
+      </v-col>
+      <v-col>
+        <v-card>
+          <v-card-title>
+            <h3>Stats</h3>
+          </v-card-title>
+          <v-card-text>
+            <v-table>
+              <thead>
+              <tr>
+                <th>Statistic</th>
+                <th>Value</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>Level</td>
+                <td>{{ userStats?.level }}</td>
+              </tr>
+              <tr>
+                <td>XP</td>
+                <td>{{ userStats?.totalXp }}</td>
+              </tr>
+              <tr>
+                <td>Issues Completed</td>
+                <td>{{ userStats?.issuesCompleted }}</td>
+              </tr>
+              <tr>
+                <td>Issues Created</td>
+                <td>{{ userStats?.issuesCreated }}</td>
+              </tr>
+              <tr>
+                <td>Pull Requests Created</td>
+                <td>{{ userStats?.pullRequestsCreated }}</td>
+              </tr>
+              <tr>
+                <td>Pull Requests Closed</td>
+                <td>{{ userStats?.pullRequestsClosed }}</td>
+              </tr>
+              <tr>
+                <td>❤️s given</td>
+                <td>{{ userStats?.reactionsGiven }}</td>
+              </tr>
+              </tbody>
+            </v-table>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <style scoped>

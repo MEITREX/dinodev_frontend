@@ -25,6 +25,10 @@ class UserInProjectService {
       this.allUsersInProjectQuery.result.value?.project?.users) || []
   })
 
+  public getUserById = (userId: string) => {
+    return this.allUsers.value.find((user) => user.user.id === userId) ?? null
+  }
+
   public joinProject = async (projectId: string) => {
     const result = await this.joinProjectMutation.mutate({ projectId })
     return useFragment(this.userInProjectFragment, result?.data?.joinProject)
@@ -78,8 +82,24 @@ class UserInProjectService {
               name
               projectPrivileges
           }
+          achievements {
+              achievement {
+                  name
+                  description
+                  goal
+                  icon {
+                      emoji
+                  }
+              }
+              progress
+              achieved
+          }
           userStats {
               level
+              
+              goldMedals
+              silverMedals
+              bronzeMedals
           }
       }`)
 

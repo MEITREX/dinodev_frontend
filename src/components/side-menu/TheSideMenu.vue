@@ -5,16 +5,15 @@ import { useAuth } from '@/service/use-auth'
 import router from '@/router'
 import UserAvatarListItem from '@/components/side-menu/UserAvatarListItem.vue'
 import { isPresent } from '@/utils/types'
-import { useRoute } from 'vue-router'
 import { useUserInProjectService } from '@/service/user-in-project-service'
 import { useAppStore } from '@/stores/app-store'
 
 const { currentUser, userStats } = useUserInProjectService()
 
-const projectId = useRoute().params.projectId
+const { projectId } = useAppStore()
 
 function subRouteTo(route: string) {
-  return `/project/${projectId}/${route}`
+  return `/project/${projectId.value}/${route}`
 }
 
 const xp = computed(() => userStats.value?.xp ?? 0)
@@ -31,12 +30,17 @@ function openProjects() {
   useAppStore().projectId.value = null
   router.push(routes.projects)
 }
+
+function openUserProfile() {
+  router.push(routes.project(projectId.value!!).user(currentUser.value?.user?.id))
+}
+
 </script>
 
 <template>
   <v-navigation-drawer location="right" v-model:rail="rail">
     <v-list v-if="isPresent(currentUser)">
-      <user-avatar-list-item :user-in-project="currentUser"/>
+      <user-avatar-list-item :user-in-project="currentUser" @click="openUserProfile()"/>
     </v-list>
 
     <v-divider></v-divider>

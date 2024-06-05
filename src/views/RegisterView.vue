@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import router from '@/router'
 import { routes } from '@/router/routes'
 import type { CreateGlobalUserInput } from '@/gql/graphql'
@@ -32,9 +32,9 @@ function registerUserButtonClicked() {
   fetch(`https://api.github.com/users/${user.value.vcsUserId}`)
     .then(response => {
       if (!response.ok) {
-        const error = new Error("Could not find user with that username.");
-        useErrorManager().catchError(error);
-        throw error;
+        const error = new Error('Could not find user with that username.')
+        useErrorManager().catchError(error)
+        throw error
       }
     })
     .then(() => registerUser(user.value))
@@ -42,25 +42,25 @@ function registerUserButtonClicked() {
 }
 
 const handleDrop = (event: DragEvent) => {
-  event.preventDefault();
+  event.preventDefault()
 
-  const files = event.dataTransfer?.files;
-  if (!files || files.length === 0) return;
+  const files = event.dataTransfer?.files
+  if (!files || files.length === 0) return
 
-  const file = files[0];
-  if (!file.type.startsWith('image/')) return;
+  const file = files[0]
+  if (!file.type.startsWith('image/')) return
 
-  const maxSize = 2000 * 1024;
+  const maxSize = 2000 * 1024
   if (file.size > maxSize) {
-    useErrorManager().catchError('File size too large. Max size is 2MB.');
+    useErrorManager().catchError('File size too large. Max size is 2MB.')
   }
 
-  const reader = new FileReader();
+  const reader = new FileReader()
   reader.onloadend = () => {
-    user.value.avatar = reader.result as string;
-  };
-  reader.readAsDataURL(file);
-};
+    user.value.avatar = reader.result as string
+  }
+  reader.readAsDataURL(file)
+}
 
 </script>
 

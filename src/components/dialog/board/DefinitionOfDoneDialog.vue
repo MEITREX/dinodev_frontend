@@ -38,9 +38,11 @@ function initDodConfirmState(item: DefinitionOfDoneTimeParent): DodConfirmState 
 const valid = computed(() => definitionOfDoneConfirmStates.value.every(isValid))
 
 function isValid(state: DodConfirmState): boolean {
-  if (!state.dodItem.required) return true
   if (state.checked) {
     return state.children.every(isValid)
+  }
+  if (!state.dodItem.required) {
+    return true
   }
   return isNotBlank(state.reasonIfNotChecked)
 }
