@@ -37,8 +37,6 @@ function openSprintStats() {
 
 <template>
   <div class="mt-10 ga-2 d-flex flex-column align-center">
-
-
     <div style="position: relative; height: 430px; width: 80%">
 <!--      <img src="@/assets/background.png"
            alt="background"
