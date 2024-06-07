@@ -17,7 +17,7 @@ function subRouteTo(route: string) {
 }
 
 const xp = computed(() => userStats.value?.xp ?? 0)
-const percent = computed(() => (xp.value) / ((userStats.value?.xpToNextLevel ?? 1) + xp.value) * 100)
+const percent = computed(() => (xp.value) / (userStats.value?.xpToNextLevel ?? 1) * 100)
 
 const rail = ref(false)
 
@@ -38,9 +38,13 @@ function openUserProfile() {
 </script>
 
 <template>
-  <v-navigation-drawer location="right" v-model:rail="rail">
+  <v-navigation-drawer
+    :location="$vuetify.display.mobile ? 'bottom' : 'right'"
+    v-model:rail="rail"
+    permanent
+  >
     <v-list v-if="isPresent(currentUser)">
-      <user-avatar-list-item :user-in-project="currentUser" @click="openUserProfile()"/>
+      <user-avatar-list-item :user-in-project="currentUser" @click="openUserProfile()" />
     </v-list>
 
     <v-divider></v-divider>
@@ -52,21 +56,12 @@ function openUserProfile() {
         :width="rail ? 3 : 16"
         color="green"
       >
-<!--        <level-up-dialog activator="#btn-level-up" />-->
-<!--        <v-btn-->
-<!--          v-show="levelUpReady"-->
-<!--          color="white"-->
-<!--          id="btn-level-up"-->
-<!--          class="btn-levelup"-->
-<!--          variant="flat">-->
-<!--          Level up-->
-<!--        </v-btn>-->
         <div>
           <div class="d-flex flex-column align-center" v-if="!rail">
-            <b>Level {{ currentUser?.userStats.level }}</b>
-            <p class="text-sm-center">{{ userStats?.totalXp }} XP</p>
+            <b>Level {{ userStats?.level }}</b>
+            <p class="text-sm-center">{{ userStats?.xp }} XP</p>
           </div>
-          <div v-else class="sm"> {{ userStats?.level }} </div>
+          <div v-else class="sm"> {{ userStats?.level }}</div>
         </div>
       </v-progress-circular>
 
@@ -80,15 +75,23 @@ function openUserProfile() {
         Project
       </v-list-subheader>
       <v-list-item prepend-icon="mdi-reiterate" :to="subRouteTo('sprint')" :active="false">
-          Current Sprint
+        Current Sprint
       </v-list-item>
       <v-list-item prepend-icon="mdi-view-dashboard" :to="subRouteTo('board')"> Issue Board</v-list-item>
       <v-list-item prepend-icon="mdi-account-group" :to="subRouteTo('team')"> Team</v-list-item>
 
-<!--      <v-list-item prepend-icon="mdi-shopping" :to="subRouteTo('store')">-->
-<!--        Store-->
-<!--        <v-chip text-color="white" class="ml-3">57 💎</v-chip>-->
-<!--      </v-list-item>-->
+      <v-list-item prepend-icon="mdi-shopping" :to="subRouteTo('store')">
+        Store
+
+        <v-chip
+          v-if="userStats?.virtualCurrency"
+          density="comfortable"
+          color="primary"
+          class="ml-3"
+        >
+          {{ userStats?.virtualCurrency }} 💎
+        </v-chip>
+      </v-list-item>
     </v-list>
     <v-divider class="my-2" />
     <v-list density="compact" nav>
@@ -110,7 +113,7 @@ function openUserProfile() {
       </v-list-item>
     </v-list>
 
-    <v-divider  class="my-2" />
+    <v-divider class="my-2" />
 
     <!-- button that closes the side menu -->
     <v-list density="compact" nav>
@@ -125,9 +128,15 @@ function openUserProfile() {
 <style scoped>
 
 @keyframes wobble {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .btn-levelup {

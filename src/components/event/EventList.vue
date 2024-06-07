@@ -5,11 +5,10 @@ import type { BaseEventFragment, EventWithChildrenFragment } from '@/gql/graphql
 import EventListItem from '@/components/event/EventListItem.vue'
 import { useFragment } from '@/gql'
 import { eventFragment } from '@/service/event-service'
-import { useAppStore } from '@/stores/app-store'
-import router from '@/router'
-import { routes } from '@/router/routes'
 import { abbreviate } from '@/utils/string-utils'
 import UserAvatar from '@/components/user/UserAvatar.vue'
+import AnimalAvatar from '@/views/MeetingView/PlanningView/AnimalAvatar.vue'
+import { useSprintService } from '@/service/sprint-service'
 
 defineProps<{
   events: readonly EventWithChildrenFragment[]
@@ -46,6 +45,8 @@ function selectEvent(event: BaseEventFragment) {
   textarea.focus()
 }
 
+const { currentSprint } = useSprintService()
+
 </script>
 
 <template>
@@ -69,7 +70,13 @@ function selectEvent(event: BaseEventFragment) {
         density="compact"
       >
         <template v-slot:icon>
+          <animal-avatar
+            :animal="currentSprint?.animal"
+            :size="40"
+            v-if="currentSprint?.animal && useFragment(eventFragment, event).eventType.identifier === 'SYSTEM_MESSAGE'"
+          />
           <user-avatar
+            v-else
             :user="useFragment(eventFragment, event)?.user || null">
           </user-avatar>
         </template>

@@ -39,8 +39,8 @@ watchLoading(loading)
       </div>
       <router-view />
     </div>
-    <the-side-menu />
   </v-main>
+  <the-side-menu />
 
 
 </template>

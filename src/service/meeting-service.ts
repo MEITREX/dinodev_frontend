@@ -23,6 +23,11 @@ class MeetingService {
     return useFragment(meetingFragment, result?.data?.mutateProject?.promoteToMeetingLeader) || null
   }
 
+  public cancelMeeting = async (type: MeetingType): Promise<DefaultMeetingFragment | null> => {
+    const result = await this.cancelMeetingMutation.mutate({ projectId: this.getProjectId(), type })
+    return useFragment(meetingFragment, result?.data?.mutateProject?.cancelMeeting) || null
+  }
+
   private getProjectId = () => {
     return useAppStore().getProjectIdOrThrow()
   }
@@ -30,12 +35,14 @@ class MeetingService {
   public loading = computed(() =>
     this.joinMeetingMutation.loading.value
     || this.leaveMeetingMutation.loading.value
-    || this.promoteToMeetingLeaderMutation.loading.value)
+    || this.promoteToMeetingLeaderMutation.loading.value
+    || this.cancelMeetingMutation.loading.value)
 
   constructor() {
     this.joinMeetingMutation.onError(useErrorManager().catchError)
     this.leaveMeetingMutation.onError(useErrorManager().catchError)
     this.promoteToMeetingLeaderMutation.onError(useErrorManager().catchError)
+    this.cancelMeetingMutation.onError(useErrorManager().catchError)
   }
 
   private joinMeetingMutation = provideApolloClient(apolloClient)(() => {
@@ -67,6 +74,18 @@ class MeetingService {
         mutation PromoteToMeetingLeader($projectId: UUID!, $type: MeetingType!, $userId: UUID!) {
             mutateProject(id: $projectId) {
                 promoteToMeetingLeader(type: $type, userId: $userId) {
+                    ...DefaultMeeting
+                }
+            }
+        }
+    `))
+  })
+
+  private cancelMeetingMutation = provideApolloClient(apolloClient)(() => {
+    return useMutation(graphql(`
+        mutation CancelMeeting($projectId: UUID!, $type: MeetingType!) {
+            mutateProject(id: $projectId) {
+                cancelMeeting(type: $type) {
                     ...DefaultMeeting
                 }
             }

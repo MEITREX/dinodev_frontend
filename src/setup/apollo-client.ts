@@ -31,7 +31,10 @@ function createApolloClient() {
 
   const wsLink = new GraphQLWsLink(
     createClient({
-      url: wsUrl
+      url: wsUrl,
+      connectionParams: {
+        authorization: `Bearer ${token.value}`,
+      },
     })
   )
 

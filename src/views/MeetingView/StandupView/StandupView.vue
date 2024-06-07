@@ -2,7 +2,7 @@
 
 import SprintStats from '@/components/SprintStats.vue'
 import { computed, onMounted, ref, watch } from 'vue'
-import MeetingView from '@/views/MeetingView/MeetingView.vue'
+import MeetingAttendeeCard from '@/components/meeting/MeetingAttendeeCard.vue'
 import { MeetingRole, MeetingType, type ProjectBoardFragment } from '@/gql/graphql'
 import { useStandupMeetingService } from '@/service/standup-meeting-service'
 import { useFragment } from '@/gql'
@@ -102,20 +102,21 @@ function youAreNext() {
 </script>
 
 <template>
-  <meeting-view :meeting-type="MeetingType.Standup" :meeting="baseMeeting" class="pa-5">
 
-    <sprint-stats v-if="!meetingStarted" class="w-100"/>
+  <div class="pa-5">
+    <sprint-stats v-if="!meetingStarted && !meetingFinished" class="w-100" />
 
-    <p v-if="!meetingStarted && isMeetingLeader" class="my-5">
-      Hint: Wait for all participants to join the meeting before starting.
-    </p>
+    <div v-if="!meetingStarted && !meetingFinished && isMeetingLeader">
+      <p class="my-5">
+        Hint: Wait for all participants to join the meeting before starting.
+      </p>
 
-    <v-btn
-      v-if="!meetingStarted && isMeetingLeader"
-      @click="() => startStandupMeeting()"
-    >
-      Start standup
-    </v-btn>
+      <v-btn
+        @click="() => startStandupMeeting()"
+      >
+        Start standup
+      </v-btn>
+    </div>
 
     <div v-if="meetingStarted && !meetingFinished" class="w-100 py-3">
       <v-stepper :model-value="selected" non-linear>
@@ -222,7 +223,13 @@ function youAreNext() {
         </p>
       </v-card>
     </div>
-  </meeting-view>
+
+    <meeting-attendee-card
+      :meeting-type="MeetingType.Standup"
+      :meeting="baseMeeting">
+
+    </meeting-attendee-card>
+  </div>
 </template>
 
 <style scoped>

@@ -85,45 +85,7 @@ const animals = ref<ShopItem[]>([
 </script>
 
 <template>
-  <h2>Store</h2>
-
-  <h3>Decorations</h3>
-
-  <v-row>
-    <v-col cols="3" v-for="decoration in decorations" :key="decoration.id">
-      <v-card>
-        <v-card-title>{{ decoration.name }}</v-card-title>
-        <v-img :src="decoration.imageUrl" height="200px">
-        </v-img>
-        <v-card-text>
-          <p>{{ decoration.description }}</p>
-          <p class="text-lg-body-1">{{ decoration.price }}💎</p>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" variant="tonal">Buy</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
-
-  <h3 class="mb-3 mt-5">Animals</h3>
-
-  <v-row>
-    <v-col cols="3" v-for="decoration in animals" :key="decoration.id">
-      <v-card>
-        <v-img :src="decoration.imageUrl" height="200px">
-          <v-card-title>{{ decoration.name }}</v-card-title>
-        </v-img>
-        <v-card-text>
-          <p>{{ decoration.description }}</p>
-          <p class="text-lg-body-1">{{ decoration.price }}💎</p>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" variant="tonal">Buy</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+  TODO
 
 </template>
 

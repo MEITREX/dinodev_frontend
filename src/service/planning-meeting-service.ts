@@ -428,7 +428,9 @@ class PlanningMeetingService {
                 }
             }
         }`
-    ))
+    ), () => ({
+      refetchQueries: ['Sprint']
+    }))
   })
 
   planningMeetingSubscription = provideApolloClient(apolloClient)(() => {

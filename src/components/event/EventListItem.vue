@@ -11,6 +11,7 @@ import { useFragment } from '@/gql'
 import { eventFragment } from '@/service/event-service'
 import { abbreviate } from '@/utils/string-utils'
 import { getDisplayUserName } from '@/utils/user-utils'
+import { useSprintService } from '@/service/sprint-service'
 
 const props = defineProps<{
   event: EventWithChildrenFragment | null
@@ -59,7 +60,14 @@ const shouldShowInteractionButtons = computed(() => {
   return true
 })
 
-const userName = computed(() => getDisplayUserName(baseEvent.value?.user))
+const { currentSprint } = useSprintService()
+
+const userName = computed(() => {
+  if (baseEvent.value?.eventType.identifier === 'SYSTEM_MESSAGE') {
+    return currentSprint.value?.name
+  }
+  return getDisplayUserName(baseEvent.value?.user)
+})
 
 const issueTitle = computed(() => {
   const title = baseEvent.value?.issueTitle?.value ?? null

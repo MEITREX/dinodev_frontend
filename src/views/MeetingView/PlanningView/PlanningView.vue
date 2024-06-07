@@ -4,7 +4,7 @@ import PlanningAnimalView from '@/views/MeetingView/PlanningView/PlanningAnimalV
 import PlanningAnimalNameView from '@/views/MeetingView/PlanningView/PlanningAnimalNameView.vue'
 import IssueEstimationView from '@/views/MeetingView/PlanningView/IssueEstimationView.vue'
 import SprintGoalView from '@/views/MeetingView/PlanningView/SprintGoalView.vue'
-import MeetingView from '@/views/MeetingView/MeetingView.vue'
+import MeetingAttendeeCard from '@/components/meeting/MeetingAttendeeCard.vue'
 import { Animal, MeetingRole, MeetingType, PlanningMeetingPage } from '@/gql/graphql'
 import { useErrorManager } from '@/utils/error-manager'
 import { usePlanningMeetingService } from '@/service/planning-meeting-service'
@@ -94,10 +94,13 @@ const stepperDisabled = computed(() => {
 </script>
 
 <template>
-  <meeting-view :meeting="meetingBase" :meeting-type="MeetingType.Planning">
+  <div class="pa-5">
     <div v-if="!(meetingBase?.active ?? false)">
+      <!-- TODO check if meeting was success -->
       <h3>Meeting finished! 🎉</h3>
-      <p>Welcome {{ planningMeeting?.nameVoting?.votingResult }} to the park!</p>
+      <p>
+        Welcome {{ planningMeeting?.nameVoting?.votingResult }} to the park!
+      </p>
 
       <animal-avatar :animal="planningMeeting?.animalVoting?.votingResult as Animal" :size="160" />
 
@@ -188,8 +191,8 @@ const stepperDisabled = computed(() => {
       </template>
     </v-stepper>
 
-
-  </meeting-view>
+    <meeting-attendee-card :meeting="meetingBase" :meeting-type="MeetingType.Planning" />
+  </div>
 </template>
 
 <style scoped>
