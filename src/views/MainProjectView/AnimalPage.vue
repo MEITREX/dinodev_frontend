@@ -2,11 +2,11 @@
 import SprintStats from '@/components/SprintStats.vue'
 import { useSprintService } from '@/service/sprint-service'
 import { computed } from 'vue'
-import { isPresent } from '@/utils/types'
-import AnimalAvatar from '@/views/MeetingView/PlanningView/AnimalAvatar.vue'
 import router from '@/router'
 import { useAppStore } from '@/stores/app-store'
 import { routes } from '@/router/routes'
+import AnimalEnclosure from '@/components/animal/AnimalEnclosure.vue'
+import { KnownAsset } from '@/gql/graphql'
 
 const { currentSprint } = useSprintService()
 
@@ -37,21 +37,11 @@ function openSprintStats() {
 
 <template>
   <div class="mt-10 ga-2 d-flex flex-column align-center">
-    <div style="position: relative; height: 430px; width: 80%">
-<!--      <img src="@/assets/background.png"
-           alt="background"
-           class="h-100 w-100 rounded-xl"
-        style="position: absolute; z-index: 0; object-fit: cover; object-position: center"
-      />-->
-      <div class="h-100 w-100 d-flex flex-column justify-end align-center pa-5" style="position: absolute">
-        <!-- scale avatar by percentage complete -->
-        <animal-avatar
-          :size="18 * percentageComplete + 100"
-          :animal="animal"
-          v-if="isPresent(animal)"
-          style="z-index: 1; position: absolute"/>
-      </div>
-    </div>
+    <animal-enclosure
+      :animal="animal ?? null"
+      :percentage-complete="percentageComplete"
+      :placed-assets="currentSprint?.placedAssets ?? []"
+    />
     <h3 class="text-h5 font-weight-bold">
       <span class="text-grey-darken-1">Sprint {{ number }}:</span>
       {{ name }}
@@ -62,7 +52,6 @@ function openSprintStats() {
     <div>
 
       <v-btn
-        variant="elevated"
         @click="openBoard"
         class="mt-10 "
       >
@@ -70,7 +59,6 @@ function openSprintStats() {
       </v-btn>
 
       <v-btn
-        variant="elevated"
         @click="openMyIssues"
         class="mt-10 ml-3"
       >
@@ -78,7 +66,6 @@ function openSprintStats() {
       </v-btn>
 
       <v-btn
-        variant="elevated"
         @click="openSprintStats"
         class="mt-10 ml-3"
       >

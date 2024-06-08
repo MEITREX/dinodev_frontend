@@ -50,7 +50,7 @@ const progressbarColor = computed(() => {
       :model-value="percentageCompleted"
       :buffer-value="percentageCompletedPlusInProgess"
       :buffer-color="progressbarColor"
-      :buffer-opacity="0.3"
+      :buffer-opacity="0.2"
       rounded
     >
     </v-progress-linear>

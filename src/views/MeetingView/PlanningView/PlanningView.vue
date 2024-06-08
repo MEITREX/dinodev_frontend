@@ -21,7 +21,7 @@ const { planningMeeting, changePage, loading } = usePlanningMeetingService()
 onMounted(() => {
   watch(loading, () => {
     if (!loading && !planningMeeting.value) {
-      useErrorManager().catchError("There is no active planning meeting.")
+      useErrorManager().catchError('There is no active planning meeting.')
       router.push(routes.project(useAppStore().getProjectIdOrThrow()).main)
     }
   })
@@ -65,7 +65,7 @@ const currentPageNumber = computed(() => {
 function updatePage(newValue: number) {
   const pageNormalized = Math.min(Math.max(1, newValue), planningSteps.value.length)
   const newPage = planningSteps.value
-    .find(step => step.value === pageNormalized)?.page
+      .find(step => step.value === pageNormalized)?.page
     ?? PlanningMeetingPage.Information
 
   changePage(newPage).catch(useErrorManager().catchError)
@@ -96,13 +96,15 @@ const stepperDisabled = computed(() => {
 <template>
   <div class="pa-5">
     <div v-if="!(meetingBase?.active ?? false)">
-      <!-- TODO check if meeting was success -->
-      <h3>Meeting finished! 🎉</h3>
-      <p>
-        Welcome {{ planningMeeting?.nameVoting?.votingResult }} to the park!
-      </p>
+      <v-card class="pa-3">
+        <!-- TODO check if meeting was success -->
+        <h3>Meeting finished! 🎉</h3>
+        <p>
+          Welcome {{ planningMeeting?.nameVoting?.votingResult }} to the park!
+        </p>
 
-      <animal-avatar :animal="planningMeeting?.animalVoting?.votingResult as Animal" :size="160" />
+        <animal-avatar :animal="planningMeeting?.animalVoting?.votingResult as Animal" :size="260" />
+      </v-card>
 
     </div>
 
@@ -132,7 +134,7 @@ const stepperDisabled = computed(() => {
             <li>Finally, you will set the sprint goal by selecting the issues you want to work on this sprint.</li>
           </ul>
 
-          <v-spacer class="my-5"/>
+          <v-spacer class="my-5" />
 
           <p>The meeting will start soon...</p>
 

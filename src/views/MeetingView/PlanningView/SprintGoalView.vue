@@ -19,14 +19,13 @@ const { issueBoard } = useIssueService()
 const { previousSprint } = useSprintService()
 
 const backlogIssues = computed(() => issueBoard.value?.states
-  .filter(boardState => boardState.state.type === IssueStateType.Backlog)
   .flatMap(boardState => boardState.issues ?? []) ?? [])
 
 const sprintGoal = computed(() => backlogIssues.value
   .filter(issue => props.sprintGoalVoting?.sprintIssueIds?.includes(issue.id)))
 
 const nonSprintGoal = computed(() => backlogIssues.value
-  .filter(issue => !props.sprintGoalVoting?.sprintIssueIds?.includes(issue.id)))
+  .filter(issue => props.sprintGoalVoting?.nonSprintIssueIds?.includes(issue.id)))
 
 const sprintGoalStoryPoints = computed(() =>
   sprintGoal.value.reduce((total, issue) => total + (issue?.storyPoints ?? 0), 0))

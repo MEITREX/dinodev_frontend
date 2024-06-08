@@ -201,7 +201,7 @@ class IssueService {
             }
         }
     `), () => ({
-      refetchQueries: ['BoardQuery']
+      refetchQueries: ['BoardQuery', 'Sprint']
     }))
   })
 

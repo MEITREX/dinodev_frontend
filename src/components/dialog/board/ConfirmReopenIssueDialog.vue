@@ -20,7 +20,6 @@ defineEmits<{
     <p>
       <strong>Consider opening a follow-up issue instead of reopening this one.</strong>
     </p>
-    <p> Finishing this issue again will not count towards any statistics and will not reward XP.</p>
   </warning-dialog>
 
 </template>

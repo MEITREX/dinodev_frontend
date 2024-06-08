@@ -5,6 +5,7 @@ import { computed } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
 import { useAppStore } from '@/stores/app-store'
 import { useAuth } from '@/service/use-auth'
+import type { DefaultSprintFragment } from '@/gql/graphql'
 
 
 class SprintService {
@@ -105,8 +106,15 @@ export const sprintFragment = graphql(`
             averageStoryPoints
             successState
         }
+        placedAssets {
+            asset
+            x
+            y
+        }
         name
         animal
         number
     }
 `)
+
+export type PlacedAssetType = DefaultSprintFragment['placedAssets'][0]

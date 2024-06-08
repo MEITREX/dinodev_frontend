@@ -1,14 +1,13 @@
 <script setup lang="ts">
 
 import { computed, ref, watch } from 'vue'
-import type { DefaultPlanningMeetingFragment } from '@/gql/graphql'
+import type { DefaultPlanningMeetingFragment, IssueBaseFragment } from '@/gql/graphql'
 import { IssueStateType, TShirtSizeEstimation } from '@/gql/graphql'
 import { usePlanningMeetingService } from '@/service/planning-meeting-service'
 import { useIssueService } from '@/service/issue-service'
 import IssuePage from '@/components/issue/IssuePage.vue'
 import { watchImmediate } from '@vueuse/core'
 import IssueCard from '@/components/issue/IssueCard.vue'
-import type { IssueBaseFragment } from '@/gql/graphql'
 import { isPresent } from '@/utils/types'
 import IssueEstimationItem from '@/components/issue/IssueEstimationItem.vue'
 import CountdownDisplay from '@/components/CountdownDisplay.vue'
@@ -57,14 +56,15 @@ const {
 } = usePlanningMeetingService()
 const { issueBoard } = useIssueService()
 
-// issues to vote are the backlog issues that have no estimation yet
+// issues to vote are the  issues that have no estimation yet
 const backlogIssues = computed(() => issueBoard.value?.states
-  .filter(state => state.state.type === IssueStateType.Backlog)
+  .filter(state => state.state.type !== IssueStateType.Done
+    && state.state.type !== IssueStateType.DoneSprint)
   .flatMap(state => state.issues ?? [])
   .filter(issue => issue.id !== props.issueEstimation?.issueId)
   .filter(issue => !isPresent(issue.effortEstimation)))
 
-const {issue: currentIssue, loading, issueId: issueIdRef} = useIssueService()
+const { issue: currentIssue, loading, issueId: issueIdRef } = useIssueService()
 watchImmediate(() => props.issueEstimation?.issueId, () => {
   issueIdRef.value = props.issueEstimation?.issueId || null
 })
@@ -250,7 +250,7 @@ watchImmediate(() => props.issueEstimation?.finished, () => {
             density="compact"
           />
           <v-btn
-           :disabled="!issueEstimation?.finished"
+            :disabled="!issueEstimation?.finished"
             @click="() => setFinalResult(selectedFinalOption)"
           >
             Confirm

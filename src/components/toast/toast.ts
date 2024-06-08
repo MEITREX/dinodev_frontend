@@ -58,9 +58,11 @@ export function setupToast() {
     }
 
     if (event?.eventType.identifier === 'ACHIEVEMENT_UNLOCKED' || event?.eventType.identifier === 'LEVEL_UP') {
-      toast.success(getDisplayUserName(event.user) + " " + event.message, {
-        timeout: 10_000
-      })
+      if (event.parent?.userId === useGlobalUserService().currentGlobalUser.value?.id) {
+        toast.success(getDisplayUserName(event.user) + ' ' + event.message, {
+          timeout: 10_000
+        })
+      }
     }
 
 

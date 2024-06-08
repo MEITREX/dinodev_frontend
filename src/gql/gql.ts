@@ -67,10 +67,13 @@ const documents = {
     "\n        mutation CreateProject($input: CreateProjectInput!) {\n            createProject(input: $input) {\n                ... ProjectMain\n            }\n        }\n    ": types.CreateProjectDocument,
     "\n        mutation UpdateProject($projectId: UUID!, $input: UpdateProjectInput!) {\n            updateProject(id: $projectId, input: $input) {\n                ... ProjectMain\n            }\n        }\n    ": types.UpdateProjectDocument,
     "\n        mutation DeleteProject($projectId: UUID!) {\n            deleteProject(id: $projectId)\n        }\n    ": types.DeleteProjectDocument,
+    "\n      query Shop {\n        shopItems {\n            ...ShopItem\n        }\n      }\n    ": types.ShopDocument,
+    "\n        mutation BuyAndPlace($projectId: UUID!, $input: PlaceAssetInput!) {\n            mutateProject(id: $projectId) {\n                buyAndPlace(input: $input) {\n                    id\n                }\n            }\n        }\n    ": types.BuyAndPlaceDocument,
+    "\n  fragment ShopItem on ShopItem {\n      id\n      name\n      image\n      price    \n  }\n": types.ShopItemFragmentDoc,
     "\n      query Sprint($projectId: UUID!) {\n          project(id: $projectId) {\n              id\n              currentSprint {\n                  ...DefaultSprint\n              }\n          }\n      }\n  ": types.SprintDocument,
     "\n      query PreviousSprint($projectId: UUID!) {\n          project(id: $projectId) {\n              id\n              previousSprint {\n                  ...DefaultSprint\n              }\n          }\n      }\n  ": types.PreviousSprintDocument,
     "\n      query Sprints($projectId: UUID!) {\n          project(id: $projectId) {\n              id\n              sprints {\n                  ...DefaultSprint\n              }\n          }\n      }\n  ": types.SprintsDocument,
-    "\n    fragment DefaultSprint on Sprint {\n        id\n        startDate\n        endDate\n        storyPointsPlanned\n        stats {\n            totalStoryPoints\n            percentageStoryPointsCompleted\n            percentageStoryPointsInProgress\n            percentageTimeElapsed\n            daysLeft\n            averageStoryPoints\n            successState\n        }\n        name\n        animal\n        number\n    }\n": types.DefaultSprintFragmentDoc,
+    "\n    fragment DefaultSprint on Sprint {\n        id\n        startDate\n        endDate\n        storyPointsPlanned\n        stats {\n            totalStoryPoints\n            percentageStoryPointsCompleted\n            percentageStoryPointsInProgress\n            percentageTimeElapsed\n            daysLeft\n            averageStoryPoints\n            successState\n        }\n        placedAssets {\n            asset\n            x\n            y\n        }\n        name\n        animal\n        number\n    }\n": types.DefaultSprintFragmentDoc,
     "\n        mutation CreateStandupMeeting($projectId: UUID!, $input: StandupMeetingInput!) {\n            mutateProject(id: $projectId) {\n                createStandupMeeting(input: $input) {\n                    ...DefaultStandupMeeting\n                }\n            }\n        }": types.CreateStandupMeetingDocument,
     "\n        mutation StartStandupMeeting($projectId: UUID!) {\n            mutateProject(id: $projectId) {\n                mutateStandupMeeting {\n                    startStandupMeeting {\n                        ...DefaultStandupMeeting\n                    }\n                }\n            }\n        }": types.StartStandupMeetingDocument,
     "\n        mutation ChangeCurrentAttendee($projectId: UUID!, $userId: UUID!) {\n            mutateProject(id: $projectId) {\n                mutateStandupMeeting {\n                    changeCurrentAttendee(attendeeId: $userId) {\n                        ...DefaultStandupMeeting\n                    }\n                }\n            }\n        }": types.ChangeCurrentAttendeeDocument,
@@ -318,6 +321,18 @@ export function graphql(source: "\n        mutation DeleteProject($projectId: UU
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n      query Shop {\n        shopItems {\n            ...ShopItem\n        }\n      }\n    "): (typeof documents)["\n      query Shop {\n        shopItems {\n            ...ShopItem\n        }\n      }\n    "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n        mutation BuyAndPlace($projectId: UUID!, $input: PlaceAssetInput!) {\n            mutateProject(id: $projectId) {\n                buyAndPlace(input: $input) {\n                    id\n                }\n            }\n        }\n    "): (typeof documents)["\n        mutation BuyAndPlace($projectId: UUID!, $input: PlaceAssetInput!) {\n            mutateProject(id: $projectId) {\n                buyAndPlace(input: $input) {\n                    id\n                }\n            }\n        }\n    "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment ShopItem on ShopItem {\n      id\n      name\n      image\n      price    \n  }\n"): (typeof documents)["\n  fragment ShopItem on ShopItem {\n      id\n      name\n      image\n      price    \n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n      query Sprint($projectId: UUID!) {\n          project(id: $projectId) {\n              id\n              currentSprint {\n                  ...DefaultSprint\n              }\n          }\n      }\n  "): (typeof documents)["\n      query Sprint($projectId: UUID!) {\n          project(id: $projectId) {\n              id\n              currentSprint {\n                  ...DefaultSprint\n              }\n          }\n      }\n  "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -330,7 +345,7 @@ export function graphql(source: "\n      query Sprints($projectId: UUID!) {\n   
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    fragment DefaultSprint on Sprint {\n        id\n        startDate\n        endDate\n        storyPointsPlanned\n        stats {\n            totalStoryPoints\n            percentageStoryPointsCompleted\n            percentageStoryPointsInProgress\n            percentageTimeElapsed\n            daysLeft\n            averageStoryPoints\n            successState\n        }\n        name\n        animal\n        number\n    }\n"): (typeof documents)["\n    fragment DefaultSprint on Sprint {\n        id\n        startDate\n        endDate\n        storyPointsPlanned\n        stats {\n            totalStoryPoints\n            percentageStoryPointsCompleted\n            percentageStoryPointsInProgress\n            percentageTimeElapsed\n            daysLeft\n            averageStoryPoints\n            successState\n        }\n        name\n        animal\n        number\n    }\n"];
+export function graphql(source: "\n    fragment DefaultSprint on Sprint {\n        id\n        startDate\n        endDate\n        storyPointsPlanned\n        stats {\n            totalStoryPoints\n            percentageStoryPointsCompleted\n            percentageStoryPointsInProgress\n            percentageTimeElapsed\n            daysLeft\n            averageStoryPoints\n            successState\n        }\n        placedAssets {\n            asset\n            x\n            y\n        }\n        name\n        animal\n        number\n    }\n"): (typeof documents)["\n    fragment DefaultSprint on Sprint {\n        id\n        startDate\n        endDate\n        storyPointsPlanned\n        stats {\n            totalStoryPoints\n            percentageStoryPointsCompleted\n            percentageStoryPointsInProgress\n            percentageTimeElapsed\n            daysLeft\n            averageStoryPoints\n            successState\n        }\n        placedAssets {\n            asset\n            x\n            y\n        }\n        name\n        animal\n        number\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
