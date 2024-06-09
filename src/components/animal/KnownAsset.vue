@@ -5,7 +5,11 @@ import { KnownAsset } from '@/gql/graphql'
 import Cave from '@/assets/cave.png'
 import Trees from '@/assets/trees.png'
 import Bushes1 from '@/assets/bushes1.png'
+import Bushes2 from '@/assets/bushes2.png'
 import Pond from '@/assets/pond.png'
+import BoxWithFood from '@/assets/box-with-food.png'
+import Flowers from '@/assets/flowers.png'
+import TreeWithRocks from '@/assets/tree-with-rocks.png'
 
 const props = defineProps<{
   asset: KnownAsset | null
@@ -21,8 +25,16 @@ function getImg(asset: KnownAsset) {
       return Trees
     case KnownAsset.Bushes_1:
       return Bushes1
+    case KnownAsset.Bushes_2:
+      return Bushes2
     case KnownAsset.WaterPuddle:
       return Pond
+    case KnownAsset.FeedingTrough:
+      return BoxWithFood
+    case KnownAsset.Flowers:
+      return Flowers
+    case KnownAsset.TreeWithRocks:
+      return TreeWithRocks
     default:
       return Cave
   }
@@ -34,13 +46,21 @@ function getWidth(asset: KnownAsset) {
   }
   switch (asset) {
     case KnownAsset.Cave:
-      return 200
+      return 240
     case KnownAsset.Trees:
-      return 200
-    case KnownAsset.WaterPuddle:
       return 250
+    case KnownAsset.WaterPuddle:
+      return 260
     case KnownAsset.Bushes_1:
       return 150
+    case KnownAsset.Bushes_2:
+      return 140
+    case KnownAsset.FeedingTrough:
+      return 150
+    case KnownAsset.Flowers:
+      return 190
+    case KnownAsset.TreeWithRocks:
+      return 300
     default:
       return 100
   }

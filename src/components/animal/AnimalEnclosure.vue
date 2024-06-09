@@ -5,8 +5,8 @@ import type { Animal, KnownAsset as KnownAssetType } from '@/gql/graphql'
 import AnimalAvatar from '@/views/MeetingView/PlanningView/AnimalAvatar.vue'
 import type { PlacedAssetType } from '@/service/sprint-service'
 import PlacedAsset from '@/components/animal/PlacedAsset.vue'
-import { refDebounced, useMouse, watchImmediate } from '@vueuse/core'
-import { computed, ref, watch, watchEffect } from 'vue'
+import { useMouse } from '@vueuse/core'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
   animal: Animal | null
@@ -84,7 +84,7 @@ function setAssetPosition() {
     <div class="h-100 w-100 d-flex flex-column justify-end align-center" style="position: absolute; bottom: 100px">
       <!-- scale avatar by percentage complete -->
       <animal-avatar
-        :size="50 + 100 * percentageComplete"
+        :size="100 + 50 * percentageComplete"
         :animal="animal"
         v-if="isPresent(animal)"
         style="z-index: 10; position: absolute"/>

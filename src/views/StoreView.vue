@@ -5,6 +5,7 @@ import { useAppTitle } from '@/stores/app-title'
 import { onMounted } from 'vue'
 import KnownAsset from '@/components/animal/KnownAsset.vue'
 import PlaceNewAssetDialog from '@/components/animal/PlaceNewAssetDialog.vue'
+import { useSprintService } from '@/service/sprint-service'
 
 onMounted(() => {
   useAppTitle().setAppTitle('Store')
@@ -13,9 +14,7 @@ onMounted(() => {
 const { shopItems } = useShopService()
 
 function getColor(item: any) {
-  if (item.price <= 100) {
-    return 'grey'
-  } else if (item.price <= 150) {
+  if (item.price <= 150) {
     return 'success'
   } else if (item.price <= 200) {
     return 'warning'
@@ -26,13 +25,13 @@ function getColor(item: any) {
   }
 }
 
-function getRandomInt(max: number) {
-  return Math.floor(Math.random() * max)
-}
+const { currentSprint } = useSprintService()
+
 </script>
 
 <template>
-  <div class="pa-5 d-flex flex-row flex-wrap ga-2">
+
+  <div v-if="currentSprint" class="pa-5 d-flex flex-row flex-wrap ga-2">
       <div v-for="item in shopItems" :key="item.id">
         <v-card width="400" height="300">
           <v-card-title>{{ item.name }}</v-card-title>
@@ -52,6 +51,15 @@ function getRandomInt(max: number) {
           </v-card-actions>
         </v-card>
       </div>
+  </div>
+
+  <div class="pa-5" v-else>
+    <v-alert>
+      <p>
+        You need to start a sprint to access the store.
+      </p>
+    </v-alert>
+
   </div>
 
 </template>
