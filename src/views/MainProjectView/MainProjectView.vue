@@ -29,7 +29,7 @@ watchLoading(loading)
 </script>
 
 <template>
-  <v-main>
+  <v-main class="h-100 overflow-auto">
 
     <div class="h-100 d-flex flex-column">
       <the-top-bar />
@@ -37,7 +37,7 @@ watchLoading(loading)
       <div style="height: 10px">
         <v-progress-linear indeterminate class="w-100" v-if="globalLoading"></v-progress-linear>
       </div>
-      <router-view />
+      <router-view class="h-100 overflow-y-scroll" />
     </div>
   </v-main>
   <the-side-menu />

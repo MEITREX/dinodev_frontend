@@ -186,11 +186,11 @@ onMounted(() => {
         </v-btn>
       </div>
     </div>
-    <div class="d-flex flex-row overflow-auto h-100" ref="scrollContainer">
+    <div class="d-flex flex-row overflow-auto h-100" ref="scrollContainer" style="max-height: 100%">
       <div v-for="boardState in issueBoard?.states"
            :key="boardState.state.name"
-           class="flex-grow-1">
-        <div class="pa-2" style="height: 100%">
+           class="flex-grow-1 d-flex flex-column h-100">
+        <div class="pa-2 h-100">
           <issue-board-column :state="boardState.state"
                               :issues="boardState.issues"
                               :issue-filter="issueFilter"

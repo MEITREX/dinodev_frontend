@@ -5,6 +5,7 @@ const props = defineProps<{
   valueFormatter?: (value: string) => string
   allowVoting: boolean
   attendeesCount: number
+  userVote?: string
 }>()
 
 defineEmits<{
@@ -12,6 +13,10 @@ defineEmits<{
 }>()
 
 function getPercentage(votes: number) {
+  if (props.allowVoting) {
+    return 0
+  }
+
   const totalVotes = Object.values(props.valuesAndVotes).reduce((acc, curr) => acc + curr, 0)
   return (votes / totalVotes) * 100
 }
@@ -31,18 +36,21 @@ function isMostVoted(name: string) {
     >
       <template #prepend>
         <v-list-item-action start>
-          <v-btn @click="$emit('vote', value)" icon="mdi-thumb-up" variant="flat"
-                 class="text-grey" :disabled="!allowVoting"
+          <v-btn @click="$emit('vote', value)" icon="mdi-thumb-up"
+                 variant="flat"
+                 class="text-grey"
+                 :class="{ 'text-success' : userVote === value}"
+                 :disabled="!allowVoting"
           />
         </v-list-item-action>
       </template>
-      <v-list-item-title :class="{ 'font-weight-bold' : isMostVoted(value)}">
+      <v-list-item-title :class="{ 'font-weight-bold' : !allowVoting && isMostVoted(value)}">
         {{ valueFormatter ? valueFormatter(value) : value}}
       </v-list-item-title>
       <v-list-item-subtitle>
         <v-row>
           <v-col cols="3">
-            {{ votes }} / {{ attendeesCount }} votes
+            {{ allowVoting ? "?" : votes }} / {{ attendeesCount }} votes
           </v-col>
           <v-col cols="5">
             <v-progress-linear

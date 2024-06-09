@@ -5,6 +5,7 @@ import { computed } from 'vue'
 import IssueTypeIcon from '@/components/issue/IssueTypeIcon.vue'
 import IssuePriorityIcon from '@/components/issue/IssuePriorityIcon.vue'
 import { capitalCase } from 'capital-case'
+import { abbreviate } from '../../utils/string-utils'
 
 const props = defineProps<{
   issue: IssueBaseFragment
@@ -52,13 +53,15 @@ function getEmoji(estimation: TShirtSizeEstimation) {
 <template>
   <v-card
     width="280px"
+    height="140"
     hover
     draggable="true"
     variant="elevated"
     density="compact"
+    class="d-flex flex-column justify-space-between mx-2"
     @click="() => emit('click', issue)"
   >
-    <v-card-title>
+    <div class="pa-3">
       <div class="d-flex flex-row align-center justify-space-between w-100">
         <div class="d-flex flex-row align-center">
           <issue-type-icon :type="issue.type" height="25" />
@@ -89,11 +92,11 @@ function getEmoji(estimation: TShirtSizeEstimation) {
           </template>
         </div>
       </div>
-    </v-card-title>
+    </div>
 
-    <v-card-text class="pb-1 pl-5">
-      {{ issue.title }}
-    </v-card-text>
+    <div class="px-3 pl-5 text-sm-body-2">
+      {{ abbreviate(issue.title, 40) }}
+    </div>
 
     <div class="pa-3 d-flex flex-row justify-space-between">
       <div>

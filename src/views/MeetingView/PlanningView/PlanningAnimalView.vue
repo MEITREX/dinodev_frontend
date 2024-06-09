@@ -107,6 +107,7 @@ function finishVoting() {
         :values-and-votes="votesAsRecord"
         :value-formatter="animal => getAnimalName(animal as Animal)"
         :attendees-count="attendeesCount"
+        :user-vote="userVote?.votedFor"
         @vote="animal => voteAnimal(animal as Animal)" />
     </v-col>
   </v-row>
@@ -123,9 +124,7 @@ function finishVoting() {
         <span>
           {{ selectedAnimal === userVote?.votedFor ? 'Voted' : 'Vote' }} for {{ getAnimalName(selectedAnimal) }}
         </span>
-        <v-chip class="ml-2" size="small">
-          {{ getNumberOfVotesForAnimal(selectedAnimal) }}
-        </v-chip>
+
       </v-btn>
     </v-col>
     <v-col>

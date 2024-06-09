@@ -136,7 +136,7 @@ watchImmediate(() => props.issueEstimation?.finished, () => {
 </script>
 
 <template>
-  <div>
+  <div class="overflow-y-scroll">
     <v-row>
       <v-col cols="3">
         <h3 class="mb-3">Upcoming Issues</h3>
@@ -156,12 +156,12 @@ watchImmediate(() => props.issueEstimation?.finished, () => {
         </div>
       </v-col>
 
-      <v-col class="pa-3">
+      <v-col class="pa-3" cols="9">
         <h3 class="mb-3">Current Issue</h3>
         <p v-if="currentIssue === null">No issue selected yet</p>
-        <v-card class="mr-2" style="height: 20%; overflow: auto">
+        <v-card class="mr-2" style="height: 35%; overflow: scroll; max-height: 35%">
           <issue-page
-            class="pa-2"
+            class="pa-3"
             :issue="currentIssue"
             :show-events="false"
             :loading="loading"

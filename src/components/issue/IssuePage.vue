@@ -41,7 +41,8 @@ const { commentOnIssue } = useIssueService()
         </div>
 
         <div v-else>
-          <v-skeleton-loader boilerplate type="heading" />
+          <v-skeleton-loader type="heading" />
+          <v-skeleton-loader type="subtitle" />
         </div>
 
         <v-btn v-if="!loading && issueBase" :href="issueBase.issueUrl" target="_blank" >
@@ -70,17 +71,19 @@ const { commentOnIssue } = useIssueService()
 
       <v-skeleton-loader type="text" v-else />
 
-      <event-list
-        v-if="!loading && showEvents"
-        :show-comment-button="true"
-        :show-comment-block="true"
-        :show-issue-information="false"
-        :events="useFragment(eventWithChildrenFragment, eventsReversed)"
-        :post-comment-loading="eventsLoading"
-        @like-event="eventId => likeEvent(eventId).then()"
-        :events-loading="loading"
-        @post-comment="(comment, parentEvent) => commentOnIssue(issueBase!!.id, comment, parentEvent?.id)"
-      />
+      <div v-if="showEvents">
+        <event-list
+          v-if="!loading && showEvents"
+          :show-comment-button="true"
+          :show-comment-block="true"
+          :show-issue-information="false"
+          :events="useFragment(eventWithChildrenFragment, eventsReversed)"
+          :post-comment-loading="eventsLoading"
+          @like-event="eventId => likeEvent(eventId).then()"
+          :events-loading="loading"
+          @post-comment="(comment, parentEvent) => commentOnIssue(issueBase!!.id, comment, parentEvent?.id)"
+        />
+      </div>
 
       <v-skeleton-loader type="list-item" v-else-if="showEvents" />
 

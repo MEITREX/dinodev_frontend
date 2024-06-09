@@ -7,7 +7,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <v-app>
+  <v-app class="h-100">
     <!-- actual view depending on the route -->
     <router-view />
   </v-app>

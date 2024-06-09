@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DatePicker from '@/components/DatePicker.vue'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import type { PlanningMeetingInput } from '@/gql/graphql'
 import { isPresent } from '@/utils/types'
 import router from '@/router'

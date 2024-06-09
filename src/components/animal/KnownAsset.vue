@@ -39,6 +39,8 @@ function getWidth(asset: KnownAsset) {
       return 200
     case KnownAsset.WaterPuddle:
       return 250
+    case KnownAsset.Bushes_1:
+      return 150
     default:
       return 100
   }

@@ -158,7 +158,7 @@ function openUserProfile(userId: string | undefined) {
       </p>
 
       <p v-else>
-        {{ baseEvent?.message }}
+        {{ abbreviate(baseEvent?.message, 80) }}
       </p>
 
       <v-spacer />

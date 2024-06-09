@@ -129,7 +129,7 @@ const stepperDisabled = computed(() => {
           <p>This meeting will have four steps:</p>
           <ul style="list-style-type: circle;">
             <li>First, you will choose a sprint mascot that will accompany you during the sprint.</li>
-            <li>Then, you can find a cute name for your mascot!</li>
+            <li>Then, you can find a name for your mascot!</li>
             <li>After that, the issues of the backlog will be estimated.</li>
             <li>Finally, you will set the sprint goal by selecting the issues you want to work on this sprint.</li>
           </ul>

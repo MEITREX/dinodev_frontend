@@ -5,6 +5,7 @@ import { getAnimalName } from '@/utils/animal-names'
 import { usePlanningMeetingService } from '@/service/planning-meeting-service'
 import VotingOverview from '@/components/VotingOverview.vue'
 import { watchImmediate } from '@vueuse/core'
+import { useGlobalUserService } from '@/service/global-user-service'
 
 const props = defineProps<{
   animal: Animal | null
@@ -38,6 +39,12 @@ watchImmediate(finished, () => {
 })
 
 const names = computed(() => props.nameVoting?.votableNames ?? [])
+
+const userVote = computed(() => {
+  const userId = useGlobalUserService().currentGlobalUser.value?.id
+  return props.nameVoting?.nameVotingStates
+    .find(votingState => votingState.userVotes.some(vote => vote.user.id === userId))
+})
 
 const votesAsRecord = computed<Record<string, number>>(() => {
   return names.value.reduce((acc, name) => {
@@ -91,6 +98,7 @@ function finishVoting() {
       :allow-voting="!finished"
       :attendees-count="attendeesCount"
       @vote="name => voteName(name)"
+      :user-vote="userVote?.votedFor"
     />
 
     <v-btn
