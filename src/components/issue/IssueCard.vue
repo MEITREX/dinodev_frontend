@@ -53,7 +53,6 @@ function getEmoji(estimation: TShirtSizeEstimation) {
 <template>
   <v-card
     width="280px"
-    height="140"
     hover
     draggable="true"
     variant="elevated"

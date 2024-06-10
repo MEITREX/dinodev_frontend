@@ -11,7 +11,7 @@ import { getEmojisForStateType } from '@/utils/emojis'
 const props = defineProps<{
   state: IssueState,
   issues: Array<IssueBaseFragment>,
-  issueFilter: { assigneeId: string | null, searchString: string }
+  issueFilter: { assigneeId: string | null, searchString: string, sprint: number | null }
 }>()
 
 const emit = defineEmits<{
@@ -23,6 +23,7 @@ const filteredIssues = computed(() => {
     .filter(issue => props.issueFilter.assigneeId === null
       || issue.assignees.some(assignee => assignee?.user.id === props.issueFilter.assigneeId))
     .filter(issue => issue.title.toLowerCase().includes(props.issueFilter.searchString?.toLowerCase()))
+    .filter(issue => props.issueFilter.sprint === null || issue.sprintNumber === props.issueFilter.sprint)
 })
 
 const priorities = Object.values(IssuePriority)
@@ -65,7 +66,7 @@ function openIssue(issue: IssueBaseFragment) {
 
 <template>
   <div
-    class="h-100 pa-2 boardColumn elevation-1"
+    class="h-100 py-3 px-1 boardColumn elevation-1"
     @dragover.prevent
     ref="columnRef"
   >
@@ -98,7 +99,6 @@ function openIssue(issue: IssueBaseFragment) {
 .boardColumn {
   overflow-y: auto;
   min-width: 300px;
-  max-width: 300px;
   height: 100%;
   display: flex;
   flex-direction: column;

@@ -22,6 +22,7 @@ import NewIssueDialog from '@/components/dialog/issue/NewIssueDialog.vue'
 import { useNewIssueDialog } from '@/components/dialog/issue/new-issue-dialog-controller'
 import { useGlobalLoading } from '@/utils/use-global-loading'
 import { useRoute } from 'vue-router'
+import { useSprintService } from '@/service/sprint-service'
 
 const { issueBoard, loading, changeState, finishIssue, assignIssue } = useIssueService()
 useGlobalLoading().watchLoading(loading)
@@ -29,12 +30,23 @@ const { openNewIssueDialog } = useNewIssueDialog()
 
 useAppTitle().setAppTitle('Issue Board')
 
+const { currentSprint } = useSprintService()
+// all sprint numbers from 1 to the current sprint number
+const selectableSprints = computed(() => currentSprint?.value
+  ? Array.from({ length: currentSprint.value.number }, (_, i) => i + 1)
+  : [])
+const selectedSprint = ref<number | null>(null)
+watch(currentSprint, () => {
+  selectedSprint.value = currentSprint.value?.number ?? null
+})
+
 // filtering
 const mode = ref<0 | 1>(useRoute().query.mine ? 1 : 0) // 0 = all issues, 1 = my issues
 const searchString = ref<string | null>('')
 const issueFilter = computed(() => ({
   assigneeId: mode.value === 1 ? useGlobalUserService().currentGlobalUser?.value?.id : null,
-  searchString: searchString.value ?? ''
+  searchString: searchString.value ?? '',
+  sprint: selectedSprint.value
 }))
 
 enum VisibleDialog {
@@ -157,8 +169,9 @@ onMounted(() => {
   <div class="d-flex flex-column h-100">
 
     <div class="d-flex flex-row align-center justify-space-between">
-      <div class="px-3 py-2" style="min-width: 400px">
+      <div class="px-3 py-2 d-flex flex-row align-center">
         <v-text-field
+          width="300"
           ref="searchField"
           v-model="searchString"
           label="Search"
@@ -169,6 +182,20 @@ onMounted(() => {
           hide-details
           append-icon="mdi-magnify"
         />
+
+        <div>
+          <v-select
+            class="ml-3"
+            width="150"
+            variant="underlined"
+            density="comfortable"
+            v-model="selectedSprint"
+            :items="selectableSprints"
+            label="Sprint"
+            clearable
+            hide-details
+            placeholder="All sprints"></v-select>
+        </div>
       </div>
 
       <v-btn-toggle class="d-flex flex-row justify-center py-2" v-model="mode" variant="outlined">
