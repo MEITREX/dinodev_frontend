@@ -28,8 +28,13 @@ const { commentOnIssue } = useIssueService()
 
 <template>
   <div class="d-flex flex-row w-100">
+    <div class="w-75" v-if="loading || issue !== null">
 
-    <div class="d-flex flex-column w-75" v-if="loading || issue !== null">
+      <div v-if="loading">
+        <v-skeleton-loader type="heading"></v-skeleton-loader>
+        <v-skeleton-loader type="subtitle"></v-skeleton-loader>
+        <v-skeleton-loader type="text"></v-skeleton-loader>
+      </div>
 
       <div class="d-flex flex-row justify-space-between align-center">
         <div class="d-flex flex-row align-center" v-if="!loading">
@@ -69,8 +74,6 @@ const { commentOnIssue } = useIssueService()
         class="mt-3"
         :markdown-text="issueBase?.description ?? ''" />
 
-      <v-skeleton-loader type="text" v-else />
-
       <div v-if="showEvents">
         <event-list
           v-if="!loading && showEvents"
@@ -85,9 +88,8 @@ const { commentOnIssue } = useIssueService()
         />
       </div>
 
-      <v-skeleton-loader type="list-item" v-else-if="showEvents" />
-
     </div>
+R
   </div>
 </template>
 
