@@ -50,23 +50,27 @@ const { commentOnIssue } = useIssueService()
           <v-skeleton-loader type="subtitle" />
         </div>
 
-        <v-btn v-if="!loading && issueBase" :href="issueBase.issueUrl" target="_blank" >
+        <v-btn v-if="!loading && issueBase" :href="issueBase.issueUrl" target="_blank">
           <gropius-icon />
         </v-btn>
       </div>
 
 
-      <div v-for="assignee in issueBase?.assignees ?? []" :key="assignee?.user.id">
-        <v-chip v-if="assignee"
-                :prepend-avatar="assignee?.user.avatar ?? ''"
-                color="grey">
-          {{ assignee?.user.username }}
-        </v-chip>
+      <div class="d-flex flex-row ga-2 flex-wrap my-1">
+        <div v-for="assignee in issueBase?.assignees ?? []" :key="assignee?.user.id">
+          <v-chip v-if="assignee"
+                  :prepend-avatar="assignee?.user.avatar ?? ''"
+                  color="grey">
+            {{ assignee?.user.username }}
+          </v-chip>
+        </div>
       </div>
-      <div v-for="label in issueBase?.labels ?? []" :key="label">
-        <v-chip v-if="label" color="success">
-          {{ label }}
-        </v-chip>
+      <div class="d-flex flex-row ga-2 flex-wrap my-1">
+        <div v-for="label in issueBase?.labels ?? []" :key="label">
+          <v-chip v-if="label" color="success">
+            {{ label }}
+          </v-chip>
+        </div>
       </div>
 
       <markdown-text-card
@@ -89,7 +93,6 @@ const { commentOnIssue } = useIssueService()
       </div>
 
     </div>
-R
   </div>
 </template>
 
