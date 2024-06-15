@@ -10,7 +10,7 @@ onMounted(() => {
   useAppTitle().setAppTitle('Sprint Stats')
 })
 
-const { allSprints } = useSprintService()
+const { allSprints, currentSprint } = useSprintService()
 
 const velocityValues = computed(() => allSprints.value.map(sprint => sprint.stats.totalStoryPoints))
 const averageSpValues = computed(() => allSprints.value.map(sprint => sprint.stats.averageStoryPoints))
@@ -84,6 +84,36 @@ function roundValue(value: string): number {
       </p>
 
     </v-col>
+  </v-row>
+  <v-row class="pa-3 mr-1">
+    <v-col>
+      <h2>
+        Current sprint: Burndown chart
+      </h2>
+      <v-card>
+        <v-sparkline
+          v-if="currentSprint?.stats?.burnDown"
+          :model-value="currentSprint?.stats?.burnDown"
+          class="pa-3"
+          auto-draw
+          smooth
+          padding="20"
+          type="trend"
+          show-labels
+          :gradient="['#f72047', '#ffd200', '#1feaea']"
+        >
+          <template #label="{ index }">
+            {{ index + 1 }}
+          </template>
+        </v-sparkline>
+      </v-card>
+      <p class="py-2">
+        The burndown chart shows the total number of story points completed in the current sprint.
+        The chart should ideally show a downward trend, indicating that the team is on track to complete all planned
+        story points.
+      </p>
+    </v-col>
+    <v-col></v-col>
   </v-row>
 
   <v-row class="pa-3 mr-1">
