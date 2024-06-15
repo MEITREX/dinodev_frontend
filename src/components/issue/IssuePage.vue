@@ -55,7 +55,7 @@ const { commentOnIssue } = useIssueService()
         </v-btn>
       </div>
 
-
+      <!-- assignees -->
       <div class="d-flex flex-row ga-2 flex-wrap my-1">
         <div v-for="assignee in issueBase?.assignees ?? []" :key="assignee?.user.id">
           <v-chip v-if="assignee"
@@ -65,6 +65,8 @@ const { commentOnIssue } = useIssueService()
           </v-chip>
         </div>
       </div>
+
+      <!-- labels -->
       <div class="d-flex flex-row ga-2 flex-wrap my-1">
         <div v-for="label in issueBase?.labels ?? []" :key="label">
           <v-chip v-if="label" color="success">
@@ -73,6 +75,7 @@ const { commentOnIssue } = useIssueService()
         </div>
       </div>
 
+      <!-- description -->
       <markdown-text-card
         v-if="!loading"
         class="mt-3"
@@ -91,7 +94,6 @@ const { commentOnIssue } = useIssueService()
           @post-comment="(comment, parentEvent) => commentOnIssue(issueBase!!.id, comment, parentEvent?.id)"
         />
       </div>
-
     </div>
   </div>
 </template>

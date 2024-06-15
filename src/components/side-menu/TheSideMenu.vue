@@ -39,7 +39,7 @@ function openUserProfile() {
 
 <template>
   <v-navigation-drawer
-    :location="$vuetify.display.mobile ? 'bottom' : 'right'"
+    location="right"
     v-model:rail="rail"
     permanent
   >
