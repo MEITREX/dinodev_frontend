@@ -11,7 +11,7 @@ import { useGlobalUserService } from '@/service/global-user-service'
 import { useIssueService } from '@/service/issue-service'
 import IssueCard from '@/components/issue/IssueCard.vue'
 import { useEventService } from '@/service/event-service'
-import { computedAsync } from '@vueuse/core'
+import { watchImmediate } from '@vueuse/core'
 import EventList from '@/components/event/EventList.vue'
 import { useAppTitle } from '@/stores/app-title'
 import { getEmojisForStateType } from '@/utils/emojis'
@@ -20,10 +20,12 @@ import { routes } from '@/router/routes'
 import { useAppStore } from '@/stores/app-store'
 import CountdownDisplay from '@/components/CountdownDisplay.vue'
 import { isPresent } from '@/utils/types'
+import { useSprintService } from '@/service/sprint-service'
 
 const { standupMeeting, startStandupMeeting, changeCurrentAttendee, finishMeeting } = useStandupMeetingService()
 const { issueBoard } = useIssueService()
-const { fetchEventsOfUser, eventsOfUserLazyQuery } = useEventService()
+const { currentSprint } = useSprintService()
+const { fetchEventsOfUser, eventsOfUserLazyQuery, newEventSubscription } = useEventService()
 const { setAppTitle } = useAppTitle()
 
 onMounted(() => {
@@ -33,7 +35,6 @@ onMounted(() => {
 const baseMeeting = computed(() => useFragment(meetingFragment, standupMeeting.value) || null)
 
 const meetingStarted = computed(() => (standupMeeting.value?.currentAttendee != null))
-
 const meetingFinished = computed(() => baseMeeting.value?.active === false)
 
 const isMeetingLeader = computed(() => {
@@ -71,12 +72,28 @@ watch(() => currentAttendee.value, () => {
 })
 
 function getIssuesOfCurrentAttendee(state: ProjectBoardFragment['states'][0]) {
-  return state.issues.filter(i => i.assignees.some(a => a?.user.id === currentAttendee.value?.user.id))
+  return state.issues
+    // only show issues of the current sprint or issues without sprint
+    .filter(i => !i.sprintNumber || i.sprintNumber === currentSprint.value?.number)
+    .filter(i => i.assignees.some(a => a?.user.id === currentAttendee.value?.user.id))
 }
 
-const eventsOfUser = computedAsync(() => {
+const eventsOfUser = ref();
+
+function fetchEventsOfCurrentAttendee() {
   if (!currentAttendee.value) return Promise.resolve([])
   return fetchEventsOfUser(currentAttendee.value?.user.id ?? '')
+}
+
+watchImmediate(currentAttendee, () => {
+  fetchEventsOfCurrentAttendee().then(events => {
+    eventsOfUser.value = events
+  })
+})
+newEventSubscription.onResult(() => {
+  fetchEventsOfCurrentAttendee().then(events => {
+    eventsOfUser.value = events
+  })
 })
 
 function next() {
@@ -97,6 +114,10 @@ function previous() {
 
 function youAreNext() {
   return currentAttendee.value?.user.id === useGlobalUserService().currentGlobalUser.value?.id
+}
+
+function likeEvent(eventId: string) {
+  return useEventService().likeEvent(eventId)
 }
 
 </script>
@@ -179,7 +200,9 @@ function youAreNext() {
                   :show-issue-information="true"
                   :show-comment-button="false"
                   :show-comment-block="false"
-                  :events="eventsOfUser">
+                  :events="eventsOfUser"
+                  @like-event="eventId => likeEvent(eventId).then()"
+                >
 
                 </event-list>
               </v-card>
