@@ -71,8 +71,8 @@ const userName = computed(() => {
 
 const issueTitle = computed(() => {
   const title = baseEvent.value?.issueTitle?.value ?? null
-  // limit to 40 characters
-  return abbreviate(title, 40)
+  // limit to 60 characters
+  return abbreviate(title, 60)
 })
 
 const issueId = computed(() => baseEvent.value?.issueId?.value ?? null)

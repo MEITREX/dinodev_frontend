@@ -5,7 +5,7 @@ import { computed } from 'vue'
 import IssueTypeIcon from '@/components/issue/IssueTypeIcon.vue'
 import IssuePriorityIcon from '@/components/issue/IssuePriorityIcon.vue'
 import { capitalCase } from 'capital-case'
-import { abbreviate } from '../../utils/string-utils'
+import { abbreviate } from '@/utils/string-utils'
 
 const props = defineProps<{
   issue: IssueBaseFragment
@@ -94,7 +94,7 @@ function getEmoji(estimation: TShirtSizeEstimation) {
     </div>
 
     <div class="px-3 pl-5 text-sm-body-2">
-      {{ abbreviate(issue.title, 40) }}
+      {{ abbreviate(issue.title, 70) }}
     </div>
 
     <div class="pa-3 d-flex flex-row justify-space-between">
