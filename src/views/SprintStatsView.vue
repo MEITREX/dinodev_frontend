@@ -100,6 +100,8 @@ function roundValue(value: string): number {
           padding="20"
           type="trend"
           show-labels
+          :min="0"
+          :max="currentSprint?.storyPointsPlanned ?? undefined"
           :gradient="['#f72047', '#ffd200', '#1feaea']"
         >
           <template #label="{ index }">
