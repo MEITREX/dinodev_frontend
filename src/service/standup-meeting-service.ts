@@ -67,7 +67,7 @@ class StandupMeetingService {
     this.standupMeetingSubscription.onError((error) => useErrorManager().catchError(error))
   }
 
-  private createStandupMeetingMutation = provideApolloClient(apolloClient)(() => {
+  createStandupMeetingMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation CreateStandupMeeting($projectId: UUID!, $input: StandupMeetingInput!) {
             mutateProject(id: $projectId) {
@@ -79,7 +79,7 @@ class StandupMeetingService {
     ))
   })
 
-  private startStandupMeetingMutation = provideApolloClient(apolloClient)(() => {
+  startStandupMeetingMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation StartStandupMeeting($projectId: UUID!) {
             mutateProject(id: $projectId) {
@@ -93,7 +93,7 @@ class StandupMeetingService {
     ))
   })
 
-  private changeCurrentAttendeeMutation = provideApolloClient(apolloClient)(() => {
+  changeCurrentAttendeeMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation ChangeCurrentAttendee($projectId: UUID!, $userId: UUID!) {
             mutateProject(id: $projectId) {
@@ -107,7 +107,7 @@ class StandupMeetingService {
     ))
   })
 
-  private finishMeetingMutation = provideApolloClient(apolloClient)(() => {
+  finishMeetingMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation FinishStandupMeeting($projectId: UUID!) {
             mutateProject(id: $projectId) {

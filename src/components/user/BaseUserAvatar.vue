@@ -5,6 +5,7 @@ import { routes } from '@/router/routes'
 
 const props = defineProps<{
   user: { id: string, avatar?: string | null, username: string } | null,
+  badgeEmoji?: string
   size?: number
 }>()
 
@@ -16,13 +17,22 @@ function openUserProfile() {
 </script>
 
 <template>
-  <v-avatar
-    class="cursor-pointer"
-    :size="size"
-    :image="user?.avatar ?? undefined"
-    @click="() => openUserProfile()">
+  <v-badge
+    v-if="user"
+    color="transparent"
+    overlap="circle">
+    <v-avatar
+      class="cursor-pointer"
+      :size="size"
+      :image="user?.avatar ?? undefined"
+      @click="() => openUserProfile()">
 
-  </v-avatar>
+    </v-avatar>
+
+    <template #badge>
+      <span class="text-h6">{{ badgeEmoji }}</span>
+    </template>
+  </v-badge>
 </template>
 
 <style scoped>

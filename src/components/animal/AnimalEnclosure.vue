@@ -8,7 +8,7 @@ import PlacedAsset from '@/components/animal/PlacedAsset.vue'
 import { useMouse } from '@vueuse/core'
 import { computed, ref } from 'vue'
 
-const props = defineProps<{
+defineProps<{
   animal: Animal | null
   percentageComplete: number,
   placedAssets: readonly PlacedAssetType[],
@@ -84,7 +84,7 @@ function setAssetPosition() {
     <div class="h-100 w-100 d-flex flex-column justify-end align-center" style="position: absolute; bottom: 100px">
       <!-- scale avatar by percentage complete -->
       <animal-avatar
-        :size="100 + 50 * percentageComplete"
+        :size="100 + 80 * percentageComplete"
         :animal="animal"
         v-if="isPresent(animal)"
         style="z-index: 10; position: absolute"/>

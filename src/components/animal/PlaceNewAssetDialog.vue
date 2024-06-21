@@ -4,7 +4,7 @@ import { useSprintService } from '@/service/sprint-service'
 import AnimalEnclosure from '@/components/animal/AnimalEnclosure.vue'
 import { useAppStore } from '@/stores/app-store'
 import { useShopService } from '@/service/shop-service'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
   newAsset: KnownAsset | null,
@@ -31,6 +31,12 @@ async function placeAsset() {
     y: Math.round(yPos.value)
   })
 }
+
+const percentageComplete = computed(() => {
+  const val = (currentSprint.value?.stats.percentageStoryPointsCompleted ?? 0) / 100
+
+  return Math.min(1, val)
+})
 </script>
 
 <template>
@@ -43,7 +49,7 @@ async function placeAsset() {
         <v-card-text>
           <animal-enclosure
             :animal="currentSprint?.animal ?? null"
-            :percentage-complete="(currentSprint?.stats.percentageStoryPointsCompleted ?? 0) / 100 "
+            :percentage-complete="percentageComplete"
             :placed-assets="currentSprint?.placedAssets ?? []"
             :new-asset-to-place="newAsset"
             @place-asset="setAssetPosition"

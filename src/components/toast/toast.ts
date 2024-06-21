@@ -12,14 +12,18 @@ import { useFragment } from '@/gql'
 import { useGlobalUserService } from '@/service/global-user-service'
 import { getDisplayUserName } from '@/utils/user-utils'
 import { abbreviate } from '@/utils/string-utils'
+import { useRetrospectiveMeetingService } from '@/service/retrospective-meeting-service'
+import RetrospectiveMeetingStartedToast from '@/components/toast/RetrospectiveMeetingStartedToast.vue'
 
 export function setupToast() {
   const toast = useToast()
   const { planningMeeting } = usePlanningMeetingService()
   const { standupMeeting } = useStandupMeetingService()
+  const { retrospectiveMeeting } = useRetrospectiveMeetingService()
 
   const planningMeetingActive = computed(() => planningMeeting.value !== null)
   const standupMeetingActive = computed(() => standupMeeting.value !== null)
+  const retrospectiveMeetingActive = computed(() => retrospectiveMeeting.value !== null)
 
   function showToastWhenMeetingStarts(routeName: string, component: any, active: Ref<boolean>) {
     watchImmediate(active, (value) => {
@@ -38,6 +42,7 @@ export function setupToast() {
 
   showToastWhenMeetingStarts(routes.projectSubRoutes.planningLive, PlanningMeetingStartedToast, planningMeetingActive)
   showToastWhenMeetingStarts(routes.projectSubRoutes.standupLive, StandupMeetingStartedToast, standupMeetingActive)
+  showToastWhenMeetingStarts(routes.projectSubRoutes.retrospectiveLive, RetrospectiveMeetingStartedToast, retrospectiveMeetingActive)
 
   const { newEventSubscription } = useEventService()
   newEventSubscription.onResult((result) => {

@@ -6,7 +6,6 @@ import router from '@/router'
 import { useAppStore } from '@/stores/app-store'
 import { routes } from '@/router/routes'
 import AnimalEnclosure from '@/components/animal/AnimalEnclosure.vue'
-import { KnownAsset } from '@/gql/graphql'
 
 const { currentSprint } = useSprintService()
 

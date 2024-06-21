@@ -1,24 +1,17 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { StandupMeetingInput } from '@/gql/graphql'
+import type { BaseGlobalUserFragment, StandupMeetingInput } from '@/gql/graphql'
 import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
-import { useUserInProjectService } from '@/service/user-in-project-service'
 import { useAppStore } from '@/stores/app-store'
 import { useStandupMeetingService } from '@/service/standup-meeting-service'
-import { useGlobalUserService } from '@/service/global-user-service'
+import UserSelect from '@/components/user/UserSelect.vue'
 
-const meetingLeaderId = ref<string | null>(useGlobalUserService().currentGlobalUser.value?.id ?? null)
+const meetingLeader = ref<BaseGlobalUserFragment | null>(null)
+const meetingLeaderId = computed(() => meetingLeader.value?.id ?? null)
 
 const projectId = computed(() => useAppStore().projectId.value)
-
-const users = computed(() => useUserInProjectService().allUsers.value?.map(user => {
-  return {
-    title: user.user?.username ?? 'Unknown user',
-    value: user.user.id
-  }
-}) ?? [])
 
 const countdownSecondsSetting = ref(60)
 const useCountdownPerAttendee = ref(false)
@@ -101,10 +94,7 @@ function createMeeting() {
             Meeting leader
           </v-col>
           <v-col>
-            <v-select
-              :items="users"
-              v-model="meetingLeaderId"
-            ></v-select>
+            <user-select v-model="meetingLeader" initialize-with-current-user />
           </v-col>
         </v-row>
 

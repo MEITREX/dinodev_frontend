@@ -90,6 +90,7 @@ watchImmediate(currentAttendee, () => {
     eventsOfUser.value = events
   })
 })
+// update events on new event (e.g. likes)
 newEventSubscription.onResult(() => {
   fetchEventsOfCurrentAttendee().then(events => {
     eventsOfUser.value = events

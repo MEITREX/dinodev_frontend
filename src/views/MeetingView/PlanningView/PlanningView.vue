@@ -20,7 +20,7 @@ const { planningMeeting, changePage, loading } = usePlanningMeetingService()
 
 onMounted(() => {
   watch(loading, () => {
-    if (!loading && !planningMeeting.value) {
+    if (!loading && planningMeeting.value == null) {
       useErrorManager().catchError('There is no active planning meeting.')
       router.push(routes.project(useAppStore().getProjectIdOrThrow()).main)
     }

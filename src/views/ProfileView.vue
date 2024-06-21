@@ -8,7 +8,6 @@ import { useGlobalLoading } from '@/utils/use-global-loading'
 import MedalIcon from '@/components/user/MedalIcon.vue'
 import AchievementCard from '@/components/user/AchievementCard.vue'
 import { computed } from 'vue'
-import { useEventService } from '@/service/event-service'
 
 const props = defineProps<{
   userId: string
@@ -33,7 +32,8 @@ const isCurrentUser = computed(() => currentLoggedInUser.value?.user?.id === pro
   <div class="pa-3">
     <v-row>
       <v-col cols="1">
-        <base-user-avatar :user="userToDisplay?.user || null" :size="100" />
+        <base-user-avatar :user="userToDisplay?.user || null" :size="100"
+                          :badge-emoji="userToDisplay?.currentBadge?.emoji ?? undefined" />
       </v-col>
       <v-col>
         <v-card height="150">

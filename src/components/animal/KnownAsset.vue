@@ -10,6 +10,9 @@ import Pond from '@/assets/pond.png'
 import BoxWithFood from '@/assets/box-with-food.png'
 import Flowers from '@/assets/flowers.png'
 import TreeWithRocks from '@/assets/tree-with-rocks.png'
+import Cave2 from '@/assets/cave_2.png'
+import WaterFountain from '@/assets/water_fountain.png'
+import Rock1 from '@/assets/rock_1.png'
 
 const props = defineProps<{
   asset: KnownAsset | null
@@ -21,6 +24,8 @@ function getImg(asset: KnownAsset) {
   switch (asset) {
     case KnownAsset.Cave:
       return Cave
+    case KnownAsset.Cave_2:
+      return Cave2
     case KnownAsset.Trees:
       return Trees
     case KnownAsset.Bushes_1:
@@ -35,6 +40,10 @@ function getImg(asset: KnownAsset) {
       return Flowers
     case KnownAsset.TreeWithRocks:
       return TreeWithRocks
+    case KnownAsset.Fountain:
+      return WaterFountain
+    case KnownAsset.Rock_1:
+      return Rock1
     default:
       return Cave
   }
@@ -47,6 +56,8 @@ function getWidth(asset: KnownAsset) {
   switch (asset) {
     case KnownAsset.Cave:
       return 240
+    case KnownAsset.Cave_2:
+      return 250
     case KnownAsset.Trees:
       return 250
     case KnownAsset.WaterPuddle:
@@ -61,6 +72,10 @@ function getWidth(asset: KnownAsset) {
       return 190
     case KnownAsset.TreeWithRocks:
       return 300
+    case KnownAsset.Fountain:
+      return 200
+    case KnownAsset.Rock_1:
+      return 30
     default:
       return 100
   }

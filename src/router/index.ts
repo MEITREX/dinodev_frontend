@@ -72,6 +72,11 @@ const router = createRouter({
           component: () => import('@/views/MeetingView/StandupView/StandupView.vue')
         },
         {
+          path: routes.projectSubRoutes.retrospective,
+          name: 'retrospective',
+          component: () => import('@/views/MeetingView/RetrospectiveView/RetrospectiveSettingsView.vue')
+        },
+        {
           path: routes.projectSubRoutes.retrospective + '-live',
           name: 'liveRetrospective',
           component: () => import('@/views/MeetingView/RetrospectiveView/RetrospectiveView.vue')
@@ -86,11 +91,6 @@ const router = createRouter({
           props: true,
           name: 'issue',
           component: () => import('@/views/IssueBoardView/IssueView.vue')
-        },
-        {
-          path: 'retrospective',
-          name: 'retrospective',
-          component: () => import('@/views/MeetingView/RetrospectiveView/RetrospectiveView.vue')
         },
         {
           path: 'team',

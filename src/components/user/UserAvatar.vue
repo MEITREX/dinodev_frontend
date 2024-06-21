@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useUserInProjectService } from '@/service/user-in-project-service'
-import { computedAsync } from '@vueuse/core'
 import BaseUserAvatar from '@/components/user/BaseUserAvatar.vue'
 import UserCard from '@/components/user/UserCard.vue'
 import { computed } from 'vue'
@@ -23,7 +22,12 @@ const userInProject = computed(() => {
 <template>
   <v-menu open-on-hover>
     <template #activator="{ props }">
-      <base-user-avatar :user="user" :size="size" v-bind="props"></base-user-avatar>
+      <base-user-avatar
+        :user="user"
+        :size="size"
+        v-bind="props"
+        :badge-emoji="userInProject?.currentBadge?.emoji ?? undefined"
+      ></base-user-avatar>
     </template>
     <user-card :userInProject="userInProject"></user-card>
   </v-menu>

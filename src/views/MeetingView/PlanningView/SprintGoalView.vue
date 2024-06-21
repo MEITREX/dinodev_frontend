@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { type DefaultPlanningMeetingFragment } from '@/gql/graphql'
+import { type DefaultPlanningMeetingFragment, IssueStateType } from '@/gql/graphql'
 import { usePlanningMeetingService } from '@/service/planning-meeting-service'
 import { useIssueService } from '@/service/issue-service'
 import IssueCard from '@/components/issue/IssueCard.vue'
 import { useSprintService } from '@/service/sprint-service'
 import HoldToConfirm from '@/components/HoldToConfirm.vue'
+import { isPresent } from '@/utils/types'
 
 const props = defineProps<{
   sprintGoalVoting: DefaultPlanningMeetingFragment['sprintGoalVoting'] | null
@@ -19,13 +20,14 @@ const { issueBoard } = useIssueService()
 const { previousSprint } = useSprintService()
 
 const backlogIssues = computed(() => issueBoard.value?.states
+  .filter(boardState => boardState.state.type !== IssueStateType.Done && boardState.state.type !== IssueStateType.DoneSprint)
   .flatMap(boardState => boardState.issues ?? []) ?? [])
 
 const sprintGoal = computed(() => backlogIssues.value
   .filter(issue => props.sprintGoalVoting?.sprintIssueIds?.includes(issue.id)))
 
 const nonSprintGoal = computed(() => backlogIssues.value
-  .filter(issue => props.sprintGoalVoting?.nonSprintIssueIds?.includes(issue.id)))
+  .filter(issue => !isPresent(issue.sprintNumber) || issue.sprintNumber > (previousSprint.value?.number ?? 0)))
 
 const sprintGoalStoryPoints = computed(() =>
   sprintGoal.value.reduce((total, issue) => total + (issue?.storyPoints ?? 0), 0))

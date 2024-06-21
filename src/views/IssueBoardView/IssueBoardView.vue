@@ -16,7 +16,7 @@ import {
   isMovedToInProgress,
   isReopened
 } from '@/utils/state-utils'
-import { useMagicKeys } from '@vueuse/core'
+import { useMagicKeys, watchImmediate } from '@vueuse/core'
 import { useAppTitle } from '@/stores/app-title'
 import NewIssueDialog from '@/components/dialog/issue/NewIssueDialog.vue'
 import { useNewIssueDialog } from '@/components/dialog/issue/new-issue-dialog-controller'
@@ -36,7 +36,7 @@ const selectableSprints = computed(() => currentSprint?.value
   ? Array.from({ length: currentSprint.value.number }, (_, i) => i + 1)
   : [])
 const selectedSprint = ref<number | null>(null)
-watch(currentSprint, () => {
+watchImmediate(currentSprint, () => {
   selectedSprint.value = currentSprint.value?.number ?? null
 })
 

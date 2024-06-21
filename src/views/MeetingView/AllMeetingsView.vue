@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MeetingCard from '@/views/MeetingView/MeetingCard.vue'
-import { computed, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
@@ -10,14 +10,18 @@ import { useStandupMeetingService } from '@/service/standup-meeting-service'
 import { useFragment } from '@/gql'
 import { meetingFragment } from '@/service/meeting-service'
 import { useAppTitle } from '@/stores/app-title'
+import { useRetrospectiveMeetingService } from '@/service/retrospective-meeting-service'
+
+onMounted(() => {
+  useAppTitle().setAppTitle('Meetings')
+})
 
 const { planningMeeting } = usePlanningMeetingService()
 const { standupMeeting } = useStandupMeetingService()
-const { setAppTitle } = useAppTitle()
-setAppTitle('Meetings')
+const { retrospectiveMeeting } = useRetrospectiveMeetingService()
 
 const planningActive = computed(() => isPresent(planningMeeting.value) && useFragment(meetingFragment, planningMeeting.value).active)
-const retrospectiveActive = ref(false)
+const retrospectiveActive = computed(() => isPresent(retrospectiveMeeting.value) && useFragment(meetingFragment, retrospectiveMeeting.value).active)
 const standupActive = computed(() => isPresent(standupMeeting.value) && useFragment(meetingFragment, standupMeeting.value).active)
 
 const knownMeetings = computed(() => {

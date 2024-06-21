@@ -36,7 +36,10 @@ function openUserProfile() {
     {{ userInProject?.roles[0]?.gamifiedName ?? "&nbsp;" }}
   </template>
   <template #append>
-    <base-user-avatar :user="userInProject?.user ?? null" :size="40" />
+    <base-user-avatar
+      :user="userInProject?.user ?? null"
+      :badge-emoji="userInProject?.currentBadge?.emoji ?? undefined"
+      :size="40" />
   </template>
 
   <template #text>

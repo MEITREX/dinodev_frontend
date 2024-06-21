@@ -101,6 +101,9 @@ class UserInProjectService {
               silverMedals
               bronzeMedals
           }
+          currentBadge {
+              emoji
+          }
       }`)
 
   userInProjectQuery = provideApolloClient(apolloClient)(() => {

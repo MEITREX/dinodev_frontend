@@ -1,28 +1,21 @@
 <script setup lang="ts">
 import DatePicker from '@/components/DatePicker.vue'
 import { computed, ref } from 'vue'
-import type { PlanningMeetingInput } from '@/gql/graphql'
+import { type BaseGlobalUserFragment, type PlanningMeetingInput } from '@/gql/graphql'
 import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
-import { useUserInProjectService } from '@/service/user-in-project-service'
 import { useAppStore } from '@/stores/app-store'
 import { usePlanningMeetingService } from '@/service/planning-meeting-service'
+import UserSelect from '@/components/user/UserSelect.vue'
 
 const start = ref<Date>(new Date())
-const meetingLeaderId = ref<string | null>(null)
+const meetingLeader = ref<BaseGlobalUserFragment | null>(null)
+const meetingLeaderId = computed(() => meetingLeader.value?.id ?? null)
 const sprintDuration = ref(14)
 const customGoldChallengeReward = ref<string | null>(null)
 
 const projectId = computed(() => useAppStore().projectId.value)
-
-const users = computed(() => useUserInProjectService().allUsers.value?.map(user => {
-  return {
-    title: user.user?.username ?? 'Unknown user',
-    value: user.user.id
-  }
-}) ?? [])
-
 
 const input = computed<PlanningMeetingInput | null>(() => {
     if (!meetingLeaderId.value || !projectId.value || !start.value) {
@@ -30,7 +23,6 @@ const input = computed<PlanningMeetingInput | null>(() => {
     }
 
     return {
-      title: 'Planning meeting',
       planningSettings: {
         sprintDurationDays: sprintDuration.value,
         sprintStartDate: start.value.toISOString(),
@@ -94,10 +86,7 @@ function createMeeting() {
             Meeting leader
           </v-col>
           <v-col>
-            <v-select
-              :items="users"
-              v-model="meetingLeaderId"
-            ></v-select>
+            <user-select v-model="meetingLeader" initialize-with-current-user />
           </v-col>
         </v-row>
 

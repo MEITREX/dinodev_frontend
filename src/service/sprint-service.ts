@@ -106,6 +106,7 @@ export const sprintFragment = graphql(`
             averageStoryPoints
             successState
             burnDown
+            streak
         }
         placedAssets {
             asset
