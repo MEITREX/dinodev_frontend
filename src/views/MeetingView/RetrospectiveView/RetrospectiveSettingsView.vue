@@ -57,7 +57,7 @@ const valid = computed(() => meetingLeader.value != null)
           </v-col>
         </v-row>
 
-<!--        <v-row class="mt-5">
+        <v-row class="mt-5">
           <v-col>
             Retrospective Activity (optional)
           </v-col>
@@ -68,7 +68,7 @@ const valid = computed(() => meetingLeader.value != null)
               :placeholder="'Select activity'"
             />
           </v-col>
-        </v-row>-->
+        </v-row>
 
         <v-row>
           <v-btn

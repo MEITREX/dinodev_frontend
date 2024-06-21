@@ -10,7 +10,7 @@ import { MeetingRole } from '@/gql/graphql'
 import { useGlobalUserService } from '@/service/global-user-service'
 import { useUserInProjectService } from '@/service/user-in-project-service'
 
-const { retrospectiveMeeting, awardMedals, finishMeeting } = useRetrospectiveMeetingService()
+const { retrospectiveMeeting, awardMedals } = useRetrospectiveMeetingService()
 
 const meetingBase = computed(() => useFragment(meetingFragment, retrospectiveMeeting.value) || null)
 
@@ -109,10 +109,6 @@ watchImmediate(currentMedalAnimationStepIndex, (newVal) => {
       </transition>
     </v-card>
   </div>
-
-  <v-btn class="ml-3" v-if="isMeetingLeader" @click="finishMeeting" color="primary">
-    Finish meeting
-  </v-btn>
 </template>
 
 <style scoped>

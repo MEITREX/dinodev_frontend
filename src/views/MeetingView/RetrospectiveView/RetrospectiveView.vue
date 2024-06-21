@@ -12,6 +12,7 @@ import { MeetingRole, MeetingType, RetrospectiveMeetingPage } from '@/gql/graphq
 import MeetingAttendeeCard from '@/components/meeting/MeetingAttendeeCard.vue'
 import SprintResultView from '@/views/MeetingView/RetrospectiveView/SprintResultView.vue'
 import MedalView from '@/views/MeetingView/RetrospectiveView/MedalView.vue'
+import SprintActivityView from '@/views/MeetingView/RetrospectiveView/SprintActivityView.vue'
 
 const { retrospectiveMeeting, changePage, loading } = useRetrospectiveMeetingService()
 
@@ -40,7 +41,12 @@ const retrospectiveSteps = computed(() => {
       title: 'Medals',
       value: 3,
       page: RetrospectiveMeetingPage.MedalCeremony
-    }
+    },
+    {
+      title: 'Activities',
+      value: 4,
+      page: RetrospectiveMeetingPage.Games
+    },
   ]
   // add game steps
 })
@@ -134,7 +140,7 @@ const stepperDisabled = computed(() => {
       <!--suppress VueUnrecognizedSlot -->
       <!-- eslint-disable-next-line -->
       <template #item.4>
-
+        <sprint-activity-view />
       </template>
 
 

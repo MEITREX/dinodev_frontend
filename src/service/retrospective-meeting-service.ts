@@ -268,5 +268,18 @@ export const defaultRetrospectiveMeetingFragment = graphql(`
         currentPage
         goldChallengeReward
         
+        activities {
+            columns {
+                id
+                title
+                description
+                comments {
+                    id
+                    content
+                    authorId
+                    thumbsUpBy
+                }
+            }
+        }
     }
 `)

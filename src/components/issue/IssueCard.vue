@@ -97,8 +97,8 @@ function getEmoji(estimation: TShirtSizeEstimation) {
       {{ abbreviate(issue.title, 70) }}
     </div>
 
-    <div class="pa-3 d-flex flex-row justify-space-between">
-      <div>
+    <div class="pa-3 d-flex flex-row justify-space-between flex-wrap ga-1">
+      <div class="d-flex flex-row flex-wrap ga-1">
         <v-chip v-if="isPresent(issue.effortEstimation)"
                 :color="color" density="comfortable">
           <b>{{ issue.effortEstimation }}</b> {{ getEmoji(issue.effortEstimation) }}
@@ -108,7 +108,6 @@ function getEmoji(estimation: TShirtSizeEstimation) {
           :key="label"
           color="secondary"
           density="comfortable"
-          class="ml-1"
         >
           <p>{{ label }}</p>
         </v-chip>
