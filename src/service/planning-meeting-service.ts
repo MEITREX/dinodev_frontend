@@ -126,10 +126,14 @@ class PlanningMeetingService {
       result?.data?.mutateProject?.mutatePlanningMeeting?.endEstimation) || null
   }
 
-  public setFinalResult = async (estimation: TShirtSizeEstimation): Promise<DefaultPlanningMeetingFragment | null> => {
+  public setFinalResult = async (
+    estimation: TShirtSizeEstimation,
+    assignUserIds: string[]
+  ): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.setFinalResultMutation.mutate({
       projectId: useAppStore().projectId.value,
-      estimation
+      estimation,
+      assignUserIds
     })
     return useFragment(defaultPlanningMeetingFragment,
       result?.data?.mutateProject?.mutatePlanningMeeting?.setFinalResult) || null
@@ -331,7 +335,7 @@ class PlanningMeetingService {
 
   private nextIssueMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
-        mutation NextIssue($projectId: UUID!, $issueId: ID) {
+        mutation NextIssue($projectId: UUID!, $issueId: String) {
             mutateProject(id: $projectId) {
                 mutatePlanningMeeting {
                     nextIssue(issueId: $issueId) {
@@ -375,10 +379,10 @@ class PlanningMeetingService {
 
   private setFinalResultMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
-        mutation SetFinalResult($projectId: UUID!, $estimation: TShirtSizeEstimation!) {
+        mutation SetFinalResult($projectId: UUID!, $estimation: TShirtSizeEstimation!, $assignUserIds: [UUID!]!) {
             mutateProject(id: $projectId) {
                 mutatePlanningMeeting {
-                    setFinalResult(estimation: $estimation) {
+                    setFinalResult(estimation: $estimation, assignUserIds: $assignUserIds) {
                         ...DefaultPlanningMeeting
                     }
                 }
@@ -391,7 +395,7 @@ class PlanningMeetingService {
 
   private addSprintIssueMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
-        mutation AddSprintIssue($projectId: UUID!, $issueId: ID!) {
+        mutation AddSprintIssue($projectId: UUID!, $issueId: String!) {
             mutateProject(id: $projectId) {
                 mutatePlanningMeeting {
                     addSprintIssue(issueId: $issueId) {
@@ -405,7 +409,7 @@ class PlanningMeetingService {
 
   private removeSprintIssueMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
-        mutation RemoveSprintIssue($projectId: UUID!, $issueId: ID!) {
+        mutation RemoveSprintIssue($projectId: UUID!, $issueId: String!) {
             mutateProject(id: $projectId) {
                 mutatePlanningMeeting {
                     removeSprintIssue(issueId: $issueId) {

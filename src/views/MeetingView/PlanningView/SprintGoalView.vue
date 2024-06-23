@@ -7,6 +7,7 @@ import IssueCard from '@/components/issue/IssueCard.vue'
 import { useSprintService } from '@/service/sprint-service'
 import HoldToConfirm from '@/components/HoldToConfirm.vue'
 import { isPresent } from '@/utils/types'
+import { useUserInProjectService } from '@/service/user-in-project-service'
 
 const props = defineProps<{
   sprintGoalVoting: DefaultPlanningMeetingFragment['sprintGoalVoting'] | null
@@ -14,10 +15,9 @@ const props = defineProps<{
 }>()
 
 const { addSprintIssue, removeSprintIssue, finishMeeting } = usePlanningMeetingService()
-
 const { issueBoard } = useIssueService()
-
 const { previousSprint } = useSprintService()
+const { allUsers } = useUserInProjectService()
 
 const backlogIssues = computed(() => issueBoard.value?.states
   .filter(boardState => boardState.state.type !== IssueStateType.Done && boardState.state.type !== IssueStateType.DoneSprint)
@@ -27,7 +27,8 @@ const sprintGoal = computed(() => backlogIssues.value
   .filter(issue => props.sprintGoalVoting?.sprintIssueIds?.includes(issue.id)))
 
 const nonSprintGoal = computed(() => backlogIssues.value
-  .filter(issue => !isPresent(issue.sprintNumber) || issue.sprintNumber > (previousSprint.value?.number ?? 0)))
+  .filter(issue => !isPresent(issue.sprintNumber) || issue.sprintNumber > (previousSprint.value?.number ?? 0))
+  .filter(issue => !props.sprintGoalVoting?.sprintIssueIds?.includes(issue.id)))
 
 const sprintGoalStoryPoints = computed(() =>
   sprintGoal.value.reduce((total, issue) => total + (issue?.storyPoints ?? 0), 0))
@@ -76,6 +77,15 @@ const goldChallengeActive = computed(() => {
 onMounted(() => {
   useIssueService().boardQuery.refetch()
 })
+
+function getSpForUser(userInProject: { user: { id: string } }) {
+  return sprintGoal.value.reduce((total, issue) => {
+    if (issue.assignees?.find(assignee => assignee?.user.id === userInProject.user.id)) {
+      return total + ((issue?.storyPoints ?? 0) / issue.assignees.length)
+    }
+    return total
+  }, 0)
+}
 </script>
 
 <template>
@@ -140,7 +150,7 @@ onMounted(() => {
       <v-col>
         <h4>Backlog issues</h4>
         <v-sheet
-          class="ma-1 pa-3 rounded"
+          class="ma-1 pa-3 rounded h-100"
           color="grey-lighten-3"
           min-height="200px"
           @dragover.prevent
@@ -161,7 +171,7 @@ onMounted(() => {
       <v-col>
         <h4>Sprint goal</h4>
         <v-sheet
-          class="ma-1 pa-3 rounded"
+          class="ma-1 pa-3 rounded h-100"
           color="grey-lighten-3"
           min-height="200px"
           @dragover.prevent
@@ -184,7 +194,17 @@ onMounted(() => {
       </v-col>
     </v-row>
 
-    <div class="d-flex flex-row-reverse mt-5 mb-3 mx-1">
+    <div class="d-flex flex-row justify-space-between align-center mt-10 mb-3 mx-1">
+      <div class="d-flex flex-wrap ga-2">
+        <v-chip
+          v-for="userInProject in allUsers"
+          :key="userInProject.user.id"
+          :prepend-avatar="userInProject.user.avatar ?? 'mdi-account'"
+        >
+          {{ userInProject.user.username }}: {{ getSpForUser(userInProject)}} SP
+        </v-chip>
+      </div>
+
       <hold-to-confirm @confirm="finishMeeting">
         <v-btn
           v-if="isMeetingLeader"

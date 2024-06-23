@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { computed, ref, watch } from 'vue'
-import type { DefaultPlanningMeetingFragment, IssueBaseFragment } from '@/gql/graphql'
+import type { BaseGlobalUserFragment, DefaultPlanningMeetingFragment, IssueBaseFragment } from '@/gql/graphql'
 import { IssueStateType, TShirtSizeEstimation } from '@/gql/graphql'
 import { usePlanningMeetingService } from '@/service/planning-meeting-service'
 import { useIssueService } from '@/service/issue-service'
@@ -11,6 +11,7 @@ import IssueCard from '@/components/issue/IssueCard.vue'
 import { isPresent } from '@/utils/types'
 import IssueEstimationItem from '@/components/issue/IssueEstimationItem.vue'
 import CountdownDisplay from '@/components/CountdownDisplay.vue'
+import UserMultiSelect from '@/components/user/UserMultiSelect.vue'
 
 const props = defineProps<{
   issueEstimation: DefaultPlanningMeetingFragment['issueEstimation'] | null
@@ -56,13 +57,17 @@ const {
 } = usePlanningMeetingService()
 const { issueBoard } = useIssueService()
 
+const currentSearchFilter = ref<string>('')
+
 // issues to vote are the  issues that have no estimation yet
 const backlogIssues = computed(() => issueBoard.value?.states
   .filter(state => state.state.type !== IssueStateType.Done
     && state.state.type !== IssueStateType.DoneSprint)
   .flatMap(state => state.issues ?? [])
   .filter(issue => issue.id !== props.issueEstimation?.issueId)
-  .filter(issue => !isPresent(issue.effortEstimation)))
+  .filter(issue => !isPresent(issue.effortEstimation))
+  .filter(issue => issue.title.toLowerCase().includes(currentSearchFilter.value.toLowerCase()))
+)
 
 const { issue: currentIssue, loading, issueId: issueIdRef } = useIssueService()
 watchImmediate(() => props.issueEstimation?.issueId, () => {
@@ -109,6 +114,7 @@ function finishEstimation() {
 }
 
 const selectedOption = ref<typeof estimationOptions.value[0] | null>(null)
+const assignees = ref<BaseGlobalUserFragment[]>([])
 
 // reset selected option when the estimation is finished
 watch(() => props.issueEstimation?.finished, () => {
@@ -133,19 +139,34 @@ const selectedFinalOption = ref<TShirtSizeEstimation>(TShirtSizeEstimation.M)
 watchImmediate(() => props.issueEstimation?.finished, () => {
   selectedFinalOption.value = props.issueEstimation?.estimationStats?.median ?? TShirtSizeEstimation.M
 })
+
+function confirmIssueVote() {
+  setFinalResult(selectedFinalOption.value, assignees.value.map(user => user.id)).then()
+}
 </script>
 
 <template>
   <div class="overflow-y-scroll">
-    <v-row>
-      <v-col cols="3">
+    <div class="d-flex flex-row">
+      <div class="w-25">
         <h3 class="mb-3">Upcoming Issues</h3>
 
         <p v-if="isMeetingLeader">
           Click on an issue to select it for estimation.
         </p>
 
-        <div class="d-flex flex-column ga-2 pa-3">
+        <div>
+          <v-text-field
+            v-model="currentSearchFilter"
+            label="Search"
+            density="compact"
+            append-icon="mdi-magnify"
+            class="mr-2 mt-2"
+            clearable
+          />
+        </div>
+
+        <div class="d-flex flex-column ga-2">
           <issue-card
             v-for="issue in backlogIssues"
             :key="issue.id"
@@ -154,9 +175,9 @@ watchImmediate(() => props.issueEstimation?.finished, () => {
             @click="i => onIssueClick(i)"
           />
         </div>
-      </v-col>
+      </div>
 
-      <v-col class="pa-3" cols="9">
+      <div class="pa-3 w-75">
         <h3 class="mb-3">Current Issue</h3>
         <p v-if="currentIssue === null">No issue selected yet</p>
         <v-card class="mr-2" style="height: 35%; overflow: scroll; max-height: 35%">
@@ -234,6 +255,7 @@ watchImmediate(() => props.issueEstimation?.finished, () => {
           />
           <p>seconds</p>
         </div>
+
         <div class="d-flex flex-row justify-start pa-3 ga-3" v-if="isMeetingLeader">
           <v-btn
             :disabled="currentIssue === null || !issueEstimation?.finished"
@@ -249,15 +271,18 @@ watchImmediate(() => props.issueEstimation?.finished, () => {
             label="Final result"
             density="compact"
           />
+
+          <user-multi-select v-model="assignees" label="Assignees" />
+
           <v-btn
             :disabled="!issueEstimation?.finished"
-            @click="() => setFinalResult(selectedFinalOption)"
+            @click="() => confirmIssueVote()"
           >
             Confirm
           </v-btn>
         </div>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
   </div>
 </template>
 

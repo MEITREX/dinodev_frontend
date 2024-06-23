@@ -82,6 +82,7 @@ function cancel() {
           </v-chip>
 
           <v-spacer />
+
           <hold-to-confirm @confirm="cancel" v-if="meeting?.active">
             <v-btn v-if="isMeetingLeader(currentUser?.user.id)"
                    variant="flat"
@@ -89,6 +90,7 @@ function cancel() {
               Cancel meeting
             </v-btn>
           </hold-to-confirm>
+
           <v-btn
             variant="flat" prepend-icon="mdi-link"
             @click="copyMeetingLink"
