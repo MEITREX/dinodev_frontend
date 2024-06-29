@@ -68,6 +68,7 @@ const { currentSprint } = useSprintService()
         class="w-100"
         min-width="100%"
         density="compact"
+        dot-color="white"
       >
         <template v-slot:icon>
           <animal-avatar
