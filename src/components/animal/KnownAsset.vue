@@ -75,7 +75,7 @@ function getWidth(asset: KnownAsset) {
     case KnownAsset.Fountain:
       return 200
     case KnownAsset.Rock_1:
-      return 30
+      return 60
     default:
       return 100
   }
