@@ -158,7 +158,7 @@ function openUserProfile(userId: string | undefined) {
       </p>
 
       <p v-else>
-        {{ abbreviate(baseEvent?.message, 80) }}
+        {{ abbreviate(baseEvent?.message, 100) }}
       </p>
 
       <v-spacer />
@@ -185,19 +185,6 @@ function openUserProfile(userId: string | undefined) {
             </v-btn>
           </template>
         </v-tooltip>
-
-        <!--          <v-tooltip location="bottom" text="Award">-->
-        <!--            <template #activator="{ props }">-->
-        <!--              <v-btn-->
-        <!--                v-bind="props"-->
-        <!--                icon="mdi-trophy-variant"-->
-        <!--                variant="flat"-->
-        <!--                class="text-grey-darken-1"-->
-        <!--                size="small"-->
-        <!--                id="btn-award"-->
-        <!--                density="comfortable" />-->
-        <!--            </template>-->
-        <!--          </v-tooltip>-->
 
       </div>
     </div>
