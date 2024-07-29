@@ -5,7 +5,7 @@ import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
 import { usePlanningMeetingService } from '@/service/planning-meeting-service'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { useStandupMeetingService } from '@/service/standup-meeting-service'
 import { useFragment } from '@/gql'
 import { meetingFragment } from '@/service/meeting-service'
@@ -25,7 +25,7 @@ const retrospectiveActive = computed(() => isPresent(retrospectiveMeeting.value)
 const standupActive = computed(() => isPresent(standupMeeting.value) && useFragment(meetingFragment, standupMeeting.value).active)
 
 const knownMeetings = computed(() => {
-  const projectId = useAppStore().projectId.value
+  const projectId = useProjectId().projectId.value
   if (!projectId) {
     return []
   }

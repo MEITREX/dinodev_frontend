@@ -2,7 +2,7 @@ import { provideApolloClient, useMutation, useQuery } from '@vue/apollo-composab
 import { apolloClient } from '@/setup/apollo-client'
 import { graphql, useFragment } from '@/gql'
 import { useAuth } from '@/service/use-auth'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { computed, ref } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
 import type { CreateIssueInput, DefinitionOfDoneConfirmState } from '@/gql/graphql'
@@ -24,7 +24,7 @@ class IssueService {
 
   public async changeState(issueId: string, stateName: string) {
     const result = await this.changeStateMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       issueId,
       stateName
     })
@@ -33,7 +33,7 @@ class IssueService {
 
   public async finishIssue(issueId: string, doneStateName: string, dodConfirmStates: DefinitionOfDoneConfirmState[]) {
     const result = await this.finishIssueMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       issueId,
       doneStateName,
       dodConfirmStates
@@ -43,7 +43,7 @@ class IssueService {
 
   public async assignIssue(issueId: string, assigneeId: string) {
     const result = await this.assignIssueMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       issueId,
       assigneeId
     })
@@ -52,7 +52,7 @@ class IssueService {
 
   public createIssue = async (input: CreateIssueInput) => {
     const result = await this.createIssueMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       input
     })
     return useFragment(issueBaseFragment, result?.data?.mutateProject?.createIssue)
@@ -60,7 +60,7 @@ class IssueService {
 
   public commentOnIssue = async (issueId: string, message: string, optionalParentId?: string | null) => {
     const result = await this.commentOnIssueMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       issueId,
       message,
       optionalParentId
@@ -137,9 +137,9 @@ class IssueService {
             }
         }
     `), () => ({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     }), () => ({
-      enabled: computed(() => useAuth().isLoggedIn() && useAppStore().isProjectSelected())
+      enabled: computed(() => useAuth().isLoggedIn() && useProjectId().isProjectSelected())
     }))
   })
 
@@ -232,11 +232,11 @@ class IssueService {
             }
         }
     `), () => ({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       issueId: this.issueId.value
     }), () => ({
       enabled: computed(() => useAuth().isLoggedIn()
-        && useAppStore().isProjectSelected()
+        && useProjectId().isProjectSelected()
         && this.issueId.value !== null)
     }))
   })

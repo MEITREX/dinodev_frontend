@@ -1,3 +1,7 @@
+<!--
+  This is the profile view. It shows the user's details, medals, achievements and stats.
+  If the user is the current logged in user, it also shows the user's stats.
+-->
 <script setup lang="ts">
 
 import { useAppTitle } from '@/stores/app-title'
@@ -87,6 +91,7 @@ const isCurrentUser = computed(() => currentLoggedInUser.value?.user?.id === pro
       </v-col>
     </v-row>
 
+    <!-- detailed stats only for the current user -->
     <v-row v-if="isCurrentUser">
       <v-col cols="1">
         &nbsp;

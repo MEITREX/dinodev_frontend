@@ -1,15 +1,15 @@
-import { computed, type Ref, ref } from 'vue'
-import { watchImmediate } from '@vueuse/core'
+import { computed, type Ref } from 'vue'
 
-const globalLoading = computed(() => globalLoadingCount.value > 0);
-const globalLoadingCount = ref(0);
+const globalLoading = computed(() => globalLoadingRef.some((ref) => ref.value))
+const globalLoadingRef: Ref<boolean>[] = [];
 
 function watchLoading(loadingRef: Ref<boolean>) {
-  watchImmediate(loadingRef, (value) => {
-    globalLoadingCount.value += value ? 1 : -1;
-  })
+  globalLoadingRef.push(loadingRef)
 }
 
+/**
+ * Hook to manage global loading state
+ */
 export function useGlobalLoading() {
   return { globalLoading, watchLoading }
 }

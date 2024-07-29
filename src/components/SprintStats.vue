@@ -20,15 +20,14 @@ const percentageTimeElapsed = computed(() => {
 })
 
 const progressbarColor = computed(() => {
+  if (percentageCompleted.value > percentageTimeElapsed.value) {
+    return 'success'
+  }
   // yellow if in 10% range of time elapsed
-  if (percentageTimeElapsed.value - 10 <= percentageCompleted.value
-    && percentageCompleted.value <= percentageTimeElapsed.value + 10) {
+  if (percentageCompleted.value >= percentageTimeElapsed.value - 10) {
     return 'warning'
   }
-  if (percentageCompleted.value < percentageTimeElapsed.value) {
-    return 'error'
-  }
-  return 'success'
+  return 'error'
 })
 
 </script>

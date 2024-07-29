@@ -8,7 +8,7 @@ import CreateProjectView from '@/views/CreateProjectView.vue'
 import MainTab from '@/views/MainProjectView/MainTab.vue'
 import AllMeetingsView from '@/views/MeetingView/AllMeetingsView.vue'
 import PlanningSettingsView from '@/views/MeetingView/PlanningView/PlanningSettingsView.vue'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -104,11 +104,6 @@ const router = createRouter({
           component: ProfileView,
         },
         {
-          path: 'rules',
-          name: 'rules',
-          component: () => import('../views/RuleView.vue')
-        },
-        {
           path: 'store',
           name: 'store',
           component: () => import('../views/StoreView.vue')
@@ -132,8 +127,8 @@ router.beforeEach((to, from, next) => {
     next(routes.login)
   } else if (auth.isLoggedIn() && (to.path === '/login' || to.path === '/')) {
     next(routes.projects)
-  } else if (useAppStore().isProjectSelected() && to.path === routes.projects) {
-    next(routes.project(useAppStore().getProjectIdOrThrow()).main)
+  } else if (useProjectId().isProjectSelected() && to.path === routes.projects) {
+    next(routes.project(useProjectId().getProjectIdOrThrow()).main)
   } else {
     next()
   }

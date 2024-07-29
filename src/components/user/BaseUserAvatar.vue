@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import router from '@/router'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { routes } from '@/router/routes'
 
 const props = defineProps<{
@@ -11,7 +11,7 @@ const props = defineProps<{
 
 function openUserProfile() {
   if (props.user?.id) {
-    router.push(routes.project(useAppStore().getProjectIdOrThrow()).user(props.user?.id))
+    router.push(routes.project(useProjectId().getProjectIdOrThrow()).user(props.user?.id))
   }
 }
 </script>

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 
 import router from '@/router'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 
 const props = defineProps<{
   activatorId: string
 }>()
 
 function startPlanning() {
-  const projectId = useAppStore().getProjectIdOrThrow()
+  const projectId = useProjectId().getProjectIdOrThrow()
   router.push(`/project/${projectId}/planning`)
 }
 </script>

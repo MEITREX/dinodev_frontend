@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import RepositoryLinkButton from '@/components/top-menu/RepositoryLinkButton.vue'
+import ExternalSystemLinkButton from '@/components/top-menu/ExternalSystemLinkButton.vue'
 import GropiusIcon from '@/assets/GropiusIcon.vue'
 
 import { computed } from 'vue'
@@ -18,14 +18,14 @@ const repositories = computed(() => [
 </script>
 
 <template>
-  <repository-link-button icon="mdi-github" :repositories="repositories" :text="imsSettings.imsName">
+  <external-system-link-button icon="mdi-cross" :repositories="repositories" :text="imsSettings.imsName">
     <template #icon>
       <gropius-icon /> <!-- todo: other icon for other ims -->
     </template>
     <template #prepend>
       <gropius-icon />
     </template>
-  </repository-link-button>
+  </external-system-link-button>
 </template>
 
 <style scoped></style>

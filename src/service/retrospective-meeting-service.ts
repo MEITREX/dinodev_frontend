@@ -1,7 +1,7 @@
 import { graphql, useFragment } from '@/gql'
 import { provideApolloClient, useMutation, useSubscription } from '@vue/apollo-composable'
 import { apolloClient } from '@/setup/apollo-client'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { useAuth } from '@/service/use-auth'
 import { computed } from 'vue'
 import type { RetrospectiveMeetingInput } from '@/gql/graphql'
@@ -17,7 +17,7 @@ class RetrospectiveMeetingService {
 
   public awardMedals = async () => {
     const result = await this.awardMedalsMutation.mutate({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     })
     return useFragment(defaultRetrospectiveMeetingFragment,
       result?.data?.mutateProject?.mutateRetrospectiveMeeting?.awardMedals) || null
@@ -25,7 +25,7 @@ class RetrospectiveMeetingService {
 
   public changePage = async (page: RetrospectiveMeetingPage) => {
     const result = await this.changePageMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       page
     })
     return useFragment(defaultRetrospectiveMeetingFragment,
@@ -34,7 +34,7 @@ class RetrospectiveMeetingService {
 
   public addComment = async (columnId: string, content: string) => {
     const result = await this.addCommentMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       columnId,
       content
     })
@@ -44,7 +44,7 @@ class RetrospectiveMeetingService {
 
   public editComment = async (commentId: string, content: string) => {
     const result = await this.editCommentMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       commentId,
       content
     })
@@ -54,7 +54,7 @@ class RetrospectiveMeetingService {
 
   public deleteComment = async (commentId: string) => {
     const result = await this.deleteCommentMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       commentId
     })
     return useFragment(defaultRetrospectiveMeetingFragment,
@@ -63,7 +63,7 @@ class RetrospectiveMeetingService {
 
   public thumbsUpComment = async (commentId: string) => {
     const result = await this.thumbsUpCommentMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       commentId
     })
     return useFragment(defaultRetrospectiveMeetingFragment,
@@ -72,7 +72,7 @@ class RetrospectiveMeetingService {
 
   public finishMeeting = async () => {
     const result = await this.finishMeetingMutation.mutate({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     })
     return useFragment(defaultRetrospectiveMeetingFragment,
       result?.data?.mutateProject?.mutateRetrospectiveMeeting?.finishMeeting) || null
@@ -80,7 +80,7 @@ class RetrospectiveMeetingService {
 
   public createRetrospectiveMeeting = async (input: RetrospectiveMeetingInput) => {
     const result = await this.createRetrospectiveMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       input
     })
     return useFragment(defaultRetrospectiveMeetingFragment,
@@ -230,9 +230,9 @@ class RetrospectiveMeetingService {
             }
         }
     `), () => ({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     }), () => ({
-      enabled: useAuth().isLoggedIn() && useAppStore().isProjectSelected()
+      enabled: useAuth().isLoggedIn() && useProjectId().isProjectSelected()
     }))
   })
 }

@@ -3,7 +3,7 @@ import { useFragment } from '@/gql'
 import { meetingFragment } from '@/service/meeting-service'
 import { useGlobalUserService } from '@/service/global-user-service'
 import router from '@/router'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { routes } from '@/router/routes'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
@@ -20,7 +20,7 @@ onMounted(() => {
   watch(loading, () => {
     if (!loading && retrospectiveMeeting.value == null) {
       useErrorManager().catchError('There is no active retrospective meeting.')
-      router.push(routes.project(useAppStore().getProjectIdOrThrow()).main)
+      router.push(routes.project(useProjectId().getProjectIdOrThrow()).main)
     }
   })
 })
@@ -48,7 +48,6 @@ const retrospectiveSteps = computed(() => {
       page: RetrospectiveMeetingPage.Games
     },
   ]
-  // add game steps
 })
 
 const currentPage = computed(() => retrospectiveMeeting.value?.currentPage ?? RetrospectiveMeetingPage.Information)

@@ -5,7 +5,7 @@ import { computed, type ComputedRef } from 'vue'
 import type { CreateProjectInput, ProjectBaseFragment, ProjectMainFragment, UpdateProjectInput } from '@/gql/graphql'
 import { isPresent, type Nullable } from '@/utils/types'
 import { useAuth } from '@/service/use-auth'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { useErrorManager } from '@/utils/error-manager'
 
 /**
@@ -72,7 +72,7 @@ class ProjectService {
     this.deleteProjectMutation.onError(useErrorManager().catchError)
   }
 
-  private projectId = useAppStore().projectId
+  private projectId = useProjectId().projectId
 
   private ProjectMainFragment = graphql(`
       fragment ProjectMain on Project {

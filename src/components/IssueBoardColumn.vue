@@ -3,7 +3,7 @@ import { type IssueBaseFragment, IssuePriority, type IssueState } from '@/gql/gr
 import { computed, ref } from 'vue'
 import { useDropZone } from '@vueuse/core'
 import IssueCard from '@/components/issue/IssueCard.vue'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import router from '@/router'
 import { routes } from '@/router/routes'
 import { getEmojisForStateType } from '@/utils/emojis'
@@ -59,7 +59,7 @@ function onDrop(event: DragEvent) {
 const emoji = computed(() => getEmojisForStateType(props.state.type))
 
 function openIssue(issue: IssueBaseFragment) {
-  const projectId = useAppStore().getProjectIdOrThrow()
+  const projectId = useProjectId().getProjectIdOrThrow()
   router.push(routes.project(projectId).issue(issue.id))
 }
 </script>

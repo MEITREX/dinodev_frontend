@@ -15,8 +15,8 @@ const { allUsers } = useUserInProjectService()
 
 <template>
   <div class="pa-3 d-flex flex-row flex-wrap ga-3">
-    <div v-for="user in allUsers" :key="user.user.id" class="">
-      <user-card :user-in-project="user" />
+    <div v-for="userInProject in allUsers" :key="userInProject.user.id" class="">
+      <user-card :user-in-project="userInProject" />
     </div>
   </div>
 </template>

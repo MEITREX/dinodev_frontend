@@ -4,14 +4,14 @@ import type { BaseGlobalUserFragment, StandupMeetingInput } from '@/gql/graphql'
 import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { useStandupMeetingService } from '@/service/standup-meeting-service'
 import UserSelect from '@/components/user/UserSelect.vue'
 
 const meetingLeader = ref<BaseGlobalUserFragment | null>(null)
 const meetingLeaderId = computed(() => meetingLeader.value?.id ?? null)
 
-const projectId = computed(() => useAppStore().projectId.value)
+const projectId = computed(() => useProjectId().projectId.value)
 
 const countdownSecondsSetting = ref(60)
 const useCountdownPerAttendee = ref(false)
@@ -48,7 +48,7 @@ function createMeeting() {
     return
   }
   createStandupMeeting(input.value).then(() => {
-    router.push(routes.project(useAppStore().getProjectIdOrThrow()).liveStandup)
+    router.push(routes.project(useProjectId().getProjectIdOrThrow()).liveStandup)
   })
 }
 </script>

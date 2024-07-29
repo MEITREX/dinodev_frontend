@@ -26,9 +26,7 @@ function tryLogin() {
 }
 
 async function nextPage() {
-  console.info("Logged in", useAuth().isLoggedIn())
   const user = await refetchUser()
-  console.info('User:', user)
   if (user !== null) {
     await router.push(routes.projects)
   } else {

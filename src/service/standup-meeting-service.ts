@@ -1,7 +1,7 @@
 import { graphql, useFragment } from '@/gql'
 import { provideApolloClient, useMutation, useSubscription } from '@vue/apollo-composable'
 import { apolloClient } from '@/setup/apollo-client'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { computed } from 'vue'
 import {
   type DefaultStandupMeetingFragment,
@@ -19,7 +19,7 @@ class StandupMeetingService {
 
   public createStandupMeeting = async (input: StandupMeetingInput): Promise<DefaultStandupMeetingFragment | null> => {
     const result = await this.createStandupMeetingMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       input
     })
     return useFragment(defaultStandupMeetingFragment,
@@ -28,7 +28,7 @@ class StandupMeetingService {
 
   public startStandupMeeting = async (): Promise<DefaultStandupMeetingFragment | null> => {
     const result = await this.startStandupMeetingMutation.mutate({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     })
     return useFragment(defaultStandupMeetingFragment,
       result?.data?.mutateProject?.mutateStandupMeeting?.startStandupMeeting) || null
@@ -36,7 +36,7 @@ class StandupMeetingService {
 
   public changeCurrentAttendee = async (userId: string): Promise<DefaultStandupMeetingFragment | null> => {
     const result = await this.changeCurrentAttendeeMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       userId
     })
     return useFragment(defaultStandupMeetingFragment,
@@ -45,7 +45,7 @@ class StandupMeetingService {
 
   public finishMeeting = async (): Promise<DefaultStandupMeetingFragment | null> => {
     const result = await this.finishMeetingMutation.mutate({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     })
     return useFragment(defaultStandupMeetingFragment,
       result?.data?.mutateProject?.mutateStandupMeeting?.finishStandupMeeting) || null
@@ -129,9 +129,9 @@ class StandupMeetingService {
             }
         }`
     ), () => ({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     }), () => ({
-      enabled: useAuth().isLoggedIn() && useAppStore().isProjectSelected()
+      enabled: useAuth().isLoggedIn() && useProjectId().isProjectSelected()
     }))
   })
 

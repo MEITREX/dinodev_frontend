@@ -1,3 +1,8 @@
+<!--
+Dialog to create a new issue.
+Only provides a small set of fields.
+For more advanced issue creation, the users should use the underlying issue management system.
+-->
 <script setup lang="ts">
 
 import { useNewIssueDialog } from '@/components/dialog/issue/new-issue-dialog-controller'

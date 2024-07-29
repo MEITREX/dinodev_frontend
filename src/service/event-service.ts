@@ -2,7 +2,7 @@ import { graphql, useFragment } from '@/gql'
 import { provideApolloClient, useLazyQuery, useMutation, useQuery, useSubscription } from '@vue/apollo-composable'
 import { apolloClient } from '@/setup/apollo-client'
 import { useAuth } from '@/service/use-auth'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { computed, ref } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
 import { useGlobalUserService } from '@/service/global-user-service'
@@ -21,7 +21,7 @@ class EventService {
 
     const variables = {
       userId,
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       page: 0,
       pageSize: 10
     }
@@ -36,7 +36,7 @@ class EventService {
 
   public likeEvent = async (eventId: string)  => {
     const result = await this.likeEventMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       eventId
     })
     return useFragment(eventFragment, result?.data?.mutateProject?.reactToEvent) || null
@@ -44,7 +44,7 @@ class EventService {
 
   public addUserComment = async (message: string, optionalParentId?: string) => {
     const result = await this.addUserCommentMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       message,
       optionalParentId
     })
@@ -80,11 +80,11 @@ class EventService {
               }
           }`
       ), () => ({
-        projectId: useAppStore().projectId.value,
+        projectId: useProjectId().projectId.value,
         page: 0,
         pageSize: this.eventsPageSize.value
       }), () => ({
-        enabled: useAuth().isLoggedIn() && useAppStore().isProjectSelected(),
+        enabled: useAuth().isLoggedIn() && useProjectId().isProjectSelected(),
         refetchWritePolicy: 'overwrite',
         keepPreviousResult: true
       }))
@@ -141,11 +141,11 @@ class EventService {
             }
         }`),
       () => ({
-        projectId: useAppStore().projectId.value,
+        projectId: useProjectId().projectId.value,
         userId: useGlobalUserService().currentGlobalUser.value?.id as string
       }), () => ({
         enabled: useAuth().isLoggedIn()
-          && useAppStore().isProjectSelected()
+          && useProjectId().isProjectSelected()
           && useGlobalUserService().currentGlobalUser.value?.id
       }))
   })

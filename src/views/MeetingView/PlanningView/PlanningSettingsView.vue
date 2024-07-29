@@ -5,7 +5,7 @@ import { type BaseGlobalUserFragment, type PlanningMeetingInput } from '@/gql/gr
 import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { usePlanningMeetingService } from '@/service/planning-meeting-service'
 import UserSelect from '@/components/user/UserSelect.vue'
 
@@ -15,7 +15,7 @@ const meetingLeaderId = computed(() => meetingLeader.value?.id ?? null)
 const sprintDuration = ref(14)
 const customGoldChallengeReward = ref<string | null>(null)
 
-const projectId = computed(() => useAppStore().projectId.value)
+const projectId = computed(() => useProjectId().projectId.value)
 
 const input = computed<PlanningMeetingInput | null>(() => {
     if (!meetingLeaderId.value || !projectId.value || !start.value) {
@@ -42,7 +42,7 @@ function createMeeting() {
     return
   }
   createPlanningMeeting(input.value).then(() => {
-    router.push(routes.project(useAppStore().getProjectIdOrThrow()).livePlanning)
+    router.push(routes.project(useProjectId().getProjectIdOrThrow()).livePlanning)
   })
 }
 </script>

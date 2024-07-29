@@ -3,7 +3,7 @@ import { provideApolloClient, useQuery } from '@vue/apollo-composable'
 import { apolloClient } from '@/setup/apollo-client'
 import { computed } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { useAuth } from '@/service/use-auth'
 import type { DefaultSprintFragment } from '@/gql/graphql'
 
@@ -46,9 +46,9 @@ class SprintService {
           }
       }
   `), () => ({
-    projectId: useAppStore().projectId.value
+    projectId: useProjectId().projectId.value
   }), () => ({
-    enabled: useAuth().isLoggedIn() && useAppStore().isProjectSelected(),
+    enabled: useAuth().isLoggedIn() && useProjectId().isProjectSelected(),
     fetchPolicy: 'no-cache'
   })))
 
@@ -62,9 +62,9 @@ class SprintService {
           }
       }
   `), () => ({
-    projectId: useAppStore().projectId.value
+    projectId: useProjectId().projectId.value
   }), () => ({
-    enabled: useAuth().isLoggedIn() && useAppStore().isProjectSelected(),
+    enabled: useAuth().isLoggedIn() && useProjectId().isProjectSelected(),
     fetchPolicy: 'no-cache'
   })))
 
@@ -78,9 +78,9 @@ class SprintService {
           }
       }
   `), () => ({
-    projectId: useAppStore().projectId.value
+    projectId: useProjectId().projectId.value
   }), () => ({
-    enabled: useAuth().isLoggedIn() && useAppStore().isProjectSelected(),
+    enabled: useAuth().isLoggedIn() && useProjectId().isProjectSelected(),
     fetchPolicy: 'no-cache'
   })))
 }

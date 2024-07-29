@@ -1,3 +1,9 @@
+<!--
+The dino avatar and placed dino assets are rendered in this component.
+The background image is rendered as an img tag with a fixed width and height.
+The placed assets are rendered as PlacedAsset components.
+It also has a mode to place a new asset at the current mouse position.
+-->
 <script setup lang="ts">
 
 import { isPresent } from '@/utils/types'

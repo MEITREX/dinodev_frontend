@@ -6,7 +6,7 @@ import { computed, ref } from 'vue'
 import { useRetrospectiveMeetingService } from '@/service/retrospective-meeting-service'
 import router from '@/router'
 import { routes } from '@/router/routes'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { retroCategoryGamePresets } from '@/utils/retro-category-game-presets'
 
 const meetingLeader = ref<BaseGlobalUserFragment | null>(null)
@@ -28,7 +28,7 @@ function createMeeting() {
   }
 
   createRetrospectiveMeeting(variables).then(() => {
-    router.push(routes.project(useAppStore().getProjectIdOrThrow()).liveRetrospective)
+    router.push(routes.project(useProjectId().getProjectIdOrThrow()).liveRetrospective)
   })
 }
 

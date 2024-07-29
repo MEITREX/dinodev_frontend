@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useIssueService } from '@/service/issue-service'
 import { type DefinitionOfDoneConfirmState, type Exact, type IssueState, IssueStateType } from '@/gql/graphql'
-import IssueBoardColumn from '@/views/IssueBoardView/IssueBoardColumn.vue'
+import IssueBoardColumn from '@/components/IssueBoardColumn.vue'
 import ConfirmMoveIssueOutOfSprintDialog from '@/components/dialog/board/ConfirmMoveIssueOutOfSprintDialog.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import ConfirmMoveIssueIntoSprintDialog from '@/components/dialog/board/ConfirmMoveIssueIntoSprintDialog.vue'

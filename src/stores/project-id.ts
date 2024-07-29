@@ -19,7 +19,7 @@ useAuth().onLogout(() => {
   projectId.value = null
 })
 
-export function useAppStore() {
+export function useProjectId() {
   return {
     projectId,
     getProjectIdOrThrow,

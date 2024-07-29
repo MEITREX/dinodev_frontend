@@ -1,3 +1,7 @@
+<!--
+Display assets based on the KnownAsset enum
+Currently, this uses hard coded images and sizes
+-->
 <script setup lang="ts">
 
 import { KnownAsset } from '@/gql/graphql'

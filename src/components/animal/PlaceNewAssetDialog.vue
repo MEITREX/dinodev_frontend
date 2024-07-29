@@ -2,7 +2,7 @@
 import { KnownAsset } from '@/gql/graphql'
 import { useSprintService } from '@/service/sprint-service'
 import AnimalEnclosure from '@/components/animal/AnimalEnclosure.vue'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { useShopService } from '@/service/shop-service'
 import { computed, ref } from 'vue'
 
@@ -25,7 +25,7 @@ async function placeAsset() {
   if (!props.newAsset) {
     return
   }
-  await buyAndPlace(useAppStore().getProjectIdOrThrow(), {
+  await buyAndPlace(useProjectId().getProjectIdOrThrow(), {
     asset: props.newAsset,
     x: Math.round(xPos.value),
     y: Math.round(yPos.value)

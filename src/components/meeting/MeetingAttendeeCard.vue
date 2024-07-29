@@ -1,3 +1,8 @@
+<!--
+Card that displays the attendees of a meeting.
+Depending if they are online, away or offline, the color of the chip changes.
+The meeting leader can cancel the meeting.
+-->
 <script setup lang="ts">
 import { onBeforeRouteLeave } from 'vue-router'
 import { computed, onMounted } from 'vue'
@@ -18,7 +23,6 @@ const meetingAttendees = computed(() => {
 })
 
 const { joinMeeting, leaveMeeting, cancelMeeting } = useMeetingService()
-
 
 onMounted(() => {
   joinMeeting(props.meetingType).then()

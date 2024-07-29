@@ -3,15 +3,15 @@
 import router from '@/router'
 import NewSprintDialog from '@/components/dialog/NewSprintDialog.vue'
 import { routes } from '@/router/routes'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 
 function openBoard() {
-  const projectId = useAppStore().getProjectIdOrThrow()
+  const projectId = useProjectId().getProjectIdOrThrow()
   router.push(routes.project(projectId).board)
 }
 
 function openOlderSprints() {
-  const projectId = useAppStore().getProjectIdOrThrow()
+  const projectId = useProjectId().getProjectIdOrThrow()
   router.push(routes.project(projectId).sprintStats)
 }
 </script>

@@ -1,3 +1,6 @@
+<!--
+View to register as a new user in DinoDev. A Gropius account is required to register.
+-->
 <script setup lang="ts">
 
 import { onMounted, ref, watch } from 'vue'

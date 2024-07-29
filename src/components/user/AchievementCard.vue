@@ -1,7 +1,10 @@
+<!--
+Card that displays a specific achievement of a user and their progress.
+-->
 <script setup lang="ts">
 import type { UserInProjectFragment } from '@/gql/graphql'
 
-const props = defineProps<{
+defineProps<{
   achievementProgress: UserInProjectFragment['achievements']['0']
 }>()
 </script>

@@ -1,3 +1,6 @@
+<!--
+Simple rendered markdown inside a card
+-->
 <script setup lang="ts">
 import VueMarkdown from 'vue-markdown-render'
 // @ts-ignore

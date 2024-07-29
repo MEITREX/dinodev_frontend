@@ -1,3 +1,6 @@
+<!--
+Card component to display an issue
+-->
 <script setup lang="ts">
 import { type IssueBaseFragment, TShirtSizeEstimation } from '@/gql/graphql'
 import { isPresent } from '@/utils/types'
@@ -61,6 +64,8 @@ function getEmoji(estimation: TShirtSizeEstimation) {
     @click="() => emit('click', issue)"
   >
     <div class="pa-3">
+
+      <!-- Issue type and priority -->
       <div class="d-flex flex-row align-center justify-space-between w-100">
         <div class="d-flex flex-row align-center">
           <issue-type-icon :type="issue.type" height="25" />
@@ -75,6 +80,7 @@ function getEmoji(estimation: TShirtSizeEstimation) {
           </v-tooltip>
         </div>
 
+        <!-- Assignees -->
         <div class="d-flex flex-row align-center">
           <template v-for="(assignee, index) of issue.assignees" :key="index">
             <v-tooltip location="bottom" v-if="assignee !== null">
@@ -97,6 +103,7 @@ function getEmoji(estimation: TShirtSizeEstimation) {
       {{ abbreviate(issue.title, 70) }}
     </div>
 
+    <!-- Effort estimation and labels -->
     <div class="pa-3 d-flex flex-row justify-space-between flex-wrap ga-1">
       <div class="d-flex flex-row flex-wrap ga-1">
         <v-chip v-if="isPresent(issue.effortEstimation)"

@@ -1,3 +1,7 @@
+<!--
+View that displays statistics about the team's sprints, including sprint velocity,
+average story points per issue, and a simple burndown chart.
+-->
 <script setup lang="ts">
 import { useAppTitle } from '@/stores/app-title'
 import { computed, onMounted } from 'vue'

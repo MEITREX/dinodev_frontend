@@ -1,3 +1,7 @@
+<!--
+Shows a list of events in a timeline view.
+The events can be liked and commented on.
+-->
 <script setup lang="ts">
 
 import { ref } from 'vue'
@@ -12,11 +16,11 @@ import { useSprintService } from '@/service/sprint-service'
 
 defineProps<{
   events: readonly EventWithChildrenFragment[]
-  showCommentBlock: boolean
-  showCommentButton: boolean
-  showIssueInformation: boolean
-  eventsLoading: boolean
-  postCommentLoading: boolean
+  showCommentBlock: boolean // if the block at the bottom to add a comment is shown
+  showCommentButton: boolean // if the button to respond to an event is shown
+  showIssueInformation: boolean // show to which issue an event is related
+  eventsLoading: boolean // if true, a loading spinner is shown
+  postCommentLoading: boolean // if true, the post button shows a loading spinner
 }>()
 
 const emit = defineEmits<{

@@ -17,7 +17,7 @@ import { useAppTitle } from '@/stores/app-title'
 import { getEmojisForStateType } from '@/utils/emojis'
 import router from '@/router'
 import { routes } from '@/router/routes'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import CountdownDisplay from '@/components/CountdownDisplay.vue'
 import { isPresent } from '@/utils/types'
 import { useSprintService } from '@/service/sprint-service'
@@ -224,7 +224,7 @@ function likeEvent(eventId: string) {
                         :key="issue.id">
                         <issue-card
                           :issue="issue"
-                          @click="() => router.push(routes.project(useAppStore().getProjectIdOrThrow()).issue(issue.id))"
+                          @click="() => router.push(routes.project(useProjectId().getProjectIdOrThrow()).issue(issue.id))"
                         />
                       </div>
                     </div>

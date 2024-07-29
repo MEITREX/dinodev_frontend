@@ -1,7 +1,7 @@
 import { graphql, useFragment } from '@/gql'
 import { provideApolloClient, useMutation, useSubscription } from '@vue/apollo-composable'
 import { apolloClient } from '@/setup/apollo-client'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { computed } from 'vue'
 import { useAuth } from '@/service/use-auth'
 import {
@@ -24,7 +24,7 @@ class PlanningMeetingService {
 
   public createPlanningMeeting = async (input: PlanningMeetingInput): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.createPlanningMeetingMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       input
     })
     return useFragment(defaultPlanningMeetingFragment,
@@ -33,7 +33,7 @@ class PlanningMeetingService {
 
   public changePage = async (page: PlanningMeetingPage): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.changePageMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       page
     })
     return useFragment(defaultPlanningMeetingFragment,
@@ -42,7 +42,7 @@ class PlanningMeetingService {
 
   public voteAnimal = async (animal: Animal): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.voteAnimalMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       animal
     })
     return useFragment(defaultPlanningMeetingFragment,
@@ -51,7 +51,7 @@ class PlanningMeetingService {
 
   public endAnimalVoting = async (): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.endAnimalVotingMutation.mutate({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     })
     return useFragment(defaultPlanningMeetingFragment,
       result?.data?.mutateProject?.mutatePlanningMeeting?.endAnimalVoting) || null
@@ -59,7 +59,7 @@ class PlanningMeetingService {
 
   public addName = async (name: string): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.addNameMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       name
     })
     return useFragment(defaultPlanningMeetingFragment,
@@ -68,7 +68,7 @@ class PlanningMeetingService {
 
   public voteName = async (name: string): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.voteNameMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       name
     })
     return useFragment(defaultPlanningMeetingFragment,
@@ -77,7 +77,7 @@ class PlanningMeetingService {
 
   public endNameVoting = async (): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.endNameVotingMutation.mutate({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     })
     return useFragment(defaultPlanningMeetingFragment,
       result?.data?.mutateProject?.mutatePlanningMeeting?.endNameVoting) || null
@@ -85,7 +85,7 @@ class PlanningMeetingService {
 
   public voteEstimation = async (estimation: TShirtSizeEstimation): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.voteEstimationMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       estimation
     })
     return useFragment(defaultPlanningMeetingFragment,
@@ -94,7 +94,7 @@ class PlanningMeetingService {
 
   public restartEstimation = async (): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.restartEstimationMutation.mutate({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     })
     return useFragment(defaultPlanningMeetingFragment,
       result?.data?.mutateProject?.mutatePlanningMeeting?.restartEstimation) || null
@@ -102,7 +102,7 @@ class PlanningMeetingService {
 
   public selectIssue = async (issueId: string | null): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.nextIssueMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       issueId
     })
     return useFragment(defaultPlanningMeetingFragment,
@@ -111,7 +111,7 @@ class PlanningMeetingService {
 
   public startCountdown = async (seconds: number): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.startCountdownMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       seconds
     })
     return useFragment(defaultPlanningMeetingFragment,
@@ -120,7 +120,7 @@ class PlanningMeetingService {
 
   public endEstimation = async (): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.endEstimationMutation.mutate({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     })
     return useFragment(defaultPlanningMeetingFragment,
       result?.data?.mutateProject?.mutatePlanningMeeting?.endEstimation) || null
@@ -131,7 +131,7 @@ class PlanningMeetingService {
     assignUserIds: string[]
   ): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.setFinalResultMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       estimation,
       assignUserIds
     })
@@ -141,7 +141,7 @@ class PlanningMeetingService {
 
   public addSprintIssue = async (issueId: string): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.addSprintIssueMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       issueId
     })
     return useFragment(defaultPlanningMeetingFragment,
@@ -150,7 +150,7 @@ class PlanningMeetingService {
 
   public removeSprintIssue = async (issueId: string): Promise<DefaultPlanningMeetingFragment | null> => {
     const result = await this.removeSprintIssueMutation.mutate({
-      projectId: useAppStore().projectId.value,
+      projectId: useProjectId().projectId.value,
       issueId
     })
     return useFragment(defaultPlanningMeetingFragment,
@@ -159,7 +159,7 @@ class PlanningMeetingService {
 
   public finishMeeting = async (): Promise<DefaultSprintFragment | null> => {
     const result = await this.finishMeetingMutation.mutate({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     })
     return useFragment(sprintFragment,
       result?.data?.mutateProject?.mutatePlanningMeeting?.finishMeeting) || null
@@ -209,7 +209,7 @@ class PlanningMeetingService {
     })
   }
 
-  private createPlanningMeetingMutation = provideApolloClient(apolloClient)(() => {
+  createPlanningMeetingMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation CreatePlanningMeeting($projectId: UUID!, $input: PlanningMeetingInput!) {
             mutateProject(id: $projectId) {
@@ -221,7 +221,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private changePageMutation = provideApolloClient(apolloClient)(() => {
+  changePageMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation ChangePage($projectId: UUID!, $page: PlanningMeetingPage!) {
             mutateProject(id: $projectId) {
@@ -235,7 +235,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private voteAnimalMutation = provideApolloClient(apolloClient)(() => {
+  voteAnimalMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation VoteAnimal($projectId: UUID!, $animal: Animal!) {
             mutateProject(id: $projectId) {
@@ -249,7 +249,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private endAnimalVotingMutation = provideApolloClient(apolloClient)(() => {
+  endAnimalVotingMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation EndAnimalVoting($projectId: UUID!) {
             mutateProject(id: $projectId) {
@@ -263,7 +263,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private addNameMutation = provideApolloClient(apolloClient)(() => {
+  addNameMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation AddName($projectId: UUID!, $name: String!) {
             mutateProject(id: $projectId) {
@@ -277,7 +277,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private voteNameMutation = provideApolloClient(apolloClient)(() => {
+  voteNameMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation VoteName($projectId: UUID!, $name: String!) {
             mutateProject(id: $projectId) {
@@ -291,7 +291,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private endNameVotingMutation = provideApolloClient(apolloClient)(() => {
+  endNameVotingMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation EndNameVoting($projectId: UUID!) {
             mutateProject(id: $projectId) {
@@ -305,7 +305,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private voteEstimationMutation = provideApolloClient(apolloClient)(() => {
+  voteEstimationMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation VoteEstimation($projectId: UUID!, $estimation: TShirtSizeEstimation!) {
             mutateProject(id: $projectId) {
@@ -319,7 +319,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private restartEstimationMutation = provideApolloClient(apolloClient)(() => {
+  restartEstimationMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation RestartEstimation($projectId: UUID!) {
             mutateProject(id: $projectId) {
@@ -333,7 +333,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private nextIssueMutation = provideApolloClient(apolloClient)(() => {
+  nextIssueMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation NextIssue($projectId: UUID!, $issueId: String) {
             mutateProject(id: $projectId) {
@@ -347,7 +347,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private startCountdownMutation = provideApolloClient(apolloClient)(() => {
+  startCountdownMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation StartCountdown($projectId: UUID!, $seconds: Int!) {
             mutateProject(id: $projectId) {
@@ -361,7 +361,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private endEstimationMutation = provideApolloClient(apolloClient)(() => {
+  endEstimationMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation EndEstimation($projectId: UUID!) {
             mutateProject(id: $projectId) {
@@ -377,7 +377,7 @@ class PlanningMeetingService {
     }))
   })
 
-  private setFinalResultMutation = provideApolloClient(apolloClient)(() => {
+  setFinalResultMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation SetFinalResult($projectId: UUID!, $estimation: TShirtSizeEstimation!, $assignUserIds: [UUID!]!) {
             mutateProject(id: $projectId) {
@@ -393,7 +393,7 @@ class PlanningMeetingService {
     }))
   })
 
-  private addSprintIssueMutation = provideApolloClient(apolloClient)(() => {
+  addSprintIssueMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation AddSprintIssue($projectId: UUID!, $issueId: String!) {
             mutateProject(id: $projectId) {
@@ -407,7 +407,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private removeSprintIssueMutation = provideApolloClient(apolloClient)(() => {
+  removeSprintIssueMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation RemoveSprintIssue($projectId: UUID!, $issueId: String!) {
             mutateProject(id: $projectId) {
@@ -421,7 +421,7 @@ class PlanningMeetingService {
     ))
   })
 
-  private finishMeetingMutation = provideApolloClient(apolloClient)(() => {
+  finishMeetingMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation FinishMeeting($projectId: UUID!) {
             mutateProject(id: $projectId) {
@@ -445,9 +445,9 @@ class PlanningMeetingService {
             }
         }`
     ), () => ({
-      projectId: useAppStore().projectId.value
+      projectId: useProjectId().projectId.value
     }), () => ({
-      enabled: useAuth().isLoggedIn() && useAppStore().isProjectSelected()
+      enabled: useAuth().isLoggedIn() && useProjectId().isProjectSelected()
     }))
   })
 

@@ -13,7 +13,7 @@ import { meetingFragment } from '@/service/meeting-service'
 import { useGlobalUserService } from '@/service/global-user-service'
 import AnimalAvatar from '@/views/MeetingView/PlanningView/AnimalAvatar.vue'
 import router from '@/router'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { routes } from '@/router/routes'
 
 const { planningMeeting, changePage, loading } = usePlanningMeetingService()
@@ -22,7 +22,7 @@ onMounted(() => {
   watch(loading, () => {
     if (!loading && planningMeeting.value == null) {
       useErrorManager().catchError('There is no active planning meeting.')
-      router.push(routes.project(useAppStore().getProjectIdOrThrow()).main)
+      router.push(routes.project(useProjectId().getProjectIdOrThrow()).main)
     }
   })
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import RepositoryLinkButton from '@/components/top-menu/RepositoryLinkButton.vue'
+import ExternalSystemLinkButton from '@/components/top-menu/ExternalSystemLinkButton.vue'
 import type { ProjectMainFragment } from '@/gql/graphql'
 import { computed } from 'vue'
 
@@ -22,7 +22,7 @@ const firstRepository = computed(() => repositories.value[0])
 </script>
 
 <template>
-  <repository-link-button
+  <external-system-link-button
     :icon="firstRepository.icon"
     :repositories="repositories"
     text="GitHub" /> <!-- todo make name dynamic -->

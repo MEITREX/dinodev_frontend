@@ -1,3 +1,6 @@
+<!--
+Page for displaying a single issue with all its information and events.
+-->
 <script setup lang="ts">
 import MarkdownTextCard from '@/components/MarkdownTextCard.vue'
 import EventList from '@/components/event/EventList.vue'

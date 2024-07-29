@@ -6,7 +6,7 @@ import MarkdownTextCard from '@/components/MarkdownTextCard.vue'
 import { useGlobalUserService } from '@/service/global-user-service'
 import router from '@/router'
 import { routes } from '@/router/routes'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { useFragment } from '@/gql'
 import { eventFragment } from '@/service/event-service'
 import { abbreviate } from '@/utils/string-utils'
@@ -81,14 +81,14 @@ const repositoryName = computed(() => baseEvent.value?.repositoryName?.value ?? 
 const repositoryUrl = computed(() => baseEvent.value?.repositoryUrl?.value ?? null)
 
 function openIssue() {
-  const { projectId } = useAppStore()
+  const { projectId } = useProjectId()
   if (issueId.value && projectId.value) {
     router.push(routes.project(projectId.value).issue(issueId.value))
   }
 }
 
 function openUserProfile(userId: string | undefined) {
-  const { projectId } = useAppStore()
+  const { projectId } = useProjectId()
   if (userId && projectId.value) {
     router.push(routes.project(projectId.value).main + '/user/' + userId)
   }

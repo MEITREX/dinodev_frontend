@@ -1,4 +1,6 @@
-
+<!--
+User avatar used in a list item with a username and a role description.
+-->
 <script setup lang="ts">
 
 import type { UserInProjectFragment } from '@/gql/graphql'

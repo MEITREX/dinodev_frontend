@@ -3,7 +3,7 @@
 import TheTopBar from '@/components/top-menu/TheTopBar.vue'
 import TheSideMenu from '@/components/side-menu/TheSideMenu.vue'
 import { useProjectService } from '@/service/project-service'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { isPresent } from '@/utils/types'
 import router from '@/router'
 import { routes } from '@/router/routes'
@@ -13,7 +13,7 @@ const props = defineProps<{
   projectId: string
 }>()
 
-useAppStore().projectId.value = props.projectId
+useProjectId().projectId.value = props.projectId
 
 const { loading, projectMainQueryResult } = useProjectService()
 

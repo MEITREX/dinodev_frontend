@@ -4,7 +4,7 @@ import { apolloClient } from '@/setup/apollo-client'
 import { type DefaultMeetingFragment, MeetingType } from '@/gql/graphql'
 import { computed } from 'vue'
 import { useErrorManager } from '@/utils/error-manager'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 
 class MeetingService {
 
@@ -29,7 +29,7 @@ class MeetingService {
   }
 
   private getProjectId = () => {
-    return useAppStore().getProjectIdOrThrow()
+    return useProjectId().getProjectIdOrThrow()
   }
 
   public loading = computed(() =>

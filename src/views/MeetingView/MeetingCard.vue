@@ -1,3 +1,6 @@
+<!--
+Simple card that displays meeting information and allows to start or join a meeting.
+-->
 <script setup lang="ts">
 
 import { computed } from 'vue'
@@ -21,7 +24,7 @@ function startOrJoinMeeting() {
   }
 }
 
-const hasPermissionToCreateMeeting = computed(() => true) // TODO permissions
+const hasPermissionToCreateMeeting = computed(() => true) // currently, everyone can create a meeting
 
 </script>
 
@@ -44,9 +47,6 @@ const hasPermissionToCreateMeeting = computed(() => true) // TODO permissions
       >
         {{ isCurrentlyActive ? 'Join' : 'Start' }} {{ meetingName }}
       </v-btn>
-<!--      <v-btn prepend-icon="mdi-information-outline">-->
-<!--        Learn more-->
-<!--      </v-btn>-->
     </v-card-actions>
   </v-card>
 </template>

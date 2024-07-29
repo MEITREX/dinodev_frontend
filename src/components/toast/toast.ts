@@ -15,6 +15,17 @@ import { abbreviate } from '@/utils/string-utils'
 import { useRetrospectiveMeetingService } from '@/service/retrospective-meeting-service'
 import RetrospectiveMeetingStartedToast from '@/components/toast/RetrospectiveMeetingStartedToast.vue'
 
+/**
+ * Setup toasts on various events.
+ * This function should be called once in the application.
+ *
+ * Toasts are shown when:
+ * - A meeting starts
+ * - An achievement is unlocked
+ * - A level up event occurs
+ * - Another user likes a message
+ * - XP is gained
+ */
 export function setupToast() {
   const toast = useToast()
   const { planningMeeting } = usePlanningMeetingService()
@@ -69,7 +80,6 @@ export function setupToast() {
         })
       }
     }
-
 
   })
 }

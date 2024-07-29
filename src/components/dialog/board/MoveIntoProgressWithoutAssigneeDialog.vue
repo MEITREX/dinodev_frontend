@@ -19,7 +19,7 @@ defineEmits<{
       <v-card-text>
        This issue is currently unassigned. Do you want to assign yourself to it?
         <p v-if="issuesOfUser.length > 1">
-          You have <b>{{ issuesOfUser.length }}</b> other issues assigned to you.
+          You have <b>{{ issuesOfUser.length }}</b> other issues assigned to you that are not completed yet.
           Consider finishing other issues first.
         </p>
       </v-card-text>

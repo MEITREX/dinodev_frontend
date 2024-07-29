@@ -6,11 +6,11 @@ import router from '@/router'
 import UserAvatarListItem from '@/components/side-menu/UserAvatarListItem.vue'
 import { isPresent } from '@/utils/types'
 import { useUserInProjectService } from '@/service/user-in-project-service'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 
 const { currentUser, userStats } = useUserInProjectService()
 
-const { projectId } = useAppStore()
+const { projectId } = useProjectId()
 
 function subRouteTo(route: string) {
   return `/project/${projectId.value}/${route}`
@@ -27,7 +27,7 @@ function logout() {
 
 function openProjects() {
   // reset project id that is stored in local storage
-  useAppStore().projectId.value = null
+  useProjectId().projectId.value = null
   router.push(routes.projects)
 }
 

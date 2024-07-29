@@ -1,6 +1,9 @@
+<!--
+Button to vote for an issue estimation option
+-->
 <script setup lang="ts">
 
-const props = defineProps<{
+defineProps<{
   option: {
     label: string
     storyPoints: number

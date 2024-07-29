@@ -5,7 +5,7 @@ import { isPresent, type Nullable } from '@/utils/types'
 import { useAuth } from '@/service/use-auth'
 import { computed, type ComputedRef } from 'vue'
 import type { UserInProjectFragment } from '@/gql/graphql'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { useErrorManager } from '@/utils/error-manager'
 
 class UserInProjectService {
@@ -117,7 +117,7 @@ class UserInProjectService {
                     }
                 }
       `), () => ({
-        projectId: useAppStore().projectId.value
+        projectId: useProjectId().projectId.value
       }),
       () => ({
         enabled: isEnabled(),
@@ -138,7 +138,7 @@ class UserInProjectService {
                     }
                 }
       `), () => ({
-        projectId: useAppStore().projectId.value
+        projectId: useProjectId().projectId.value
       }),
       () => ({
         enabled: isEnabled(),
@@ -157,7 +157,7 @@ class UserInProjectService {
                     }
                 }
       `), () => ({
-        projectId: useAppStore().projectId.value
+        projectId: useProjectId().projectId.value
       }),
       () => ({
         enabled: isEnabled(),
@@ -179,7 +179,7 @@ class UserInProjectService {
 }
 
 function isEnabled() {
-  return useAuth().isLoggedIn() && isPresent(useAppStore().projectId.value)
+  return useAuth().isLoggedIn() && isPresent(useProjectId().projectId.value)
 }
 
 const userInProjectServiceInstance = new UserInProjectService()

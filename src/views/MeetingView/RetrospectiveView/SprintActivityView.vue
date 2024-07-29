@@ -2,7 +2,7 @@
 
 import { useRetrospectiveMeetingService } from '@/service/retrospective-meeting-service'
 import { computed } from 'vue'
-import SprintActivityColumn from '@/views/MeetingView/RetrospectiveView/SprintActivityColumn.vue'
+import RetroActivityColumn from '@/components/meeting/RetroActivityColumn.vue'
 import { MeetingRole } from '@/gql/graphql'
 import { useGlobalUserService } from '@/service/global-user-service'
 import { useFragment } from '@/gql'
@@ -27,7 +27,7 @@ const isMeetingLeader = computed(() => {
 <template>
   <div v-if="activity" class="d-flex flow-row ga-3 pa-1">
     <div v-for="column in activity.columns" :key="column.id" class="elevation-1 pa-3" style="min-height: 500px; flex: 1">
-      <sprint-activity-column :column="column" />
+      <retro-activity-column :column="column" />
     </div>
 
   </div>

@@ -3,7 +3,7 @@ import SprintStats from '@/components/SprintStats.vue'
 import { useSprintService } from '@/service/sprint-service'
 import { computed } from 'vue'
 import router from '@/router'
-import { useAppStore } from '@/stores/app-store'
+import { useProjectId } from '@/stores/project-id'
 import { routes } from '@/router/routes'
 import AnimalEnclosure from '@/components/animal/AnimalEnclosure.vue'
 
@@ -19,17 +19,17 @@ const percentageComplete = computed(() => {
 })
 
 function openBoard() {
-  const projectId = useAppStore().getProjectIdOrThrow()
+  const projectId = useProjectId().getProjectIdOrThrow()
   router.push(routes.project(projectId).board)
 }
 
 function openMyIssues() {
-  const projectId = useAppStore().getProjectIdOrThrow()
+  const projectId = useProjectId().getProjectIdOrThrow()
   router.push(routes.project(projectId).boardMyIssues)
 }
 
 function openSprintStats() {
-  const projectId = useAppStore().getProjectIdOrThrow()
+  const projectId = useProjectId().getProjectIdOrThrow()
   router.push(routes.project(projectId).sprintStats)
 }
 </script>
