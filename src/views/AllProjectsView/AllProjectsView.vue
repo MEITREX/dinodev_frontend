@@ -92,6 +92,7 @@ function createProject() {
               <template v-for="project in items" :key="project.id">
                 <project-card
                   :project="project.raw"
+                  class="mb-2"
                   @select-project="selectProject"
                   @joined-project="onJoinedProject" />
               </template>
