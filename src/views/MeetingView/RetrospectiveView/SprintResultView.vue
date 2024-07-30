@@ -6,7 +6,7 @@ import { computed, onMounted, ref } from 'vue'
 import { watchImmediate } from '@vueuse/core'
 import { KnownAsset, SprintSuccessState } from '@/gql/graphql'
 import { useRetrospectiveMeetingService } from '@/service/retrospective-meeting-service'
-import AnimalAvatar from '@/views/MeetingView/PlanningView/AnimalAvatar.vue'
+import AnimalAvatar from '@/components/animal/AnimalAvatar.vue'
 import AnimalEnclosureAsset from '@/components/animal/KnownAsset.vue'
 import { animateValue } from '@/utils/animate-ref'
 
@@ -230,19 +230,20 @@ const percentageComplete = computed(() => {
                 </v-card-text>
               </v-card>
 
-              <v-card>
+              <v-card v-for="baseReward in retrospectiveMeeting?.baseRewards || []" :key="baseReward">
                 <v-card-title>New tile!</v-card-title>
                 <v-card-subtitle>Base reward</v-card-subtitle>
                 <v-card-text>
-                  <animal-enclosure-asset :asset="KnownAsset.Rock_1" :fixed-width="180" :fixed-height="100" />
+                  <animal-enclosure-asset :asset="baseReward" :fixed-width="180" :fixed-height="100" />
                 </v-card-text>
               </v-card>
 
-              <v-card v-if="wasSuccess">
+              <v-card v-for="additionalReward in retrospectiveMeeting?.streakRewards || []"
+                      :key="additionalReward">
                 <v-card-title>New tile!</v-card-title>
                 <v-card-subtitle>Sprint streak reward</v-card-subtitle>
                 <v-card-text>
-                  <animal-enclosure-asset :asset="KnownAsset.Fountain" :fixed-width="180" :fixed-height="100" />
+                  <animal-enclosure-asset :asset="additionalReward" :fixed-width="180" :fixed-height="100" />
                 </v-card-text>
               </v-card>
             </div>

@@ -6,7 +6,7 @@ average story points per issue, and a simple burndown chart.
 import { useAppTitle } from '@/stores/app-title'
 import { computed, onMounted } from 'vue'
 import { useSprintService } from '@/service/sprint-service'
-import AnimalAvatar from '@/views/MeetingView/PlanningView/AnimalAvatar.vue'
+import AnimalAvatar from '@/components/animal/AnimalAvatar.vue'
 import { isPresent, type Maybe } from '@/utils/types'
 import { type DefaultSprintFragment, SprintSuccessState } from '@/gql/graphql'
 

@@ -36,7 +36,7 @@ class SprintService {
     this.allSprintsQuery.onError(useErrorManager().catchError)
   }
 
-  private currentSprintQuery = provideApolloClient(apolloClient)(() => useQuery(graphql(`
+  currentSprintQuery = provideApolloClient(apolloClient)(() => useQuery(graphql(`
       query Sprint($projectId: UUID!) {
           project(id: $projectId) {
               id
@@ -52,7 +52,7 @@ class SprintService {
     fetchPolicy: 'no-cache'
   })))
 
-  private previousSprintQuery = provideApolloClient(apolloClient)(() => useQuery(graphql(`
+  previousSprintQuery = provideApolloClient(apolloClient)(() => useQuery(graphql(`
       query PreviousSprint($projectId: UUID!) {
           project(id: $projectId) {
               id

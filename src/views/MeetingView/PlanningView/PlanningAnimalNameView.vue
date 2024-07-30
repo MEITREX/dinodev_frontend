@@ -61,7 +61,7 @@ function getNumberOfVotes(name: string) {
 function finishVoting() {
   const totalVotes = props.nameVoting?.nameVotingStates.reduce((acc, curr) => acc + curr.totalVotes, 0) ?? 0
   if (totalVotes < props.attendeesCount) {
-    // show confirmation dialog TODO make a real dialog
+    // show confirmation dialog
     if (!window.confirm('Not all attendees have voted yet. Are you sure you want to finish the voting?')) {
       return
     }

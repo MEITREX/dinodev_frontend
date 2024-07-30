@@ -74,7 +74,7 @@ class ProjectService {
 
   private projectId = useProjectId().projectId
 
-  private ProjectMainFragment = graphql(`
+  ProjectMainFragment = graphql(`
       fragment ProjectMain on Project {
           id
           name
@@ -121,7 +121,7 @@ class ProjectService {
       }
   `)
 
-  private ProjectBaseFragment = graphql(`
+  ProjectBaseFragment = graphql(`
       fragment ProjectBase on Project {
           id
           name
@@ -149,7 +149,7 @@ class ProjectService {
     }))
   })
 
-  private allProjectsQueryResult = provideApolloClient(apolloClient)(() => {
+  allProjectsQueryResult = provideApolloClient(apolloClient)(() => {
     return useQuery(graphql(`
         query AllProjectsQuery {
             projects {
@@ -161,7 +161,7 @@ class ProjectService {
     }))
   })
 
-  private createProjectMutation = provideApolloClient(apolloClient)(() => {
+  createProjectMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation CreateProject($input: CreateProjectInput!) {
             createProject(input: $input) {
@@ -173,7 +173,7 @@ class ProjectService {
     }))
   })
 
-  private updateProjectMutation = provideApolloClient(apolloClient)(() => {
+  updateProjectMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation UpdateProject($projectId: UUID!, $input: UpdateProjectInput!) {
             updateProject(id: $projectId, input: $input) {
@@ -185,7 +185,7 @@ class ProjectService {
     }))
   })
 
-  private deleteProjectMutation = provideApolloClient(apolloClient)(() => {
+  deleteProjectMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation DeleteProject($projectId: UUID!) {
             deleteProject(id: $projectId)

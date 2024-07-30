@@ -45,7 +45,7 @@ class MeetingService {
     this.cancelMeetingMutation.onError(useErrorManager().catchError)
   }
 
-  private joinMeetingMutation = provideApolloClient(apolloClient)(() => {
+  joinMeetingMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation JoinMeeting($projectId: UUID!, $type: MeetingType!) {
             mutateProject(id: $projectId) {
@@ -57,7 +57,7 @@ class MeetingService {
     `))
   })
 
-  private leaveMeetingMutation = provideApolloClient(apolloClient)(() => {
+  leaveMeetingMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation LeaveMeeting($projectId: UUID!, $type: MeetingType!) {
             mutateProject(id: $projectId) {
@@ -69,7 +69,7 @@ class MeetingService {
     `))
   })
 
-  private promoteToMeetingLeaderMutation = provideApolloClient(apolloClient)(() => {
+  promoteToMeetingLeaderMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation PromoteToMeetingLeader($projectId: UUID!, $type: MeetingType!, $userId: UUID!) {
             mutateProject(id: $projectId) {
@@ -81,7 +81,7 @@ class MeetingService {
     `))
   })
 
-  private cancelMeetingMutation = provideApolloClient(apolloClient)(() => {
+  cancelMeetingMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation CancelMeeting($projectId: UUID!, $type: MeetingType!) {
             mutateProject(id: $projectId) {

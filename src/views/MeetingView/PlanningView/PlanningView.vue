@@ -11,7 +11,7 @@ import { usePlanningMeetingService } from '@/service/planning-meeting-service'
 import { useFragment } from '@/gql'
 import { meetingFragment } from '@/service/meeting-service'
 import { useGlobalUserService } from '@/service/global-user-service'
-import AnimalAvatar from '@/views/MeetingView/PlanningView/AnimalAvatar.vue'
+import AnimalAvatar from '@/components/animal/AnimalAvatar.vue'
 import router from '@/router'
 import { useProjectId } from '@/stores/project-id'
 import { routes } from '@/router/routes'
@@ -97,7 +97,7 @@ const stepperDisabled = computed(() => {
   <div class="pa-5">
     <div v-if="!(meetingBase?.active ?? false)">
       <v-card class="pa-3">
-        <!-- TODO check if meeting was success -->
+        <!-- TODO: check if meeting was success -->
         <h3>Meeting finished! 🎉</h3>
         <p>
           Welcome {{ planningMeeting?.nameVoting?.votingResult }} to the park!

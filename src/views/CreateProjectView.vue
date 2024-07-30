@@ -119,82 +119,85 @@ function submit() {
 
 <template>
   <v-main class="fill-height">
-    <v-form fast-fail @submit.prevent v-model="valid" validate-on="blur">
-      <v-container>
-        <v-row>
-          <v-col cols="12" sm="8" md="8">
-            <h2 class="my-3">Create new project</h2>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-text-field
-              v-model="project.name"
-              label="Project name"
-              :rules="projectNameRules"
-              required
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-textarea
-              v-model="project.description"
-              label="Description"
-            ></v-textarea>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <h3>Settings</h3>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-text-field
-              v-model="project.projectSettings.imsSettings.imsProjectId"
-              label="IMS Project ID"
-            ></v-text-field>
-          </v-col>
-        </v-row>
+    Currently, creating projects with the UI is not supported. Please use the API to create a project.
 
-        <!-- states -->
-        <v-row>
-          <v-col cols="12">
-            <h4>Issue states</h4>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-row v-for="(state, index) in project.projectSettings.imsSettings.issueStates" :key="index">
-              <v-col cols="4">
-                <v-text-field
-                  v-model="state.name"
-                  :label="'State ' + (index + 1)"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="4">
-                <v-text-field
-                  v-model="state.imsStateId"
-                  :label="'IMS State ID ' + (index + 1)"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="4">
-                <v-select
-                  v-model="state.type"
-                  :items="Object.values(IssueStateType)"
-                  :label="'Type ' + (index + 1)"
-                ></v-select>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+    <!-- the commented code can be helpful for local development -->
+<!--    <v-form fast-fail @submit.prevent v-model="valid" validate-on="blur">-->
+<!--      <v-container>-->
+<!--        <v-row>-->
+<!--          <v-col cols="12" sm="8" md="8">-->
+<!--            <h2 class="my-3">Create new project</h2>-->
+<!--          </v-col>-->
+<!--        </v-row>-->
+<!--        <v-row>-->
+<!--          <v-col cols="12">-->
+<!--            <v-text-field-->
+<!--              v-model="project.name"-->
+<!--              label="Project name"-->
+<!--              :rules="projectNameRules"-->
+<!--              required-->
+<!--            ></v-text-field>-->
+<!--          </v-col>-->
+<!--        </v-row>-->
+<!--        <v-row>-->
+<!--          <v-col cols="12">-->
+<!--            <v-textarea-->
+<!--              v-model="project.description"-->
+<!--              label="Description"-->
+<!--            ></v-textarea>-->
+<!--          </v-col>-->
+<!--        </v-row>-->
+<!--        <v-row>-->
+<!--          <v-col cols="12">-->
+<!--            <h3>Settings</h3>-->
+<!--          </v-col>-->
+<!--        </v-row>-->
+<!--        <v-row>-->
+<!--          <v-col cols="12">-->
+<!--            <v-text-field-->
+<!--              v-model="project.projectSettings.imsSettings.imsProjectId"-->
+<!--              label="IMS Project ID"-->
+<!--            ></v-text-field>-->
+<!--          </v-col>-->
+<!--        </v-row>-->
 
-        <v-row>
-          <v-btn @click="submit" :loading="loading" :disabled="!valid">Create project</v-btn>
-        </v-row>
-      </v-container>
-    </v-form>
+<!--        &lt;!&ndash; states &ndash;&gt;-->
+<!--        <v-row>-->
+<!--          <v-col cols="12">-->
+<!--            <h4>Issue states</h4>-->
+<!--          </v-col>-->
+<!--        </v-row>-->
+<!--        <v-row>-->
+<!--          <v-col cols="12">-->
+<!--            <v-row v-for="(state, index) in project.projectSettings.imsSettings.issueStates" :key="index">-->
+<!--              <v-col cols="4">-->
+<!--                <v-text-field-->
+<!--                  v-model="state.name"-->
+<!--                  :label="'State ' + (index + 1)"-->
+<!--                ></v-text-field>-->
+<!--              </v-col>-->
+<!--              <v-col cols="4">-->
+<!--                <v-text-field-->
+<!--                  v-model="state.imsStateId"-->
+<!--                  :label="'IMS State ID ' + (index + 1)"-->
+<!--                ></v-text-field>-->
+<!--              </v-col>-->
+<!--              <v-col cols="4">-->
+<!--                <v-select-->
+<!--                  v-model="state.type"-->
+<!--                  :items="Object.values(IssueStateType)"-->
+<!--                  :label="'Type ' + (index + 1)"-->
+<!--                ></v-select>-->
+<!--              </v-col>-->
+<!--            </v-row>-->
+<!--          </v-col>-->
+<!--        </v-row>-->
+
+<!--        <v-row>-->
+<!--          <v-btn @click="submit" :loading="loading" :disabled="!valid">Create project</v-btn>-->
+<!--        </v-row>-->
+<!--      </v-container>-->
+<!--    </v-form>-->
   </v-main>
 </template>
 

@@ -8,7 +8,7 @@ It also has a mode to place a new asset at the current mouse position.
 
 import { isPresent } from '@/utils/types'
 import type { Animal, KnownAsset as KnownAssetType } from '@/gql/graphql'
-import AnimalAvatar from '@/views/MeetingView/PlanningView/AnimalAvatar.vue'
+import AnimalAvatar from '@/components/animal/AnimalAvatar.vue'
 import type { PlacedAssetType } from '@/service/sprint-service'
 import PlacedAsset from '@/components/animal/PlacedAsset.vue'
 import { useMouse } from '@vueuse/core'

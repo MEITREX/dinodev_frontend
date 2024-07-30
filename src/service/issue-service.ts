@@ -22,7 +22,7 @@ class IssueService {
       this.issueQuery.result.value?.project?.issue) || null
   })
 
-  public async changeState(issueId: string, stateName: string) {
+  public changeState = async (issueId: string, stateName: string) => {
     const result = await this.changeStateMutation.mutate({
       projectId: useProjectId().projectId.value,
       issueId,
@@ -31,7 +31,7 @@ class IssueService {
     return useFragment(issueBaseFragment, result?.data?.mutateProject?.mutateIssue?.changeIssueState)
   }
 
-  public async finishIssue(issueId: string, doneStateName: string, dodConfirmStates: DefinitionOfDoneConfirmState[]) {
+  public finishIssue = async (issueId: string, doneStateName: string, dodConfirmStates: DefinitionOfDoneConfirmState[]) => {
     const result = await this.finishIssueMutation.mutate({
       projectId: useProjectId().projectId.value,
       issueId,
@@ -41,7 +41,7 @@ class IssueService {
     return useFragment(issueBaseFragment, result?.data?.mutateProject?.mutateIssue?.finishIssue)
   }
 
-  public async assignIssue(issueId: string, assigneeId: string) {
+  public assignIssue = async (issueId: string, assigneeId: string) => {
     const result = await this.assignIssueMutation.mutate({
       projectId: useProjectId().projectId.value,
       issueId,
@@ -80,10 +80,6 @@ class IssueService {
   public issueId = ref<string | null>(null)
 
   constructor() {
-    this.changeState = this.changeState.bind(this)
-    this.finishIssue = this.finishIssue.bind(this)
-    this.assignIssue = this.assignIssue.bind(this)
-
     this.boardQuery.onError(useErrorManager().catchError)
     this.changeStateMutation.onError(useErrorManager().catchError)
     this.finishIssueMutation.onError(useErrorManager().catchError)
@@ -143,7 +139,7 @@ class IssueService {
     }))
   })
 
-  private changeStateMutation = provideApolloClient(apolloClient)(() => {
+  changeStateMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation ChangeStateMutation($projectId: UUID!, $issueId: ID!, $stateName: String!) {
             mutateProject(id: $projectId) {
@@ -159,7 +155,7 @@ class IssueService {
     }))
   })
 
-  private finishIssueMutation = provideApolloClient(apolloClient)(() => {
+  finishIssueMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation FinishIssueMutation($projectId: UUID!, $issueId: ID!, $doneStateName: String!, $dodConfirmStates: [DefinitionOfDoneConfirmState!]!) {
             mutateProject(id: $projectId) {
@@ -175,7 +171,7 @@ class IssueService {
     }))
   })
 
-  private createIssueMutation = provideApolloClient(apolloClient)(() => {
+  createIssueMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation CreateIssueMutation($projectId: UUID!, $input: CreateIssueInput!) {
             mutateProject(id: $projectId) {
@@ -189,7 +185,7 @@ class IssueService {
     }))
   })
 
-  private assignIssueMutation = provideApolloClient(apolloClient)(() => {
+  assignIssueMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation AssignIssueMutation($projectId: UUID!, $issueId: ID!, $assigneeId: UUID!) {
             mutateProject(id: $projectId) {
@@ -205,7 +201,7 @@ class IssueService {
     }))
   })
 
-  private commentOnIssueMutation = provideApolloClient(apolloClient)(() => {
+  commentOnIssueMutation = provideApolloClient(apolloClient)(() => {
     return useMutation(graphql(`
         mutation CommentOnIssueMutation($projectId: UUID!, $issueId: ID!, $message: String!, $optionalParentId: String) {
             mutateProject(id: $projectId) {
@@ -221,7 +217,7 @@ class IssueService {
     }))
   })
 
-  private issueQuery = provideApolloClient(apolloClient)(() => {
+  issueQuery = provideApolloClient(apolloClient)(() => {
     return useQuery(graphql(`
         query IssueQuery($projectId: UUID!, $issueId: UUID!) {
             project(id: $projectId) {

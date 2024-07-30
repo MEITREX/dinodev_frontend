@@ -267,6 +267,8 @@ export const defaultRetrospectiveMeetingFragment = graphql(`
 
         currentPage
         goldChallengeReward
+        streakRewards
+        baseRewards
         
         activities {
             columns {

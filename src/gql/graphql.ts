@@ -51,6 +51,12 @@ export enum AllowedDataType {
   String = 'STRING'
 }
 
+/**
+ * 
+ * All known animals that can be placed in the park.
+ * 
+ * Frontend supports TREX, TRICERATOPS, DODO, and BRONTOSAURUS.
+ */
 export enum Animal {
   Ankylosaurus = 'ANKYLOSAURUS',
   Brontosaurus = 'BRONTOSAURUS',
@@ -63,26 +69,82 @@ export enum Animal {
   Triceratops = 'TRICERATOPS'
 }
 
+/**
+ * 
+ * Details about the animal voting.
+ */
 export type AnimalVoting = {
   __typename?: 'AnimalVoting';
+  /**
+   * 
+   * The voting states for each animal, containing the votes of the users.
+   */
   animalVotingStates: Array<AnimalVotingState>;
+  /**
+   * 
+   * If the animal voting is finished.
+   */
   finished: Scalars['Boolean']['output'];
+  /**
+   * 
+   * The animals that can be voted for.
+   */
   votableAnimals: Array<Animal>;
+  /**
+   * 
+   * If the animal voting is finished, the result of the voting.
+   */
   votingResult?: Maybe<Animal>;
 };
 
+/**
+ * 
+ * Holds the votes for an animal.
+ */
 export type AnimalVotingState = {
   __typename?: 'AnimalVotingState';
+  /**
+   * 
+   * The total number of votes for the animal.
+   */
   totalVotes: Scalars['Int']['output'];
+  /**
+   * 
+   * The votes for the animal.
+   */
   userVotes: Array<Vote>;
+  /**
+   * 
+   * The animal that is voted for.
+   */
   votedFor: Animal;
 };
 
+/**
+ * 
+ * User info from the AuthenticationProvider
+ */
 export type BasicUserInfo = {
   __typename?: 'BasicUserInfo';
+  /**
+   * 
+   * The avatar of the user. Should be a URL.
+   */
   avatar?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
+  /**
+   * 
+   * The ID of the user.
+   */
+  id: Scalars['String']['output'];
+  /**
+   * 
+   * If the user should be treated as an admin.
+   */
   isAdmin: Scalars['Boolean']['output'];
+  /**
+   * 
+   * The username of the user.
+   */
   username: Scalars['String']['output'];
 };
 
@@ -95,19 +157,29 @@ export type CodeRepositorySettingsInput = {
   repositories: Array<RepositoryDefinitionInput>;
 };
 
+/**
+ * Input for creating an event.
+ * Fields are described in the Event interface.
+ */
 export type CreateEventInput = {
-  eventData: Array<TemplateFieldInput>;
+  eventData: Array<DataFieldInput>;
   eventTypeIdentifier: Scalars['String']['input'];
   id?: InputMaybe<Scalars['UUID']['input']>;
+  /**
+   * Message of the event. If not provided, the message template of the event type is used and
+   * the eventData is used to fill in the template.
+   */
   message?: InputMaybe<Scalars['String']['input']>;
   parentId?: InputMaybe<Scalars['UUID']['input']>;
   projectId?: InputMaybe<Scalars['UUID']['input']>;
   timestamp: Scalars['DateTime']['input'];
   userId?: InputMaybe<Scalars['UUID']['input']>;
+  /** Visibility of the event. If not provided, the default visibility of the event type is used. */
   visibility?: InputMaybe<EventVisibility>;
   visibleToUserIds?: InputMaybe<Array<Scalars['UUID']['input']>>;
 };
 
+/** Input for creating an event type. */
 export type CreateEventTypeInput = {
   defaultVisibility: EventVisibility;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -167,6 +239,23 @@ export type CreateSprintInput = {
   storyPointsPlanned: Scalars['Int']['input'];
 };
 
+/** Represents a field in the data of an event. */
+export type DataField = {
+  /** Name of the field. */
+  key: Scalars['String']['output'];
+  /** Type of the field. */
+  type: AllowedDataType;
+  /** Value of the field, as a string. */
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+/** Input for creating a data field. */
+export type DataFieldInput = {
+  key: Scalars['String']['input'];
+  type: AllowedDataType;
+  value?: InputMaybe<Scalars['String']['input']>;
+};
+
 /**
  * Filter for date values.
  * If multiple filters are specified, they are combined with AND.
@@ -178,31 +267,67 @@ export type DateTimeFilter = {
   before?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+/** Default implementation of the DataField interface. */
+export type DefaultDataField = DataField & {
+  __typename?: 'DefaultDataField';
+  key: Scalars['String']['output'];
+  type: AllowedDataType;
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+/**
+ * Implementation of the Event interface.
+ * Fields are described in the interface definition.
+ */
 export type DefaultEvent = Event & {
   __typename?: 'DefaultEvent';
   children: Array<DefaultEvent>;
-  eventData: Array<DefaultTemplateField>;
+  eventData: Array<DefaultDataField>;
   eventType: DefaultEventType;
-  field?: Maybe<TemplateField>;
+  /**
+   * 
+   * Get a field by name.
+   */
+  field?: Maybe<DataField>;
   id: Scalars['UUID']['output'];
   message: Scalars['String']['output'];
   mostRecentChildTimestamp: Scalars['DateTime']['output'];
   parent?: Maybe<DefaultEvent>;
   projectId?: Maybe<Scalars['UUID']['output']>;
+  /**
+   * 
+   * List of reactions on this event.
+   */
   reactions: Array<Reaction>;
   timestamp: Scalars['DateTime']['output'];
+  /**
+   * 
+   * The user who is associated with this event.
+   */
   user?: Maybe<GlobalUser>;
   userId?: Maybe<Scalars['UUID']['output']>;
   visibility: EventVisibility;
   visibleToUserIds: Array<Scalars['UUID']['output']>;
+  /**
+   * 
+   * How much XP the current user has earned for this event.
+   */
   xpForCurrentUser?: Maybe<Scalars['Int']['output']>;
 };
 
 
+/**
+ * Implementation of the Event interface.
+ * Fields are described in the interface definition.
+ */
 export type DefaultEventFieldArgs = {
   name: Scalars['String']['input'];
 };
 
+/**
+ * Implementation of the EventType interface.
+ * Fields are described in the interface definition.
+ */
 export type DefaultEventType = EventType & {
   __typename?: 'DefaultEventType';
   defaultVisibility: EventVisibility;
@@ -212,6 +337,7 @@ export type DefaultEventType = EventType & {
   messageTemplate: Scalars['String']['output'];
 };
 
+/** Default implementation of the FieldSchemaDefinition interface. */
 export type DefaultFieldSchemaDefinition = FieldSchemaDefinition & {
   __typename?: 'DefaultFieldSchemaDefinition';
   allowedValues?: Maybe<Array<Scalars['String']['output']>>;
@@ -221,29 +347,61 @@ export type DefaultFieldSchemaDefinition = FieldSchemaDefinition & {
   type: AllowedDataType;
 };
 
+/** Default implementation of the SchemaDefinition interface. */
 export type DefaultSchemaDefinition = SchemaDefinition & {
   __typename?: 'DefaultSchemaDefinition';
   fields: Array<DefaultFieldSchemaDefinition>;
 };
 
-export type DefaultTemplateField = TemplateField & {
-  __typename?: 'DefaultTemplateField';
-  key: Scalars['String']['output'];
-  type: AllowedDataType;
-  value?: Maybe<Scalars['String']['output']>;
-};
-
+/**
+ * 
+ * Represents an item of the definition of done and with the information if it is checked or not and
+ * the reason if it is not checked.
+ */
 export type DefinitionOfDoneConfirmState = {
+  /**
+   * 
+   * If the item is checked.
+   */
   checked: Scalars['Boolean']['input'];
+  /**
+   * 
+   * The child confirm states, containing the child items of the definition of done item.
+   */
   children: Array<DefinitionOfDoneConfirmState>;
+  /**
+   * 
+   * Text of the definition of done item.
+   */
   dodText: Scalars['String']['input'];
+  /**
+   * 
+   * The reason why the item is not checked.
+   * Should be null if the item is checked.
+   */
   reasonIfNotChecked?: InputMaybe<Scalars['String']['input']>;
 };
 
+/**
+ * 
+ * A single item of the definition of done that has to be checked or commented on when completing an issue.
+ */
 export type DefinitionOfDoneItem = {
   __typename?: 'DefinitionOfDoneItem';
+  /**
+   * 
+   * Items that are implied by this item. If this item is checked, all items in this list also need to be checked if they are required.
+   */
   implies: Array<DefinitionOfDoneItem>;
+  /**
+   * 
+   * Whether the item is required to be checked. If not, the dialog can be completed without checking this item.
+   */
   required: Scalars['Boolean']['output'];
+  /**
+   * 
+   * The text of the item.
+   */
   text: Scalars['String']['output'];
 };
 
@@ -253,6 +411,10 @@ export type DefinitionOfDoneItemInput = {
   text: Scalars['String']['input'];
 };
 
+/**
+ * 
+ * Statistics about the estimations.
+ */
 export type EstimationStats = {
   __typename?: 'EstimationStats';
   max?: Maybe<TShirtSizeEstimation>;
@@ -261,6 +423,10 @@ export type EstimationStats = {
   mode?: Maybe<TShirtSizeEstimation>;
 };
 
+/**
+ * 
+ * Holds the votes for an estimation.
+ */
 export type EstimationVote = {
   __typename?: 'EstimationVote';
   totalVotes: Scalars['Int']['output'];
@@ -268,50 +434,78 @@ export type EstimationVote = {
   votedFor: TShirtSizeEstimation;
 };
 
+/** Represents an event in the system. */
 export type Event = {
+  /** List of child events. */
   children: Array<Event>;
-  eventData: Array<TemplateField>;
+  /** Data of the event. */
+  eventData: Array<DataField>;
+  /** Type of the event. */
   eventType: EventType;
-  field?: Maybe<TemplateField>;
+  /**
+   * 
+   * Get a field by name.
+   */
+  field?: Maybe<DataField>;
+  /** Unique identifier of the event. */
   id: Scalars['UUID']['output'];
+  /** Message of the event. */
   message: Scalars['String']['output'];
+  /** Timestamp of the most recent child event. */
   mostRecentChildTimestamp: Scalars['DateTime']['output'];
+  /** Parent event, if any. */
   parent?: Maybe<Event>;
+  /** Id of the project the event belongs to. */
   projectId?: Maybe<Scalars['UUID']['output']>;
+  /**
+   * 
+   * List of reactions on this event.
+   */
   reactions: Array<Reaction>;
+  /** Timestamp of the event. */
   timestamp: Scalars['DateTime']['output'];
+  /**
+   * 
+   * The user who is associated with this event.
+   */
   user?: Maybe<GlobalUser>;
+  /** Id of the user who triggered the event. */
   userId?: Maybe<Scalars['UUID']['output']>;
+  /** Visibility of the event. */
   visibility: EventVisibility;
+  /** List of user ids who can see the event (in addition to the user who triggered the event). */
   visibleToUserIds: Array<Scalars['UUID']['output']>;
+  /**
+   * 
+   * How much XP the current user has earned for this event.
+   */
   xpForCurrentUser?: Maybe<Scalars['Int']['output']>;
 };
 
 
+/** Represents an event in the system. */
 export type EventFieldArgs = {
   name: Scalars['String']['input'];
 };
 
-export type EventFilter = {
-  eventTypeIdentifier?: InputMaybe<StringFilter>;
-  minVisibility?: InputMaybe<EventVisibility>;
-  projectId?: InputMaybe<Scalars['UUID']['input']>;
-  since?: InputMaybe<Scalars['DateTime']['input']>;
-  userId?: InputMaybe<Scalars['UUID']['input']>;
-};
-
+/** Represents a type of event in the system. */
 export type EventType = {
+  /** Default of the event type. */
   defaultVisibility: EventVisibility;
+  /** Description of the event type. */
   description?: Maybe<Scalars['String']['output']>;
+  /** Describes the schema of the event data. */
   eventSchema: SchemaDefinition;
+  /** Unique, human readable identifier of the event type. */
   identifier: Scalars['String']['output'];
+  /** String template for the message of the event. */
   messageTemplate: Scalars['String']['output'];
 };
 
 export enum EventVisibility {
   /** Detail level: visible to all users but only when viewing a specific object, not in the whole list of events. */
   Detail = 'DETAIL',
-  /** Only for admins. Not visible to users. */
+  /** Internal events. Not visible to users. May be shown to administrators. */
   Internal = 'INTERNAL',
   /** Only for the user who created the event and users in "visibleToUserIds". */
   Private = 'PRIVATE',
@@ -319,14 +513,21 @@ export enum EventVisibility {
   Public = 'PUBLIC'
 }
 
+/** Schema definition for a field in the event data. */
 export type FieldSchemaDefinition = {
+  /** Allowed values for the field. Set to null if any value is allowed. */
   allowedValues?: Maybe<Array<Scalars['String']['output']>>;
+  /** Description of the field. */
   description?: Maybe<Scalars['String']['output']>;
+  /** Name of the field. */
   name: Scalars['String']['output'];
+  /** Whether the field is required. */
   required: Scalars['Boolean']['output'];
+  /** Type of the field. */
   type: AllowedDataType;
 };
 
+/** Input for creating and updating a field schema definition. */
 export type FieldSchemaDefinitionInput = {
   allowedValues?: InputMaybe<Array<Scalars['String']['input']>>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -335,6 +536,11 @@ export type FieldSchemaDefinitionInput = {
   type: AllowedDataType;
 };
 
+/**
+ * 
+ * Privileges on the global level, i.e., not tied to a specific project.
+ * Currently, UPDATE_ROLE and LIST_USERS are not used.
+ */
 export enum GlobalPrivilege {
   ChangeRoles = 'CHANGE_ROLES',
   CreateProject = 'CREATE_PROJECT',
@@ -363,6 +569,13 @@ export type GlobalUserUserInProjectArgs = {
   projectId: Scalars['UUID']['input'];
 };
 
+/**
+ * 
+ * Global roles define the permissions of a user on a global level.
+ * They are not tied to a specific project.
+ * 
+ * Currently, there is only a distinction between admins and non-admins.
+ */
 export type GlobalUserRole = {
   __typename?: 'GlobalUserRole';
   globalPrivileges: Array<GlobalPrivilege>;
@@ -386,6 +599,10 @@ export type IconInput = {
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
+/**
+ * 
+ * Ims specific settings of a project. Currently, this is tailored to Gropius.
+ */
 export type ImsSettings = {
   __typename?: 'ImsSettings';
   effortEstimationFieldName: Scalars['String']['output'];
@@ -433,6 +650,10 @@ export type Issue = {
   __typename?: 'Issue';
   /** List of user UUIDs representing the assignees of the issue. */
   assigneeIds: Array<Scalars['UUID']['output']>;
+  /**
+   * 
+   * The assignees of this issue.
+   */
   assignees: Array<Maybe<UserInProject>>;
   /** Children issue ids of the issue. */
   childrenIssueIds: Array<Scalars['ID']['output']>;
@@ -454,6 +675,10 @@ export type Issue = {
   priority: IssuePriority;
   /** Unique identifier of the project the issue belongs to. */
   projectId: Scalars['UUID']['output'];
+  /**
+   * 
+   * The sprint that this issue is in.
+   */
   sprint?: Maybe<Sprint>;
   /** Sprint number associated with the issue, if applicable. */
   sprintNumber?: Maybe<Scalars['Int']['output']>;
@@ -470,6 +695,10 @@ export type Issue = {
   type: IssueType;
 };
 
+/**
+ * 
+ * Details about the issue estimation.
+ */
 export type IssueEstimation = {
   __typename?: 'IssueEstimation';
   countdownSeconds?: Maybe<Scalars['Int']['output']>;
@@ -482,57 +711,134 @@ export type IssueEstimation = {
   votes: Array<EstimationVote>;
 };
 
+/**
+ * 
+ * Mutation type to change issues.
+ */
 export type IssueMutation = {
   __typename?: 'IssueMutation';
+  /**
+   * 
+   * Assign the issue to the user with the given id.
+   */
   assignIssue: Issue;
+  /**
+   * 
+   * Change the description of the issue.
+   */
   changeIssueDescription: Issue;
+  /**
+   * 
+   * Change the state of the issue.
+   */
   changeIssueState: Issue;
+  /**
+   * 
+   * Change the title of the issue.
+   */
   changeIssueTitle: Issue;
+  /**
+   * 
+   * Change the type of the issue.
+   */
   changeIssueType: Issue;
+  /**
+   * 
+   * Change the sprint of the issue.
+   */
   changeSprint: Issue;
+  /**
+   * 
+   * Add a comment to the issue.
+   */
   commentOnIssue: Issue;
+  /**
+   * 
+   * Move an issue to the state with the given name and add a comment to the issue,
+   * containing the definition of done confirm states.
+   */
   finishIssue: Issue;
-  issueId: Scalars['ID']['output'];
+  /**
+   * 
+   * The id of the issue that is being changed.
+   */
+  issueId: Scalars['String']['output'];
+  /**
+   * 
+   * The project that the issue belongs to.
+   */
   project: Project;
 };
 
 
+/**
+ * 
+ * Mutation type to change issues.
+ */
 export type IssueMutationAssignIssueArgs = {
   assigneeId?: InputMaybe<Scalars['UUID']['input']>;
 };
 
 
+/**
+ * 
+ * Mutation type to change issues.
+ */
 export type IssueMutationChangeIssueDescriptionArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
 };
 
 
+/**
+ * 
+ * Mutation type to change issues.
+ */
 export type IssueMutationChangeIssueStateArgs = {
   stateName: Scalars['String']['input'];
 };
 
 
+/**
+ * 
+ * Mutation type to change issues.
+ */
 export type IssueMutationChangeIssueTitleArgs = {
   title: Scalars['String']['input'];
 };
 
 
+/**
+ * 
+ * Mutation type to change issues.
+ */
 export type IssueMutationChangeIssueTypeArgs = {
   typeName: Scalars['String']['input'];
 };
 
 
+/**
+ * 
+ * Mutation type to change issues.
+ */
 export type IssueMutationChangeSprintArgs = {
   sprintNumber?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
+/**
+ * 
+ * Mutation type to change issues.
+ */
 export type IssueMutationCommentOnIssueArgs = {
   comment: Scalars['String']['input'];
   optionalParentId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
+/**
+ * 
+ * Mutation type to change issues.
+ */
 export type IssueMutationFinishIssueArgs = {
   dodConfirmStates: Array<DefinitionOfDoneConfirmState>;
   doneStateName?: InputMaybe<Scalars['String']['input']>;
@@ -567,10 +873,26 @@ export type IssueState = {
   type: IssueStateType;
 };
 
+/**
+ * 
+ * Represents a column in a Kanban board.
+ */
 export type IssueStateInBoard = {
   __typename?: 'IssueStateInBoard';
+  /**
+   * 
+   * The issues in the column.
+   */
   issues: Array<Issue>;
+  /**
+   * 
+   * The project board that the column belongs to.
+   */
   projectBoard: ProjectBoard;
+  /**
+   * 
+   * The issue state of the column.
+   */
   state: IssueState;
 };
 
@@ -613,6 +935,12 @@ export type IssueTypeInput = {
   name: Scalars['String']['input'];
 };
 
+/**
+ * 
+ * All known decorations that can be placed in the park.
+ * 
+ * Note: not all are yet supported by the frontend.
+ */
 export enum KnownAsset {
   Bushes_1 = 'BUSHES_1',
   Bushes_2 = 'BUSHES_2',
@@ -633,26 +961,76 @@ export enum KnownIcon {
   Gropius = 'GROPIUS'
 }
 
+/**
+ * 
+ * Represents a SCRUM meeting.
+ */
 export type Meeting = {
+  /**
+   * 
+   * If the meeting is currently active.
+   */
   active: Scalars['Boolean']['output'];
+  /**
+   * 
+   * The attendees of the meeting.
+   * Contains at most one meeting leader.
+   */
   attendees: Array<MeetingAttendee>;
+  /**
+   * 
+   * The type of the meeting.
+   */
   meetingType: MeetingType;
+  /**
+   * 
+   * The id of the project that the meeting is associated with.
+   */
   projectId: Scalars['UUID']['output'];
 };
 
+/**
+ * 
+ * A user that attends a meeting.
+ */
 export type MeetingAttendee = {
   __typename?: 'MeetingAttendee';
+  /**
+   * 
+   * The role of the user.
+   */
   role: MeetingRole;
+  /**
+   * 
+   * The state of the user, e.g. online, offline or away.
+   */
   state: UserState;
+  /**
+   * 
+   * The user who is attending the meeting.
+   */
   user: GlobalUser;
+  /**
+   * 
+   * The id of the user.
+   */
   userId: Scalars['UUID']['output'];
 };
 
+/**
+ * 
+ * The role of the user in a meeting.
+ * Can be an attendee or the meeting leader.
+ */
 export enum MeetingRole {
   Attendee = 'ATTENDEE',
   MeetingLeader = 'MEETING_LEADER'
 }
 
+/**
+ * 
+ * The type of the meeting, which can be a planning, retrospective or standup meeting.
+ */
 export enum MeetingType {
   Planning = 'PLANNING',
   Retrospective = 'RETROSPECTIVE',
@@ -768,27 +1146,54 @@ export type MutationUpdateProjectArgs = {
   input: UpdateProjectInput;
 };
 
-export type MvelRule = Rule & {
-  __typename?: 'MvelRule';
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['UUID']['output'];
-  mvelExpression: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-  triggerEventType: EventType;
-};
-
+/**
+ * 
+ * Details about the name voting.
+ */
 export type NameVoting = {
   __typename?: 'NameVoting';
+  /**
+   * 
+   * If the name voting is finished.
+   */
   finished: Scalars['Boolean']['output'];
+  /**
+   * 
+   * The voting states for each name, containing the votes of the users.
+   */
   nameVotingStates: Array<NameVotingState>;
+  /**
+   * 
+   * The names that can be voted for.
+   */
   votableNames: Array<Scalars['String']['output']>;
+  /**
+   * 
+   * If the name voting is finished, the result of the voting.
+   */
   votingResult?: Maybe<Scalars['String']['output']>;
 };
 
+/**
+ * 
+ * Holds the votes for a name.
+ */
 export type NameVotingState = {
   __typename?: 'NameVotingState';
+  /**
+   * 
+   * The total number of votes for the name.
+   */
   totalVotes: Scalars['Int']['output'];
+  /**
+   * 
+   * The votes for the name.
+   */
   userVotes: Array<Vote>;
+  /**
+   * 
+   * The name that is voted for.
+   */
   votedFor: Scalars['String']['output'];
 };
 
@@ -836,18 +1241,62 @@ export type PlacedAsset = {
   y: Scalars['Int']['output'];
 };
 
+/**
+ * 
+ * The PlanningMeeting represents the SCRUM planning meeting.
+ */
 export type PlanningMeeting = Meeting & {
   __typename?: 'PlanningMeeting';
+  /**
+   * 
+   * If the meeting is currently active.
+   */
   active: Scalars['Boolean']['output'];
+  /**
+   * 
+   * Details about the animal voting.
+   */
   animalVoting: AnimalVoting;
+  /**
+   * 
+   * The attendees of the meeting.
+   * Contains at most one meeting leader.
+   */
   attendees: Array<MeetingAttendee>;
+  /**
+   * 
+   * The current page.
+   */
   currentPage: PlanningMeetingPage;
+  /**
+   * 
+   * Details about the current issue estimation.
+   */
   issueEstimation: IssueEstimation;
-  /**  inherited from Meeting: */
+  /**
+   * 
+   * The type of the meeting, must be PLANNING.
+   */
   meetingType: MeetingType;
+  /**
+   * 
+   * Details about the name voting.
+   */
   nameVoting: NameVoting;
+  /**
+   * 
+   * The settings of the planning meeting.
+   */
   planningSettings: PlanningSettings;
+  /**
+   * 
+   * The id of the project that the meeting is associated with.
+   */
   projectId: Scalars['UUID']['output'];
+  /**
+   * 
+   * Details about the sprint goal voting.
+   */
   sprintGoalVoting: SprintGoalVoting;
 };
 
@@ -856,6 +1305,10 @@ export type PlanningMeetingInput = {
   planningSettings: PlanningSettingsInput;
 };
 
+/**
+ * 
+ * Wrapper type for all operations on the planning meeting.
+ */
 export type PlanningMeetingMutation = {
   __typename?: 'PlanningMeetingMutation';
   /**  name voting */
@@ -872,7 +1325,6 @@ export type PlanningMeetingMutation = {
   removeSprintIssue: PlanningMeeting;
   restartEstimation: PlanningMeeting;
   setFinalResult: PlanningMeeting;
-  /**  todo rename setIssueId or something */
   startCountdown: PlanningMeeting;
   /**  animal voting */
   voteAnimal: PlanningMeeting;
@@ -881,56 +1333,100 @@ export type PlanningMeetingMutation = {
 };
 
 
+/**
+ * 
+ * Wrapper type for all operations on the planning meeting.
+ */
 export type PlanningMeetingMutationAddNameArgs = {
   name: Scalars['String']['input'];
 };
 
 
+/**
+ * 
+ * Wrapper type for all operations on the planning meeting.
+ */
 export type PlanningMeetingMutationAddSprintIssueArgs = {
   issueId: Scalars['String']['input'];
 };
 
 
+/**
+ * 
+ * Wrapper type for all operations on the planning meeting.
+ */
 export type PlanningMeetingMutationChangePageArgs = {
   page: PlanningMeetingPage;
 };
 
 
+/**
+ * 
+ * Wrapper type for all operations on the planning meeting.
+ */
 export type PlanningMeetingMutationNextIssueArgs = {
   issueId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
+/**
+ * 
+ * Wrapper type for all operations on the planning meeting.
+ */
 export type PlanningMeetingMutationRemoveSprintIssueArgs = {
   issueId: Scalars['String']['input'];
 };
 
 
+/**
+ * 
+ * Wrapper type for all operations on the planning meeting.
+ */
 export type PlanningMeetingMutationSetFinalResultArgs = {
   assignUserIds?: Array<Scalars['UUID']['input']>;
   estimation: TShirtSizeEstimation;
 };
 
 
+/**
+ * 
+ * Wrapper type for all operations on the planning meeting.
+ */
 export type PlanningMeetingMutationStartCountdownArgs = {
   seconds: Scalars['Int']['input'];
 };
 
 
+/**
+ * 
+ * Wrapper type for all operations on the planning meeting.
+ */
 export type PlanningMeetingMutationVoteAnimalArgs = {
   animal: Animal;
 };
 
 
+/**
+ * 
+ * Wrapper type for all operations on the planning meeting.
+ */
 export type PlanningMeetingMutationVoteEstimationArgs = {
   estimation: TShirtSizeEstimation;
 };
 
 
+/**
+ * 
+ * Wrapper type for all operations on the planning meeting.
+ */
 export type PlanningMeetingMutationVoteNameArgs = {
   name: Scalars['String']['input'];
 };
 
+/**
+ * 
+ * The pages of the planning meeting.
+ */
 export enum PlanningMeetingPage {
   ChooseAnimal = 'CHOOSE_ANIMAL',
   EstimateIssues = 'ESTIMATE_ISSUES',
@@ -939,10 +1435,26 @@ export enum PlanningMeetingPage {
   SprintGoal = 'SPRINT_GOAL'
 }
 
+/**
+ * 
+ * The settings of the planning meeting.
+ */
 export type PlanningSettings = {
   __typename?: 'PlanningSettings';
+  /**
+   * 
+   * A custom reward for the gold challenge. (currently not used)
+   */
   customGoldChallengeReward?: Maybe<Scalars['String']['output']>;
-  sprintDurationDays: Scalars['Int']['output'];
+  /**
+   * 
+   * The duration of the sprint in days.
+   */
+  sprintDurationDays?: Maybe<Scalars['Int']['output']>;
+  /**
+   * 
+   * The start date of the sprint.
+   */
   sprintStartDate: Scalars['DateTime']['output'];
 };
 
@@ -954,28 +1466,107 @@ export type PlanningSettingsInput = {
 
 export type Project = {
   __typename?: 'Project';
-  /**  meetings */
+  /**
+   * 
+   * Returns the planning meeting of the project if one is active, otherwise null.
+   */
   activePlanningMeeting?: Maybe<PlanningMeeting>;
+  /**
+   * 
+   * Returns the retrospective meeting of the project if one is active, otherwise null.
+   */
   activeRetrospectiveMeeting?: Maybe<RetrospectiveMeeting>;
+  /**
+   * 
+   * Returns the standup meeting of the project if one is active, otherwise null.
+   */
   activeStandupMeeting?: Maybe<StandupMeeting>;
+  /**
+   * 
+   * The current sprint of the project. Returns null if no sprint is active.
+   */
   currentSprint?: Maybe<Sprint>;
+  /**
+   * 
+   * The number of the current sprint. Returns null if no sprint is active.
+   */
   currentSprintNumber?: Maybe<Scalars['Int']['output']>;
+  /**
+   * 
+   * Return the currently logged in user in the project, defined by the JWT token.
+   */
   currentUser?: Maybe<UserInProject>;
+  /**
+   * 
+   * Description of the project.
+   */
   description?: Maybe<Scalars['String']['output']>;
-  /**  events */
+  /**
+   * 
+   *     Returns the events of the project.
+   * 
+   *     NOTE: This also triggers the synchronization of Gropius events.
+   */
   events: Array<Event>;
+  /**
+   * 
+   * Unique identifier of the project. (This is not the same ID as the one in the IMS.)
+   */
   id: Scalars['UUID']['output'];
+  /**
+   * 
+   * Returns the issue with the given ID.
+   */
   issue?: Maybe<Issue>;
-  /**  issues */
+  /**
+   * 
+   * Returns the issues of the project.
+   */
   issues: Array<Issue>;
+  /**
+   * 
+   * Name of the project.
+   */
   name: Scalars['String']['output'];
+  /**
+   * 
+   * The previous sprint of the project. Returns null if no sprint is active.
+   */
   previousSprint?: Maybe<Sprint>;
+  /**
+   * 
+   * Groups the issues of the project by their state, representing a Kanban board.
+   */
   projectBoard: ProjectBoard;
+  /**
+   * 
+   * Project settings.
+   */
   projectSettings: ProjectSettings;
+  /**
+   * 
+   * Returns the role with the given name.
+   */
   role?: Maybe<ProjectRole>;
-  /**  roles */
+  /**
+   * 
+   * Returns all project roles.
+   */
   roles: Array<ProjectRole>;
+  /**
+   * 
+   * Returns the shop items of the project.
+   */
+  shopItems: Array<ShopItem>;
+  /**
+   * 
+   * All sprints of the project.
+   */
   sprints: Array<Sprint>;
+  /**
+   * 
+   * Returns the users of the project.
+   */
   users: Array<UserInProject>;
 };
 
@@ -995,15 +1586,22 @@ export type ProjectRoleArgs = {
   name: Scalars['String']['input'];
 };
 
+/**
+ * 
+ * Represents a Kanban board.
+ */
 export type ProjectBoard = {
   __typename?: 'ProjectBoard';
+  /**
+   * 
+   * The project that the board belongs to.
+   */
   project: Project;
+  /**
+   * 
+   * Ordered list of states in the board.
+   */
   states: Array<IssueStateInBoard>;
-};
-
-export type ProjectDependent = {
-  project: Project;
-  projectId: Scalars['UUID']['output'];
 };
 
 export type ProjectMutation = {
@@ -1123,6 +1721,13 @@ export type ProjectMutationUpdateSprintArgs = {
   number: Scalars['Int']['input'];
 };
 
+/**
+ * 
+ * Privileges on the project level.
+ * 
+ * NOTE: This is NOT implemented yet. These are just suggestions.
+ * Future work is needed to implement project-level privileges.
+ */
 export enum ProjectPrivilege {
   CreateRole = 'CREATE_ROLE',
   CreateShopItem = 'CREATE_SHOP_ITEM',
@@ -1142,6 +1747,15 @@ export enum ProjectPrivilege {
   UpdateUser = 'UPDATE_USER'
 }
 
+/**
+ * 
+ * Roles are used to define the permissions of a user in a project.
+ * A user can have multiple roles in a project.
+ * 
+ * NOTE: Project-level privileges/roles are NOT implemented yet.
+ * While the general framework is in place, an actual differentiation
+ * between roles has yet to be implemented.
+ */
 export type ProjectRole = {
   __typename?: 'ProjectRole';
   gamifiedName: Scalars['String']['output'];
@@ -1151,6 +1765,10 @@ export type ProjectRole = {
   projectPrivileges: Array<ProjectPrivilege>;
 };
 
+/**
+ * 
+ * Settings of a project.
+ */
 export type ProjectSettings = {
   __typename?: 'ProjectSettings';
   codeRepositorySettings: CodeRepositorySettings;
@@ -1180,8 +1798,6 @@ export type Query = {
   project?: Maybe<Project>;
   /**  projects */
   projects: Array<Project>;
-  /**  shop */
-  shopItems: Array<ShopItem>;
 };
 
 
@@ -1332,17 +1948,13 @@ export enum RetrospectiveMeetingPage {
   SprintResult = 'SPRINT_RESULT'
 }
 
-export type Rule = {
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['UUID']['output'];
-  name: Scalars['String']['output'];
-  triggerEventType: EventType;
-};
-
+/** Definition of the schema of the event data. */
 export type SchemaDefinition = {
+  /** List of fields in the schema. */
   fields: Array<FieldSchemaDefinition>;
 };
 
+/** Input for creating and updating a schema definition. */
 export type SchemaDefinitionInput = {
   fields: Array<FieldSchemaDefinitionInput>;
 };
@@ -1418,6 +2030,10 @@ export type Sprint = {
   storyPointsPlanned?: Maybe<Scalars['Int']['output']>;
 };
 
+/**
+ * 
+ * Details about the sprint goal voting.
+ */
 export type SprintGoalVoting = {
   __typename?: 'SprintGoalVoting';
   finished: Scalars['Boolean']['output'];
@@ -1653,18 +2269,7 @@ export enum TShirtSizeEstimation {
   Xs = 'XS'
 }
 
-export type TemplateField = {
-  key: Scalars['String']['output'];
-  type: AllowedDataType;
-  value?: Maybe<Scalars['String']['output']>;
-};
-
-export type TemplateFieldInput = {
-  key: Scalars['String']['input'];
-  type: AllowedDataType;
-  value?: InputMaybe<Scalars['String']['input']>;
-};
-
+/** Input for updating an event type. */
 export type UpdateEventTypeInput = {
   defaultVisibility: EventVisibility;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -1706,7 +2311,7 @@ export type UpdateSprintInput = {
   storyPointsPlanned?: InputMaybe<Scalars['Int']['input']>;
 };
 
-export type UserInProject = ProjectDependent & {
+export type UserInProject = {
   __typename?: 'UserInProject';
   achievements: Array<AchievementProgress>;
   currentBadge?: Maybe<Icon>;
@@ -1725,6 +2330,12 @@ export type UserInProjectPublicEventsArgs = {
   size?: InputMaybe<Scalars['Int']['input']>;
 };
 
+/**
+ * 
+ * The state of the user in a meeting.
+ * Can be online, offline or away.
+ * Away is currently not used.
+ */
 export enum UserState {
   Away = 'AWAY',
   Offline = 'OFFLINE',
@@ -1750,9 +2361,21 @@ export type UserStats = {
   xpToNextLevel: Scalars['Int']['output'];
 };
 
+/**
+ * 
+ * Represents a vote for a name or animal.
+ */
 export type Vote = {
   __typename?: 'Vote';
+  /**
+   * 
+   * The user who voted.
+   */
   user: GlobalUser;
+  /**
+   * 
+   * The id of the user who voted.
+   */
   userId: Scalars['UUID']['output'];
 };
 
@@ -1815,9 +2438,9 @@ export type NewEventSubscription = { __typename?: 'Subscription', event: (
     & { ' $fragmentRefs'?: { 'ReducedEventFragment': ReducedEventFragment } }
   ) };
 
-export type ReducedEventFragment = { __typename?: 'DefaultEvent', id: any, timestamp: any, message: string, user?: { __typename?: 'GlobalUser', id: any, username: string, avatar?: string | null } | null, eventType: { __typename?: 'DefaultEventType', identifier: string }, parent?: { __typename?: 'DefaultEvent', userId?: any | null, message: string } | null, issueId?: { __typename?: 'DefaultTemplateField', value?: string | null } | null, issueTitle?: { __typename?: 'DefaultTemplateField', value?: string | null } | null, repositoryName?: { __typename?: 'DefaultTemplateField', value?: string | null } | null, repositoryUrl?: { __typename?: 'DefaultTemplateField', value?: string | null } | null } & { ' $fragmentName'?: 'ReducedEventFragment' };
+export type ReducedEventFragment = { __typename?: 'DefaultEvent', id: any, timestamp: any, message: string, user?: { __typename?: 'GlobalUser', id: any, username: string, avatar?: string | null } | null, eventType: { __typename?: 'DefaultEventType', identifier: string }, parent?: { __typename?: 'DefaultEvent', userId?: any | null, message: string } | null, issueId?: { __typename?: 'DefaultDataField', value?: string | null } | null, issueTitle?: { __typename?: 'DefaultDataField', value?: string | null } | null, repositoryName?: { __typename?: 'DefaultDataField', value?: string | null } | null, repositoryUrl?: { __typename?: 'DefaultDataField', value?: string | null } | null } & { ' $fragmentName'?: 'ReducedEventFragment' };
 
-export type BaseEventFragment = { __typename?: 'DefaultEvent', id: any, timestamp: any, message: string, xpForCurrentUser?: number | null, user?: { __typename?: 'GlobalUser', id: any, username: string, avatar?: string | null } | null, eventType: { __typename?: 'DefaultEventType', identifier: string }, eventData: Array<{ __typename?: 'DefaultTemplateField', key: string, value?: string | null }>, issueId?: { __typename?: 'DefaultTemplateField', value?: string | null } | null, issueTitle?: { __typename?: 'DefaultTemplateField', value?: string | null } | null, repositoryName?: { __typename?: 'DefaultTemplateField', value?: string | null } | null, repositoryUrl?: { __typename?: 'DefaultTemplateField', value?: string | null } | null, reactions: Array<{ __typename?: 'Reaction', userId: any }> } & { ' $fragmentName'?: 'BaseEventFragment' };
+export type BaseEventFragment = { __typename?: 'DefaultEvent', id: any, timestamp: any, message: string, xpForCurrentUser?: number | null, user?: { __typename?: 'GlobalUser', id: any, username: string, avatar?: string | null } | null, eventType: { __typename?: 'DefaultEventType', identifier: string }, eventData: Array<{ __typename?: 'DefaultDataField', key: string, value?: string | null }>, issueId?: { __typename?: 'DefaultDataField', value?: string | null } | null, issueTitle?: { __typename?: 'DefaultDataField', value?: string | null } | null, repositoryName?: { __typename?: 'DefaultDataField', value?: string | null } | null, repositoryUrl?: { __typename?: 'DefaultDataField', value?: string | null } | null, reactions: Array<{ __typename?: 'Reaction', userId: any }> } & { ' $fragmentName'?: 'BaseEventFragment' };
 
 export type EventWithChildrenFragment = (
   { __typename?: 'DefaultEvent', children: Array<(
@@ -2375,17 +2998,19 @@ export type RetrospectiveMeetingSubscription = { __typename?: 'Subscription', re
   ) };
 
 export type DefaultRetrospectiveMeetingFragment = (
-  { __typename?: 'RetrospectiveMeeting', bronzeMedalPoints?: number | null, silverMedalPoints?: number | null, goldMedalPoints?: number | null, currentPage: RetrospectiveMeetingPage, goldChallengeReward?: Animal | null, bronzeMedalUser?: { __typename?: 'GlobalUser', id: any, username: string, avatar?: string | null } | null, silverMedalUser?: { __typename?: 'GlobalUser', id: any, username: string, avatar?: string | null } | null, goldMedalUser?: { __typename?: 'GlobalUser', id: any, username: string, avatar?: string | null } | null, activities: Array<{ __typename?: 'RetrospectiveActivity', columns: Array<{ __typename?: 'RetrospectiveColumn', id: any, title: string, description: string, comments: Array<{ __typename?: 'RetrospectiveComment', id: any, content: string, authorId: any, thumbsUpBy: Array<any> }> }> }> }
+  { __typename?: 'RetrospectiveMeeting', bronzeMedalPoints?: number | null, silverMedalPoints?: number | null, goldMedalPoints?: number | null, currentPage: RetrospectiveMeetingPage, goldChallengeReward?: Animal | null, streakRewards: Array<KnownAsset>, baseRewards: Array<KnownAsset>, bronzeMedalUser?: { __typename?: 'GlobalUser', id: any, username: string, avatar?: string | null } | null, silverMedalUser?: { __typename?: 'GlobalUser', id: any, username: string, avatar?: string | null } | null, goldMedalUser?: { __typename?: 'GlobalUser', id: any, username: string, avatar?: string | null } | null, activities: Array<{ __typename?: 'RetrospectiveActivity', columns: Array<{ __typename?: 'RetrospectiveColumn', id: any, title: string, description: string, comments: Array<{ __typename?: 'RetrospectiveComment', id: any, content: string, authorId: any, thumbsUpBy: Array<any> }> }> }> }
   & { ' $fragmentRefs'?: { 'DefaultMeeting_RetrospectiveMeeting_Fragment': DefaultMeeting_RetrospectiveMeeting_Fragment } }
 ) & { ' $fragmentName'?: 'DefaultRetrospectiveMeetingFragment' };
 
-export type ShopQueryVariables = Exact<{ [key: string]: never; }>;
+export type ShopQueryVariables = Exact<{
+  projectId: Scalars['UUID']['input'];
+}>;
 
 
-export type ShopQuery = { __typename?: 'Query', shopItems: Array<(
-    { __typename?: 'ShopItem' }
-    & { ' $fragmentRefs'?: { 'ShopItemFragment': ShopItemFragment } }
-  )> };
+export type ShopQuery = { __typename?: 'Query', project?: { __typename?: 'Project', shopItems: Array<(
+      { __typename?: 'ShopItem' }
+      & { ' $fragmentRefs'?: { 'ShopItemFragment': ShopItemFragment } }
+    )> } | null };
 
 export type BuyAndPlaceMutationVariables = Exact<{
   projectId: Scalars['UUID']['input'];
@@ -2542,7 +3167,7 @@ export const DefaultMeetingFragmentDoc = {"kind":"Document","definitions":[{"kin
 export const DefaultPlanningMeetingFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultPlanningMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PlanningMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"animalVoting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"finished"}},{"kind":"Field","name":{"kind":"Name","value":"votableAnimals"}},{"kind":"Field","name":{"kind":"Name","value":"votingResult"}},{"kind":"Field","name":{"kind":"Name","value":"animalVotingStates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"votedFor"}},{"kind":"Field","name":{"kind":"Name","value":"totalVotes"}},{"kind":"Field","name":{"kind":"Name","value":"userVotes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"nameVoting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"finished"}},{"kind":"Field","name":{"kind":"Name","value":"votableNames"}},{"kind":"Field","name":{"kind":"Name","value":"votingResult"}},{"kind":"Field","name":{"kind":"Name","value":"nameVotingStates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"votedFor"}},{"kind":"Field","name":{"kind":"Name","value":"totalVotes"}},{"kind":"Field","name":{"kind":"Name","value":"userVotes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"issueEstimation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"finished"}},{"kind":"Field","name":{"kind":"Name","value":"countdownSeconds"}},{"kind":"Field","name":{"kind":"Name","value":"estimationStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"max"}},{"kind":"Field","name":{"kind":"Name","value":"min"}},{"kind":"Field","name":{"kind":"Name","value":"median"}},{"kind":"Field","name":{"kind":"Name","value":"mode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"finalResult"}},{"kind":"Field","name":{"kind":"Name","value":"issueId"}},{"kind":"Field","name":{"kind":"Name","value":"votes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalVotes"}},{"kind":"Field","name":{"kind":"Name","value":"votedFor"}},{"kind":"Field","name":{"kind":"Name","value":"userVotes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sprintGoalVoting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"finished"}},{"kind":"Field","name":{"kind":"Name","value":"nonSprintIssueIds"}},{"kind":"Field","name":{"kind":"Name","value":"sprintIssueIds"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}}]} as unknown as DocumentNode<DefaultPlanningMeetingFragment, unknown>;
 export const ProjectMainFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectMain"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Project"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"currentSprintNumber"}},{"kind":"Field","name":{"kind":"Name","value":"projectSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imsSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imsName"}},{"kind":"Field","name":{"kind":"Name","value":"imsIcon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"imsProjectUrl"}},{"kind":"Field","name":{"kind":"Name","value":"issueStates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"issueTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"codeRepositorySettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repositories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"icon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mdiIcon"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"definitionOfDone"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"implies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"implies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"required"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ProjectMainFragment, unknown>;
 export const ProjectBaseFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Project"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"currentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"projectPrivileges"}}]}}]}}]}}]} as unknown as DocumentNode<ProjectBaseFragment, unknown>;
-export const DefaultRetrospectiveMeetingFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}}]} as unknown as DocumentNode<DefaultRetrospectiveMeetingFragment, unknown>;
+export const DefaultRetrospectiveMeetingFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"streakRewards"}},{"kind":"Field","name":{"kind":"Name","value":"baseRewards"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}}]} as unknown as DocumentNode<DefaultRetrospectiveMeetingFragment, unknown>;
 export const ShopItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ShopItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShopItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"price"}}]}}]} as unknown as DocumentNode<ShopItemFragment, unknown>;
 export const DefaultSprintFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultSprint"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Sprint"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"storyPointsPlanned"}},{"kind":"Field","name":{"kind":"Name","value":"stats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalStoryPoints"}},{"kind":"Field","name":{"kind":"Name","value":"percentageStoryPointsCompleted"}},{"kind":"Field","name":{"kind":"Name","value":"percentageStoryPointsInProgress"}},{"kind":"Field","name":{"kind":"Name","value":"percentageTimeElapsed"}},{"kind":"Field","name":{"kind":"Name","value":"daysLeft"}},{"kind":"Field","name":{"kind":"Name","value":"averageStoryPoints"}},{"kind":"Field","name":{"kind":"Name","value":"successState"}},{"kind":"Field","name":{"kind":"Name","value":"burnDown"}},{"kind":"Field","name":{"kind":"Name","value":"streak"}}]}},{"kind":"Field","name":{"kind":"Name","value":"placedAssets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"asset"}},{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"animal"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}}]} as unknown as DocumentNode<DefaultSprintFragment, unknown>;
 export const DefaultStandupMeetingFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultStandupMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"StandupMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"standupMeetingSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countdownPerAttendee"}}]}},{"kind":"Field","name":{"kind":"Name","value":"currentAttendee"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"order"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}}]} as unknown as DocumentNode<DefaultStandupMeetingFragment, unknown>;
@@ -2590,16 +3215,16 @@ export const AllProjectsQueryDocument = {"kind":"Document","definitions":[{"kind
 export const CreateProjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateProject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateProjectInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProjectMain"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectMain"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Project"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"currentSprintNumber"}},{"kind":"Field","name":{"kind":"Name","value":"projectSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imsSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imsName"}},{"kind":"Field","name":{"kind":"Name","value":"imsIcon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"imsProjectUrl"}},{"kind":"Field","name":{"kind":"Name","value":"issueStates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"issueTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"codeRepositorySettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repositories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"icon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mdiIcon"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"definitionOfDone"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"implies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"implies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"required"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateProjectMutation, CreateProjectMutationVariables>;
 export const UpdateProjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateProject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateProjectInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProjectMain"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectMain"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Project"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"currentSprintNumber"}},{"kind":"Field","name":{"kind":"Name","value":"projectSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imsSettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imsName"}},{"kind":"Field","name":{"kind":"Name","value":"imsIcon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"imsProjectUrl"}},{"kind":"Field","name":{"kind":"Name","value":"issueStates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"issueTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"codeRepositorySettings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repositories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"icon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mdiIcon"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"definitionOfDone"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"implies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"implies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"required"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<UpdateProjectMutation, UpdateProjectMutationVariables>;
 export const DeleteProjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteProject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}]}]}}]} as unknown as DocumentNode<DeleteProjectMutation, DeleteProjectMutationVariables>;
-export const ChangeRetrospectiveMeetingPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ChangeRetrospectiveMeetingPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeetingPage"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ChangeRetrospectiveMeetingPageMutation, ChangeRetrospectiveMeetingPageMutationVariables>;
-export const AddCommentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddComment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"columnId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"content"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addComment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"columnId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"columnId"}}},{"kind":"Argument","name":{"kind":"Name","value":"content"},"value":{"kind":"Variable","name":{"kind":"Name","value":"content"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<AddCommentMutation, AddCommentMutationVariables>;
-export const EditCommentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"EditComment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"commentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"content"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"editComment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"commentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"commentId"}}},{"kind":"Argument","name":{"kind":"Name","value":"content"},"value":{"kind":"Variable","name":{"kind":"Name","value":"content"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<EditCommentMutation, EditCommentMutationVariables>;
-export const DeleteCommentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteComment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"commentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteComment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"commentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"commentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<DeleteCommentMutation, DeleteCommentMutationVariables>;
-export const ThumbsUpCommentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ThumbsUpComment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"commentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"thumbsUpComment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"commentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"commentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ThumbsUpCommentMutation, ThumbsUpCommentMutationVariables>;
-export const FinishRetroMeetingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"FinishRetroMeeting"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"finishMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<FinishRetroMeetingMutation, FinishRetroMeetingMutationVariables>;
-export const AwardMedalsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AwardMedals"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"awardMedals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<AwardMedalsMutation, AwardMedalsMutationVariables>;
-export const CreateRetrospectiveMeetingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateRetrospectiveMeeting"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeetingInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createRetrospectiveMeeting"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateRetrospectiveMeetingMutation, CreateRetrospectiveMeetingMutationVariables>;
-export const RetrospectiveMeetingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RetrospectiveMeeting"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"retrospectiveMeeting"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"projectId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RetrospectiveMeetingSubscription, RetrospectiveMeetingSubscriptionVariables>;
-export const ShopDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Shop"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shopItems"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShopItem"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ShopItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShopItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"price"}}]}}]} as unknown as DocumentNode<ShopQuery, ShopQueryVariables>;
+export const ChangeRetrospectiveMeetingPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ChangeRetrospectiveMeetingPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeetingPage"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"streakRewards"}},{"kind":"Field","name":{"kind":"Name","value":"baseRewards"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ChangeRetrospectiveMeetingPageMutation, ChangeRetrospectiveMeetingPageMutationVariables>;
+export const AddCommentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddComment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"columnId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"content"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addComment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"columnId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"columnId"}}},{"kind":"Argument","name":{"kind":"Name","value":"content"},"value":{"kind":"Variable","name":{"kind":"Name","value":"content"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"streakRewards"}},{"kind":"Field","name":{"kind":"Name","value":"baseRewards"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<AddCommentMutation, AddCommentMutationVariables>;
+export const EditCommentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"EditComment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"commentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"content"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"editComment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"commentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"commentId"}}},{"kind":"Argument","name":{"kind":"Name","value":"content"},"value":{"kind":"Variable","name":{"kind":"Name","value":"content"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"streakRewards"}},{"kind":"Field","name":{"kind":"Name","value":"baseRewards"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<EditCommentMutation, EditCommentMutationVariables>;
+export const DeleteCommentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteComment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"commentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteComment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"commentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"commentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"streakRewards"}},{"kind":"Field","name":{"kind":"Name","value":"baseRewards"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<DeleteCommentMutation, DeleteCommentMutationVariables>;
+export const ThumbsUpCommentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ThumbsUpComment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"commentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"thumbsUpComment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"commentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"commentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"streakRewards"}},{"kind":"Field","name":{"kind":"Name","value":"baseRewards"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ThumbsUpCommentMutation, ThumbsUpCommentMutationVariables>;
+export const FinishRetroMeetingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"FinishRetroMeeting"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"finishMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"streakRewards"}},{"kind":"Field","name":{"kind":"Name","value":"baseRewards"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<FinishRetroMeetingMutation, FinishRetroMeetingMutationVariables>;
+export const AwardMedalsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AwardMedals"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateRetrospectiveMeeting"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"awardMedals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"streakRewards"}},{"kind":"Field","name":{"kind":"Name","value":"baseRewards"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<AwardMedalsMutation, AwardMedalsMutationVariables>;
+export const CreateRetrospectiveMeetingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateRetrospectiveMeeting"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeetingInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createRetrospectiveMeeting"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"streakRewards"}},{"kind":"Field","name":{"kind":"Name","value":"baseRewards"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateRetrospectiveMeetingMutation, CreateRetrospectiveMeetingMutationVariables>;
+export const RetrospectiveMeetingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RetrospectiveMeeting"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"retrospectiveMeeting"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"projectId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Meeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meetingType"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultRetrospectiveMeeting"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RetrospectiveMeeting"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultMeeting"}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bronzeMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"silverMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"goldMedalPoints"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"goldChallengeReward"}},{"kind":"Field","name":{"kind":"Name","value":"streakRewards"}},{"kind":"Field","name":{"kind":"Name","value":"baseRewards"}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"columns"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"authorId"}},{"kind":"Field","name":{"kind":"Name","value":"thumbsUpBy"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RetrospectiveMeetingSubscription, RetrospectiveMeetingSubscriptionVariables>;
+export const ShopDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Shop"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shopItems"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ShopItem"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ShopItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ShopItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"price"}}]}}]} as unknown as DocumentNode<ShopQuery, ShopQueryVariables>;
 export const BuyAndPlaceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BuyAndPlace"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PlaceAssetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mutateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"buyAndPlace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<BuyAndPlaceMutation, BuyAndPlaceMutationVariables>;
 export const SprintDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Sprint"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currentSprint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultSprint"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultSprint"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Sprint"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"storyPointsPlanned"}},{"kind":"Field","name":{"kind":"Name","value":"stats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalStoryPoints"}},{"kind":"Field","name":{"kind":"Name","value":"percentageStoryPointsCompleted"}},{"kind":"Field","name":{"kind":"Name","value":"percentageStoryPointsInProgress"}},{"kind":"Field","name":{"kind":"Name","value":"percentageTimeElapsed"}},{"kind":"Field","name":{"kind":"Name","value":"daysLeft"}},{"kind":"Field","name":{"kind":"Name","value":"averageStoryPoints"}},{"kind":"Field","name":{"kind":"Name","value":"successState"}},{"kind":"Field","name":{"kind":"Name","value":"burnDown"}},{"kind":"Field","name":{"kind":"Name","value":"streak"}}]}},{"kind":"Field","name":{"kind":"Name","value":"placedAssets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"asset"}},{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"animal"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}}]} as unknown as DocumentNode<SprintQuery, SprintQueryVariables>;
 export const PreviousSprintDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PreviousSprint"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"previousSprint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DefaultSprint"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DefaultSprint"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Sprint"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"storyPointsPlanned"}},{"kind":"Field","name":{"kind":"Name","value":"stats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalStoryPoints"}},{"kind":"Field","name":{"kind":"Name","value":"percentageStoryPointsCompleted"}},{"kind":"Field","name":{"kind":"Name","value":"percentageStoryPointsInProgress"}},{"kind":"Field","name":{"kind":"Name","value":"percentageTimeElapsed"}},{"kind":"Field","name":{"kind":"Name","value":"daysLeft"}},{"kind":"Field","name":{"kind":"Name","value":"averageStoryPoints"}},{"kind":"Field","name":{"kind":"Name","value":"successState"}},{"kind":"Field","name":{"kind":"Name","value":"burnDown"}},{"kind":"Field","name":{"kind":"Name","value":"streak"}}]}},{"kind":"Field","name":{"kind":"Name","value":"placedAssets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"asset"}},{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"animal"}},{"kind":"Field","name":{"kind":"Name","value":"number"}}]}}]} as unknown as DocumentNode<PreviousSprintQuery, PreviousSprintQueryVariables>;

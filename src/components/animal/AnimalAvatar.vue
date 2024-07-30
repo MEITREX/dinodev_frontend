@@ -3,6 +3,7 @@ import { Animal } from '@/gql/graphql'
 import Dodo from '@/assets/dodo.png'
 import Triceratops from '@/assets/triceratops.png'
 import TRex from '@/assets/trex.png'
+import Parasaurolophus from '@/assets/parasaurolophus.png'
 
 defineProps<{ animal: Animal, size: number }>()
 
@@ -14,6 +15,8 @@ function getImg(animal: Animal) {
       return Triceratops
     case Animal.Trex:
       return TRex
+    case Animal.Parasaurolophus:
+      return Parasaurolophus
   }
 }
 </script>

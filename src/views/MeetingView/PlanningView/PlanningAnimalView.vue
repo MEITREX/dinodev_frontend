@@ -3,7 +3,7 @@
 import { Animal, type DefaultPlanningMeetingFragment } from '@/gql/graphql'
 import { computed, ref } from 'vue'
 import { usePlanningMeetingService } from '@/service/planning-meeting-service'
-import AnimalCarouselItem from '@/views/MeetingView/PlanningView/AnimalCarouselItem.vue'
+import AnimalCarouselItem from '@/components/animal/AnimalCarouselItem.vue'
 import { useGlobalUserService } from '@/service/global-user-service'
 import VotingOverview from '@/components/VotingOverview.vue'
 import { watchImmediate } from '@vueuse/core'
@@ -67,7 +67,7 @@ const votesAsRecord = computed<Record<string, number>>(() => {
 function finishVoting() {
   const totalVotes = Object.values(votesAsRecord.value).reduce((acc, curr) => acc + curr, 0)
   if (totalVotes < props.attendeesCount) {
-    // show confirmation dialog TODO make a real dialog
+    // show confirmation dialog
     if (!window.confirm('Not all attendees have voted yet. Are you sure you want to finish the voting?')) {
       return
     }

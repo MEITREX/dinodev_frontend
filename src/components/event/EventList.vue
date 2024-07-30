@@ -11,7 +11,7 @@ import { useFragment } from '@/gql'
 import { eventFragment } from '@/service/event-service'
 import { abbreviate } from '@/utils/string-utils'
 import UserAvatar from '@/components/user/UserAvatar.vue'
-import AnimalAvatar from '@/views/MeetingView/PlanningView/AnimalAvatar.vue'
+import AnimalAvatar from '@/components/animal/AnimalAvatar.vue'
 import { useSprintService } from '@/service/sprint-service'
 
 defineProps<{
