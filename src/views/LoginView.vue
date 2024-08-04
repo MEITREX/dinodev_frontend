@@ -1,37 +1,17 @@
 <script setup lang="ts">
 
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useAuth } from '@/service/use-auth'
-import router from '@/router'
 import { routes } from '@/router/routes'
 import { useGlobalUserService } from '@/service/global-user-service'
-import { useErrorManager } from '@/utils/error-manager'
 
-// form data
-const credentials = ref({
-  username: '',
-  password: ''
-})
-const valid = ref(false)
-
-const { login, loading: authLoading } = useAuth()
-const { refetchUser, loading: globalUserLoading } = useGlobalUserService()
+const { loading: authLoading } = useAuth()
+const { loading: globalUserLoading } = useGlobalUserService()
 
 const loading = computed(() => authLoading.value || globalUserLoading.value)
 
-function tryLogin() {
-  login(credentials.value.username, credentials.value.password)
-    .then(() => nextPage())
-    .catch(useErrorManager().catchError)
-}
-
-async function nextPage() {
-  const user = await refetchUser()
-  if (user !== null) {
-    await router.push(routes.projects)
-  } else {
-    await router.push(routes.register)
-  }
+function redirectToGropius() {
+  useAuth().authorizeIfRequired(routes.register)
 }
 
 </script>
@@ -47,27 +27,13 @@ async function nextPage() {
             </v-card-title>
 
             <v-card-text>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                <v-text-field
-                  v-model="credentials.username"
-                  label="Username"
-                  required
-                />
-
-                <v-text-field
-                  v-model="credentials.password"
-                  label="Password"
-                  type="password"
-                  @keydown.enter="tryLogin"
-                  required
-                />
-
+              <v-form>
                 <v-btn
-                  :disabled="!valid"
-                  @click="tryLogin"
+                  block
+                  @click="redirectToGropius"
                   :loading="loading"
                 >
-                  Login
+                  Login with Gropius
                 </v-btn>
               </v-form>
             </v-card-text>

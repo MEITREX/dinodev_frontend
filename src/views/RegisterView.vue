@@ -114,7 +114,7 @@ const handleDrop = (event: DragEvent) => {
                 </v-text-field>
 
                 <div class="text-sm-body-2">
-                  Your Github name will be used to match your pull requests with your Scrum Game profile.
+                  Your Github name will be used to match your pull requests with your DinoDev profile.
                 </div>
 
                 <v-btn
@@ -123,7 +123,7 @@ const handleDrop = (event: DragEvent) => {
                   :loading="loading"
                   @click="registerUserButtonClicked"
                 >
-                  Create Scrum Game Profile
+                  Create DinoDev Profile
                 </v-btn>
               </v-form>
             </v-card-text>

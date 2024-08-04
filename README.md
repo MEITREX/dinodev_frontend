@@ -19,17 +19,16 @@ To run the frontend in production mode, follow the steps below:
    ```
 4. Figure out the Gropius Login Server URL
    The default would be `http://<gropius-login-service-container>:3000`
-5. Figure out the UUID of the auth strategy
-   All strategies can be fetched at `<gropius-login-server-url>/login/strategyInstance`.
+5. Add a new OAuth client in Gropius (under the Admin tab)
 6. Adjust the values in the `docker-compose.yml` file:
     ```yaml
     environment:
       - GRAPHQL_ENDPOINT=http://scrum_game:12001/graphql
       - GRAPHQL_WS_ENDPOINT=http://scrum_game:12001/graphql-ws
       - WEBHOOK_ENDPOINT=http://scrum_game:12001/webhook
-      - LOGIN_ENDPOINT=http://<gropius-login-service-container>:3000/authenticate/oauth/<authstrategyInstanceId>/token/login
       - GRAPHIQL_ENDPOINT=http://scrum_game:12001/graphiql
-      - CLIENT_ID_ENDPOINT=http://<gropius-frontend-container>:4200/api/login-client-id
+      - FIXED_CLIENT_ID=<client-id>
+      - AUTH_ENDPOINT=http://<gropius-frontend-container>:4200/auth/oath/
     ```
    If required, replace the backend URLs.
 7. Run the following command:
@@ -43,19 +42,13 @@ To run the frontend in production mode, follow the steps below:
 To run the frontend in development mode, follow the steps below:
 1. Figure out the Gropius Login Server URL
    If Gropius is run locally, this should be `http://localhost:3000`. 
-2. Figure out the UUID of the auth strategy
-   All strategies can be fetched at `/login/strategyInstance`.
-3. Figure out the client id for auth
-   For this, you need the frontend url of Gropius.
-   The default is `http://localhost:4200`.
-   The client ID can be fetched at `<frontend-url>/api/login-client-id`.
-4. Update the values in the `.env` file:
+2. Add a Gropius client, like described above.
+3. Update the values in the `.env` file:
     ```
-   VITE_APP_LOGIN_URL=http://localhost:3000/authenticate/oauth/<authstrategyInstanceId>/token/login
    VITE_APP_FIXED_CLIENT_ID=<client-id>
     ```
    Adjust other values as needed, the defaults assume that a local backend is running.
-5. Run the following commands:
+4. Run the following commands:
 ```bash
 # install dependencies
 $ npm install
