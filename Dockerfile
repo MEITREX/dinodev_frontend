@@ -8,10 +8,10 @@ WORKDIR /app
 COPY / /app
 RUN rm .env
 
-ENV VITE_APP_LOGIN_URL=/api/login
 ENV VITE_APP_BACKEND_URL=/api/graphql
 ENV VITE_APP_BACKEND_WS_URL=/api/graphql-ws
 ENV VITE_APP_CLIENT_ID_URL=/api/client-id
+ENV VITE_APP_AUTH_ENDPOINT=/auth/oauth
 
 # Install dependencies and build the frontend
 RUN npm ci
