@@ -48,7 +48,7 @@ async function postLoginRequest(data: string): Promise<string> {
   }
 
   try {
-    const response = await axios.post<TokenResponse>(loginUrl, data, config)
+    const response = await axios.post<TokenResponse>(loginUrl + "/token", data, config)
 
     if (response.status >= 200 && response.status < 300 && response.data.access_token) {
       token.value = response.data.access_token
