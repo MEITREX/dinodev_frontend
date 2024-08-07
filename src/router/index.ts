@@ -9,6 +9,8 @@ import MainTab from '@/views/MainProjectView/MainTab.vue'
 import AllMeetingsView from '@/views/MeetingView/AllMeetingsView.vue'
 import PlanningSettingsView from '@/views/MeetingView/PlanningView/PlanningSettingsView.vue'
 import { useProjectId } from '@/stores/project-id'
+import { onLoginEnter } from '@/service/navigationGuards'
+import { useGlobalUserService } from '@/service/global-user-service'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,17 +19,24 @@ const router = createRouter({
       path: routes.login,
       name: 'login',
       component: () => import('../views/LoginView.vue'),
-      alias: '/'
+      alias: '/',
+      beforeEnter: onLoginEnter
     },
     {
       path: routes.register,
       name: 'register',
-      component: () => import('../views/RegisterView.vue')
+      component: () => import('../views/RegisterView.vue'),
+      beforeEnter: skipRegistrationIfRegistered
     },
     {
       path: routes.projects,
       name: 'projectList',
       component: () => import('../views/AllProjectsView/AllProjectsView.vue')
+    },
+    {
+      path: '/graphiql',
+      name: 'graphiql',
+      component: () => import('../views/GraphiQLView.vue')
     },
     {
       path: routes.createProject,
@@ -137,5 +146,15 @@ router.beforeEach((to, from, next) => {
 useAuth().onLogout(() => {
   router.push(routes.login).then()
 })
+
+async function skipRegistrationIfRegistered() {
+  const { refetchUser } = useGlobalUserService()
+  const user = await refetchUser()
+  if (user !== null) {
+    return routes.projects
+  } else {
+    return true
+  }
+}
 
 export default router
