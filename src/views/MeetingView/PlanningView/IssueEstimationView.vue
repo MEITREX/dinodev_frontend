@@ -29,7 +29,7 @@ const estimationOptions = computed(() => ([
   {
     label: TShirtSizeEstimation.S,
     storyPoints: 2,
-    icon: 'mdi-apple',
+    icon: 'mdi-food-apple',
     votes: getTotalVotes(TShirtSizeEstimation.S)
   },
   {
